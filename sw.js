@@ -1,0 +1,85 @@
+/* Offline support. The whole app is static and self-contained, so the service
+ * worker precaches every file on first visit and serves stale-while-revalidate
+ * after that: pages load instantly from cache, and any update fetched in the
+ * background appears on the next reload.
+ *
+ * All paths are relative so the same worker serves a project page
+ * (username.github.io/typing-trainer/) and a local server root alike. */
+'use strict';
+
+var CACHE = 'typing-trainer-v1';
+
+var ASSETS = [
+  './',
+  'index.html',
+  'manifest.webmanifest',
+  'icon.svg',
+  'css/themes.css',
+  'css/style.css',
+  'css/keyboard.css',
+  'js/data/words.en.js',
+  'js/data/words.es.js',
+  'js/data/quotes.en.js',
+  'js/data/quotes.es.js',
+  'js/data/patterns.js',
+  'js/data/layouts.js',
+  'js/data/lessons.js',
+  'js/core/storage.js',
+  'js/core/generator.js',
+  'js/core/engine.js',
+  'js/core/stats.js',
+  'js/core/wordstats.js',
+  'js/core/keyspeed.js',
+  'js/ui/chart.js',
+  'js/ui/render.js',
+  'js/ui/keyboard.js',
+  'js/ui/sound.js',
+  'js/ui/results.js',
+  'js/ui/settings.js',
+  'js/ui/lessons.js',
+  'js/ui/statsview.js',
+  'js/ui/router.js',
+  'js/app.js'
+];
+
+self.addEventListener('install', function (e) {
+  e.waitUntil(
+    caches.open(CACHE)
+      .then(function (cache) { return cache.addAll(ASSETS); })
+      .then(function () { return self.skipWaiting(); })
+  );
+});
+
+self.addEventListener('activate', function (e) {
+  e.waitUntil(
+    caches.keys().then(function (keys) {
+      return Promise.all(keys.map(function (k) {
+        return k === CACHE ? null : caches.delete(k);
+      }));
+    }).then(function () { return self.clients.claim(); })
+  );
+});
+
+self.addEventListener('fetch', function (e) {
+  if (e.request.method !== 'GET') return;
+  var url = new URL(e.request.url);
+  if (url.origin !== self.location.origin) return;
+
+  e.respondWith(
+    caches.open(CACHE).then(function (cache) {
+      return cache.match(e.request, { ignoreSearch: true }).then(function (cached) {
+        var fresh = fetch(e.request).then(function (res) {
+          if (res && res.ok) cache.put(e.request, res.clone());
+          return res;
+        }).catch(function () {
+          // Offline and not individually cached: a navigation can still fall
+          // back to the app shell, which handles its own routing by hash.
+          if (cached) return cached;
+          if (e.request.mode === 'navigate') return cache.match('./');
+          return Promise.reject(new Error('offline and uncached: ' + url.pathname));
+        });
+        return cached || fresh;
+      });
+    })
+  );
+});

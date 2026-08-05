@@ -25,6 +25,13 @@ python3 -m http.server 8000  # then visit http://localhost:8000
 
 There is nothing to install and nothing to compile.
 
+**Offline** — visiting the live site once is enough: a service worker caches the
+whole app, so it keeps working with no connection and can be installed from the
+browser as an app (the worker and manifest are http-only; a local `file://` copy
+needs neither). To keep a local copy, clone the repo or download the source ZIP
+rather than using the browser's "Save page as…", which rewrites every link to
+point back at the live site.
+
 ## Features
 
 **Test modes**

@@ -502,6 +502,35 @@ function check(name, cond, detail) {
   const tilesText = await page.$eval('#stat-tiles', e => e.textContent);
   check('stat tiles show a test count', /tests taken/.test(tilesText));
 
+  console.log('\n— offline (service worker) —');
+  if (!APP.startsWith('http')) {
+    console.log('  (skipped over file:// — service workers need http; run with APP_URL=http://…)');
+  } else {
+    await page.evaluate(() => { window.location.hash = '#/test'; });
+    await page.waitForSelector('#words .word');
+    // ready resolves once the worker is active, and activation only follows a
+    // completed install, so the precache is guaranteed to be populated.
+    await page.evaluate(() => navigator.serviceWorker.ready);
+
+    const errsBefore = consoleErrors.length;
+    await page.setOfflineMode(true);
+    await page.reload({ waitUntil: 'load' });
+    let offlineWords = 0;
+    try {
+      await page.waitForSelector('#words .word', { timeout: 5000 });
+      offlineWords = (await page.$$('#words .word')).length;
+    } catch (e) { /* fall through to the check below */ }
+    check('the app loads and renders with no network', offlineWords > 5,
+      'got ' + offlineWords + ' words offline');
+    await page.setOfflineMode(false);
+
+    // The worker's background revalidation is expected to fail while offline;
+    // drop those entries so the final console check stays meaningful.
+    for (let i = consoleErrors.length - 1; i >= errsBefore; i--) {
+      if (consoleErrors[i].startsWith('requestfailed:')) consoleErrors.splice(i, 1);
+    }
+  }
+
   console.log('\n— final console check —');
   check('no console errors across the whole run', consoleErrors.length === 0,
     consoleErrors.slice(0, 5).join(' | '));

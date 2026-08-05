@@ -114,6 +114,24 @@
 
     TT.settings.onChange(onSettingChange);
     TT.router.start();
+
+    // Offline support: after one visit over http(s) the service worker caches
+    // the whole app, so it keeps working with no connection and can be
+    // installed. Both the worker and the manifest are http-only — file:// has
+    // no service workers and blocks manifest fetches, but needs neither.
+    if (window.location.protocol !== 'file:') {
+      var link = document.createElement('link');
+      link.rel = 'manifest';
+      link.href = 'manifest.webmanifest';
+      document.head.appendChild(link);
+
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').catch(function () {
+          // Plain-http hosts other than localhost refuse service workers; the
+          // app still works, just without the offline cache.
+        });
+      }
+    }
   }
 
   /* ── input ─────────────────────────────────────────────────────── */
