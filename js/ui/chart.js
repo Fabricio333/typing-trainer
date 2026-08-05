@@ -26,12 +26,20 @@
   }
 
   /* Sizes the backing store to the element's real pixel size so lines stay crisp
-   * on high-DPI screens, and returns a context already scaled to CSS pixels. */
+   * on high-DPI screens, and returns a context already scaled to CSS pixels.
+   *
+   * A hidden canvas measures zero, so there is a fallback — but it divides the
+   * previous backing size by dpr rather than using it raw. Falling back to
+   * canvas.width directly re-multiplies by dpr on every draw, and on any
+   * high-DPI screen the canvas grows exponentially until the browser kills it,
+   * leaving a white sad-face box where the chart should be. */
   function prepare(canvas) {
     var dpr = window.devicePixelRatio || 1;
     var rect = canvas.getBoundingClientRect();
-    var w = Math.max(1, Math.round(rect.width || canvas.width));
-    var h = Math.max(1, Math.round(rect.height || canvas.height));
+    var w = Math.round(rect.width) || Math.round(canvas.width / dpr) || 600;
+    var h = Math.round(rect.height) || Math.round(canvas.height / dpr) || 200;
+    w = Math.max(1, Math.min(4096, w));
+    h = Math.max(1, Math.min(4096, h));
 
     canvas.width = w * dpr;
     canvas.height = h * dpr;

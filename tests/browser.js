@@ -305,6 +305,30 @@ function check(name, cond, detail) {
     e => e.classList.contains('is-active'));
   check('time mode does not self-complete', stillRunning);
 
+  console.log('\n— chart canvas stability —');
+  /* The results chart used to be drawn while its view was hidden; the sizing
+   * fallback then re-multiplied the backing store by devicePixelRatio on every
+   * test, growing the canvas exponentially until the browser killed it — a
+   * white sad-face box instead of a chart, but only on high-DPI screens and
+   * only after enough tests in a row. Simulate exactly that. */
+  const chartGrowth = await page.evaluate(() => {
+    const c = document.getElementById('res-chart');   // hidden: the test view is active
+    Object.defineProperty(window, 'devicePixelRatio', { value: 2, configurable: true });
+    const series = [
+      { second: 1, wpm: 50, raw: 55, errors: 0 },
+      { second: 2, wpm: 60, raw: 62, errors: 1 }
+    ];
+    window.TT.chart.results(c, series);
+    const first = c.width;
+    for (let i = 0; i < 10; i++) window.TT.chart.results(c, series);
+    const after = c.width;
+    Object.defineProperty(window, 'devicePixelRatio', { value: 1, configurable: true });
+    return { first, after };
+  });
+  check('redrawing a hidden chart never grows the canvas',
+    chartGrowth.after === chartGrowth.first && chartGrowth.after <= 8192,
+    JSON.stringify(chartGrowth));
+
   console.log('\n— hardest-words drill —');
   // Seed a word history directly: typing enough real tests to rank 20 words
   // would take minutes, and the recording path is covered by the unit tests.

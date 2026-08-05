@@ -602,8 +602,10 @@
 
     var record = TT.results.toRecord(summary, ctx);
     TT.results.save(record);
-    TT.results.render(summary, ctx, record);
+    // Navigate first: the chart sizes itself from its on-screen box, and a
+    // still-hidden canvas measures zero.
     TT.router.go('results');
+    TT.results.render(summary, ctx, record);
 
     // History recording, after the result is safely on screen. A stats module
     // that fails here — say a half-updated cache mid-deploy left old and new
