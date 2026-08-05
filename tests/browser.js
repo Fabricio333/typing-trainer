@@ -175,6 +175,30 @@ function check(name, cond, detail) {
   check('results chart painted', chartPainted);
   await shot(page, 'results');
 
+  console.log('\n— endless modes —');
+  // Time and zen tests must never run out of words. The buffer starts at 60 and
+  // tops up once fewer than 25 remain, so typing ~40 words has to grow it.
+  await page.evaluate(() => {
+    window.TT.settings.set('mode', 'time');
+    window.TT.settings.set('timeValue', 120);
+    window.location.hash = '#/test';
+  });
+  await page.reload({ waitUntil: 'networkidle0' });
+  await page.waitForSelector('#words .word');
+
+  const initialCount = await page.$$eval('#words .word', e => e.length);
+  await page.click('#typing-area');
+  const first40 = await page.$$eval('#words .word',
+    els => els.slice(0, 40).map(e => e.textContent));
+  await page.keyboard.type(first40.join(' ') + ' ', { delay: 3 });
+
+  const grownCount = await page.$$eval('#words .word', e => e.length);
+  check('time mode tops up its word buffer',
+    grownCount > initialCount, initialCount + ' -> ' + grownCount);
+  const stillRunning = await page.$eval('#view-test',
+    e => e.classList.contains('is-active'));
+  check('time mode does not self-complete', stillRunning);
+
   console.log('\n— views —');
   for (const view of ['lessons', 'stats', 'settings']) {
     await page.evaluate(v => { window.location.hash = '#/' + v; }, view);
