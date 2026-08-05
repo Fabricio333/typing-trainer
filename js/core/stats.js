@@ -164,18 +164,37 @@
     var out = [];
     var segmentStart = 0;
     var recorded = {};
+    var isFirstSegment = true;
 
-    function push(index, ms) {
+    /* `units` is how many keystroke intervals the measured span actually covers,
+     * which is what the duration must be divided by to get a fair per-keystroke
+     * rate. It is NOT simply the word's length:
+     *
+     *   - a normal word's span runs from the previous space to its own, so it
+     *     covers its characters plus that trailing space  -> chars + 1
+     *   - the first word's clock starts ON its first keystroke, so that stroke
+     *     costs nothing                                    -> one less
+     *   - the last word of a test ends without a space     -> one less
+     *
+     * Dividing by chars alone inflates short words by (chars+1)/chars — 50% for
+     * a two-letter word against 10% for a ten-letter one — which would rank
+     * short words as hard purely for being short. */
+    function push(index, ms, hasSpace) {
       if (recorded[index]) return;
       var want = typeof state.words[index] === 'string' ? state.words[index] : '';
       var typed = typeof state.input[index] === 'string' ? state.input[index] : '';
       if (!want) return;
       recorded[index] = true;
+
+      var units = want.length + 1 - (isFirstSegment ? 1 : 0) - (hasSpace ? 0 : 1);
+      isFirstSegment = false;
+
       out.push({
         word: want,
         typed: typed,
         correct: typed === want,
         chars: want.length,
+        units: Math.max(1, units),
         ms: ms
       });
     }
@@ -183,14 +202,14 @@
     for (var i = 0; i < state.log.length; i++) {
       var e = state.log[i];
       if (e.char !== ' ') continue;
-      push(e.word, e.t - segmentStart);
+      push(e.word, e.t - segmentStart, true);
       segmentStart = e.t;
     }
 
     // The final word of a finite test completes without a trailing space.
     var last = state.log[state.log.length - 1];
     if (state.finishedAt !== null && last && last.char !== ' ') {
-      push(last.word, last.t - segmentStart);
+      push(last.word, last.t - segmentStart, false);
     }
 
     return out;

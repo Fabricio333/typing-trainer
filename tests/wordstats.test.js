@@ -77,6 +77,36 @@ test('an untouched test produces no timings', function () {
   eq(S.wordTimings(s), []);
 });
 
+suite('stats / timing units');
+
+/* A word's measured span covers more than just its own letters, so the divisor
+ * used for per-keystroke speed has to match what was actually measured. */
+
+test('a normal word counts its characters plus the committing space', function () {
+  const s = play(['aa', 'bb', 'cc', 'dd'], 'aa bb cc dd', 100);
+  const t = S.wordTimings(s);
+  eq(t[1].units, 3, 'two letters plus the space that commits them');
+  eq(t[2].units, 3);
+});
+
+test("the first word does not count a keystroke before the clock started", function () {
+  const s = play(['aa', 'bb', 'cc'], 'aa bb cc', 100);
+  eq(S.wordTimings(s)[0].units, 2, 'the very first keystroke costs no time');
+});
+
+test('the last word does not count a space it never typed', function () {
+  const s = play(['aa', 'bb', 'cc'], 'aa bb cc', 100);
+  const t = S.wordTimings(s);
+  eq(t[t.length - 1].units, 2, 'no trailing space on the final word');
+});
+
+test('units always match the measured span at a steady rhythm', function () {
+  const s = play(['zz', 'abcdefghij', 'of', 'it'], 'zz abcdefghij of it', 100);
+  S.wordTimings(s).forEach(function (t) {
+    near(t.ms / t.units, 100, 0.001, t.word + ' should be exactly one interval per unit');
+  });
+});
+
 suite('wordstats / merge');
 
 test('merging accumulates count, total and best', function () {
@@ -112,6 +142,36 @@ test('implausible timings are discarded', function () {
 });
 
 suite('wordstats / ranking');
+
+/* The regression that prompted all of this: dividing a word's span by its
+ * letter count alone inflated short words by (n+1)/n — 50% for a two-letter
+ * word against 10% for a ten-letter one — so short words ranked as "hard"
+ * purely for being short. */
+test('word length does not affect the score at a constant rhythm', function () {
+  const words = ['zz', 'abcdefghij', 'of', 'extraordinary', 'it'];
+  const s = play(words, words.join(' '), 100);
+  let map = {};
+  for (let i = 0; i < 3; i++) map = W.mergeTimings(map, S.wordTimings(s));
+
+  const rows = W.rank(map);
+  eq(rows.length, words.length);
+  rows.forEach(function (r) {
+    near(r.msPerChar, 100, 0.001, r.word + ' (' + r.word.length + ' chars)');
+    near(r.wpm, 120, 0.001, r.word);
+  });
+});
+
+test('a genuinely slow short word still ranks as hardest', function () {
+  const s = E.create(['of', 'abcdeghij', 'it'], { type: 'words', value: 3 });
+  let t = 0;
+  for (const ch of 'of abcdeghij it') {
+    t += (ch === 'o' || ch === 'f') ? 400 : 100;   // "of" typed slowly
+    E.typeChar(s, ch, t);
+  }
+  let map = {};
+  for (let i = 0; i < 3; i++) map = W.mergeTimings(map, S.wordTimings(s));
+  eq(W.rank(map)[0].word, 'of');
+});
 
 test('ranks by time per character, not raw time', function () {
   // "elephant" takes longer in total but is faster per character.
@@ -149,12 +209,20 @@ test('limit truncates to the hardest N', function () {
 });
 
 test('ranking reports a per-word wpm', function () {
-  // One 5-character word in 500ms is one word per half second => 120 wpm.
-  const map = { abcde: { n: 1, ms: 500, best: 500, err: 0 } };
+  // 5 keystroke units in 500ms => 100ms per key => 120 wpm.
+  const map = { abcde: { n: 1, ms: 500, u: 5, best: 500, err: 0 } };
   const row = W.rank(map, { minSamples: 1 })[0];
+  near(row.msPerChar, 100, 0.001);
   near(row.wpm, 120, 0.001);
   near(row.avgMs, 500, 0.001);
-  near(row.msPerChar, 100, 0.001);
+});
+
+test('records written before unit tracking still rank sensibly', function () {
+  // No `u`: fall back to characters plus the committing space.
+  const map = { abcde: { n: 2, ms: 1200, best: 600, err: 0 } };
+  const row = W.rank(map, { minSamples: 1 })[0];
+  near(row.msPerChar, 1200 / (2 * 6), 0.001);
+  ok(row.wpm > 0);
 });
 
 test('ranking is stable and never returns junk entries', function () {

@@ -56,8 +56,18 @@ is timed and the history accumulates permanently. A word's time runs from the
 previous word's commit to its own, so the hesitation *before* a hard word counts
 towards it, which is where most of the difficulty actually lives.
 
-Words are ranked by **milliseconds per character**, not raw time — ranking by raw
-time would just surface the longest words rather than the hard ones.
+Words are ranked by **milliseconds per keystroke** — the average gap between key
+presses while typing that word — not by raw time, which would just surface your
+longest words rather than your hard ones.
+
+The divisor is the number of keystroke intervals the measurement actually covers,
+not the word's letter count. A word's span also includes the space that commits
+it, so dividing by letters alone inflates short words by `(n+1)/n`: 50% for a
+two-letter word against 10% for a ten-letter one, which would rank short words as
+hard purely for being short. The first word of a test drops one interval (the
+clock starts on its first keystroke) and the last drops one too (no trailing
+space). At a constant typing rhythm every word scores identically regardless of
+length, which is what the tests assert.
 
 The **hardest words** mode takes the slowest N (10–50) and drills them by
 repetition, cycling the set so every word gets an equal share. The set is
@@ -119,7 +129,7 @@ Two details worth knowing if you change things:
 ## Tests
 
 ```bash
-node tests/run.js        # 111 unit tests — no dependencies, no install
+node tests/run.js        # 118 unit tests — no dependencies, no install
 node tests/browser.js    # 53 end-to-end checks — needs puppeteer, skips without it
 ```
 

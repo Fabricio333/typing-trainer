@@ -12,8 +12,10 @@
 
   var DEFAULT_MIN_SAMPLES = 2;
 
+  /* n = samples, ms = total time, u = total keystroke units those samples
+   * covered (see stats.wordTimings), best = fastest single attempt. */
   function emptyEntry() {
-    return { n: 0, ms: 0, best: 0, err: 0 };
+    return { n: 0, ms: 0, u: 0, best: 0, err: 0 };
   }
 
   /* Folds one test's timings into an existing map. Pure: returns a new map. */
@@ -25,6 +27,7 @@
         out[k] = {
           n: map[k].n || 0,
           ms: map[k].ms || 0,
+          u: map[k].u || 0,
           best: map[k].best || 0,
           err: map[k].err || 0
         };
@@ -44,6 +47,7 @@
 
       e.n++;
       e.ms += t.ms;
+      e.u += t.units > 0 ? t.units : t.word.length;
       e.best = e.best === 0 ? t.ms : Math.min(e.best, t.ms);
     });
 
@@ -53,8 +57,13 @@
   /* Ranks words hardest-first.
    *
    * Ranking by raw time would just surface the longest words, so the metric is
-   * milliseconds per character — that is what "this word is hard for me" means
-   * independently of how many letters it happens to have. */
+   * milliseconds per keystroke — the average gap between key presses while
+   * typing that word. That is what "this word is hard for me" means
+   * independently of how many letters it happens to have.
+   *
+   * The divisor is the recorded keystroke-unit count rather than the word's
+   * length, because a word's measured span also covers the space that commits
+   * it. Dividing by length alone would make every short word look hard. */
   function rank(map, opts) {
     var o = opts || {};
     var minSamples = o.minSamples === undefined ? DEFAULT_MIN_SAMPLES : o.minSamples;
@@ -66,7 +75,10 @@
       if (!e || e.n < minSamples || !word.length) continue;
 
       var avgMs = e.ms / e.n;
-      var msPerChar = avgMs / word.length;
+      // Records written before unit tracking existed fall back to the nominal
+      // "characters plus the committing space" count.
+      var units = e.u > 0 ? e.u : e.n * (word.length + 1);
+      var msPerChar = e.ms / units;
       rows.push({
         word: word,
         n: e.n,
