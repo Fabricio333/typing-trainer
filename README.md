@@ -7,7 +7,7 @@ English + Spanish throughout.
 No accounts, no build step, no network requests, no tracking. Open `index.html`
 and it works — online or off.
 
-**Live:** https://fabricio333.github.io/typing-trainer/
+**Live:** https://typing.fabriok.ar/
 
 ---
 
@@ -162,7 +162,7 @@ Point it at a deployed site to verify a release — a broken script path only sh
 up over HTTP, never on `file://`:
 
 ```bash
-APP_URL=https://fabricio333.github.io/typing-trainer/ node tests/browser.js
+APP_URL=https://typing.fabriok.ar/ node tests/browser.js
 ```
 
 ## Deployment
