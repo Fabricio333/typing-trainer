@@ -7,6 +7,7 @@
   "scripts": {
     "test": "node tests/run.js",
     "test:browser": "node tests/browser.js",
+    "og": "node scripts/og-image.js",
     "start": "python3 -m http.server 8000"
   },
   "//": "The site itself needs nothing installed. puppeteer is only for tests/browser.js, which skips cleanly when it is absent.",
