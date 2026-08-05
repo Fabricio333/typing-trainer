@@ -29,7 +29,10 @@
   border-radius: 6px;
   background: var(--surface);
   border: 1px solid var(--border);
-  color: var(--sub);
+  /* Labels always take the theme's primary text colour: the finger tint lives
+   * in the key surface and underline, and a muted glyph on a tinted surface
+   * is unreadable on every dark theme. */
+  color: var(--text);
   font-size: 0.82rem;
   transition: background 120ms ease, color 120ms ease, border-color 120ms ease,
               transform 80ms ease;
@@ -37,12 +40,11 @@
 }
 
 .kb-main { line-height: 1.1; }
-.kb-shift { font-size: 0.62rem; color: var(--sub-alt); line-height: 1; }
-.kb-special { font-size: 0.62rem; color: var(--sub-alt); }
+.kb-shift { font-size: 0.62rem; color: var(--sub); line-height: 1; }
+.kb-special { font-size: 0.62rem; color: var(--sub); }
 .kb-space { flex-grow: 6; }
 
-/* The home row sits slightly brighter; F and J carry the locating bumps. */
-.kb-home { color: var(--text); }
+/* F and J carry the locating bumps. */
 .kb-bump::after {
   content: '';
   position: absolute;

@@ -56,8 +56,8 @@ has a target speed and accuracy; clear it to earn stars and unlock the next.
 **Editing that behaves like a real editor**
 - `Ctrl`/`Alt`/`Cmd` + `Backspace` wipes the whole current word. Press it again on
   an empty word and it steps back and wipes the previous one, walking backwards.
-- `Backspace` steps back into an earlier word so you can fix it — by default only
-  when that word was wrong, or into any word with *free backspace* on.
+- `Backspace` steps back into any earlier word, like a real text field. Turning
+  *free backspace* off restricts it to words with mistakes, for strict practice.
 - `Enter` commits a word, exactly like space.
 - `Tab` restarts, `Esc` releases focus (both configurable).
 - *Confidence mode* turns backspace off entirely.

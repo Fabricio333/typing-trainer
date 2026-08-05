@@ -8,7 +8,7 @@
   var DEFAULTS = {
     // Bumped when a default changes meaning, so load() can migrate stored
     // settings exactly once. Not shown in the settings view.
-    _v: 2,
+    _v: 3,
 
     lang: 'en',
     theme: 'carbon',
@@ -33,7 +33,7 @@
     keyboardLayout: 'auto',
 
     stopOnError: 'off',
-    freeBackspace: false,
+    freeBackspace: true,
     confidenceMode: false,
     quickRestart: 'tab',
     sound: false
@@ -47,13 +47,16 @@
 
   function load() {
     var saved = TT.storage.read('settings', {});
-    // v2: finger colours became mirrored and default-on. Drop the stored value
-    // once so existing profiles see the new look; any choice made afterwards
-    // sticks, because _v is persisted along with it.
-    if ((saved._v || 1) < 2) {
-      delete saved.fingerColors;
-      saved._v = 2;
-    }
+    // Sequential default migrations. Dropping a stored value once lets the new
+    // default through; any choice made afterwards sticks, because _v is
+    // persisted along with it.
+    var v = saved._v || 1;
+    // v2: finger colours became mirrored and default-on.
+    if (v < 2) delete saved.fingerColors;
+    // v3: free backspace became the default — a real keyboard lets you delete
+    // into anything, and the strict mode is the opt-in.
+    if (v < 3) delete saved.freeBackspace;
+    saved._v = 3;
     current = {};
     Object.keys(DEFAULTS).forEach(function (k) {
       current[k] = Object.prototype.hasOwnProperty.call(saved, k) ? saved[k] : DEFAULTS[k];
@@ -132,8 +135,9 @@
     },
     {
       key: 'freeBackspace', name: 'Free backspace', desc:
-        'Normally you can only go back to a word you got wrong. This lets you go back to any word.',
-      options: [[false, 'off'], [true, 'on']]
+        'Delete back into any earlier word, like a real text field. Off is strict practice: ' +
+        'only words with mistakes can be re-entered.',
+      options: [[true, 'on'], [false, 'off']]
     },
     {
       key: 'confidenceMode', name: 'Confidence mode', desc:
