@@ -22,7 +22,8 @@ const ROOT = path.join(__dirname, '..');
   'js/core/generator.js',
   'js/core/engine.js',
   'js/core/stats.js',
-  'js/core/wordstats.js'
+  'js/core/wordstats.js',
+  'js/core/keyspeed.js'
 ].forEach(function (rel) {
   require(path.join(ROOT, rel));
 });
@@ -86,6 +87,7 @@ require('./stats.test.js');
 require('./generator.test.js');
 require('./data.test.js');
 require('./wordstats.test.js');
+require('./keyspeed.test.js');
 
 /* ---------- report ---------- */
 

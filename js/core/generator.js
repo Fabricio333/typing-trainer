@@ -232,6 +232,18 @@
     if (def.quote) {
       return quote({ lang: lang, length: def.length || 'medium', random: rnd }).words;
     }
+    if (def.slowest) {
+      // The learner's own slowest key transitions, passed in via opts so this
+      // module stays free of storage. Until there is enough history, fall back
+      // to the language's common patterns — still a pattern drill, just not a
+      // personalised one.
+      var pairs = o.slowest && o.slowest.length ? o.slowest : null;
+      if (!pairs) {
+        var sets = (TT.data && TT.data.patterns && TT.data.patterns[lang]) || {};
+        pairs = [].concat(sets.bigrams || [], sets.trigrams || []);
+      }
+      return drill(pairs, count, rnd);
+    }
     if (def.pool) {
       return words({
         lang: lang,

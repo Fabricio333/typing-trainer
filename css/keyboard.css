@@ -53,6 +53,26 @@
   background: var(--sub-alt);
 }
 
+/* Finger colouring — one colour per finger, mirrored: pinky, ring, middle and
+ * index wear the same colour on both hands, matching the mirrored key pairs
+ * the lessons introduce. On by default, toggled in settings.
+ *
+ * This block sits above the .is-next/.is-hit/.is-miss states on purpose: equal
+ * specificity, so the later state rules win while a key is highlighted. */
+.kb-fingers .kb-key[data-finger='lp'],
+.kb-fingers .kb-key[data-finger='rp'] { --finger: #e0679b; }
+.kb-fingers .kb-key[data-finger='lr'],
+.kb-fingers .kb-key[data-finger='rr'] { --finger: #e0a35c; }
+.kb-fingers .kb-key[data-finger='lm'],
+.kb-fingers .kb-key[data-finger='rm'] { --finger: #d9cf5c; }
+.kb-fingers .kb-key[data-finger='li'],
+.kb-fingers .kb-key[data-finger='ri'] { --finger: #5cc98a; }
+
+.kb-fingers .kb-key {
+  border-bottom: 3px solid var(--finger, var(--sub-alt));
+  background: color-mix(in srgb, var(--finger, var(--surface)) 13%, var(--surface));
+}
+
 .kb-key.is-next {
   background: var(--main);
   border-color: var(--main);
@@ -77,17 +97,6 @@
   color: var(--bg);
   transform: translateY(2px);
 }
-
-/* Finger colouring — off by default, toggled in settings. */
-.kb-fingers .kb-key[data-finger='lp'] { border-bottom: 3px solid #e05c5c; }
-.kb-fingers .kb-key[data-finger='lr'] { border-bottom: 3px solid #e0a35c; }
-.kb-fingers .kb-key[data-finger='lm'] { border-bottom: 3px solid #d9e05c; }
-.kb-fingers .kb-key[data-finger='li'] { border-bottom: 3px solid #6ce05c; }
-.kb-fingers .kb-key[data-finger='ri'] { border-bottom: 3px solid #5ce0c4; }
-.kb-fingers .kb-key[data-finger='rm'] { border-bottom: 3px solid #5c9ee0; }
-.kb-fingers .kb-key[data-finger='rr'] { border-bottom: 3px solid #9b5ce0; }
-.kb-fingers .kb-key[data-finger='rp'] { border-bottom: 3px solid #e05cb4; }
-.kb-fingers .kb-key[data-finger='th'] { border-bottom: 3px solid var(--sub-alt); }
 
 /* Heatmap: --heat runs 0 (clean) to 1 (missed a quarter of the time or worse). */
 .kb-key[style*='--heat'] {

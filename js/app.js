@@ -348,7 +348,10 @@
     var lang = s.lang;
 
     if (context.lessonDef) {
-      return TT.generator.lesson(context.lessonDef, { lang: lang });
+      return TT.generator.lesson(context.lessonDef, {
+        lang: lang,
+        slowest: TT.keyspeed.slowest(lang, 12).map(function (r) { return r.pair; })
+      });
     }
 
     switch (s.mode) {
@@ -542,9 +545,19 @@
 
     TT.statsview.addKeyStats(summary.keys);
 
-    // Every mode contributes to the per-word history, which is what the
-    // hardest-words drill is built from.
-    TT.wordstats.record(context.lang, TT.stats.wordTimings(state));
+    // The per-word history only wants real words: finger drills and pattern
+    // practice type random letter chunks, which would otherwise surface in the
+    // hardest-words drill as gibberish.
+    var chunkText = state.mode.type === 'patterns' ||
+      !!(context.lessonDef &&
+         (context.lessonDef.chars || context.lessonDef.patterns || context.lessonDef.slowest));
+    if (!chunkText) {
+      TT.wordstats.record(context.lang, TT.stats.wordTimings(state));
+    }
+
+    // Transition speed is real regardless of what was typed, so every mode
+    // feeds the slowest-combinations history.
+    TT.keyspeed.record(context.lang, TT.keyspeed.fromLog(state.log));
 
     var ctx = {
       lang: context.lang,

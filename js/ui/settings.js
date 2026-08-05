@@ -6,6 +6,10 @@
   'use strict';
 
   var DEFAULTS = {
+    // Bumped when a default changes meaning, so load() can migrate stored
+    // settings exactly once. Not shown in the settings view.
+    _v: 2,
+
     lang: 'en',
     theme: 'carbon',
 
@@ -25,7 +29,7 @@
     fontSize: 'medium',
     blind: false,
     showKeyboard: true,
-    fingerColors: false,
+    fingerColors: true,
 
     stopOnError: 'off',
     freeBackspace: false,
@@ -42,6 +46,13 @@
 
   function load() {
     var saved = TT.storage.read('settings', {});
+    // v2: finger colours became mirrored and default-on. Drop the stored value
+    // once so existing profiles see the new look; any choice made afterwards
+    // sticks, because _v is persisted along with it.
+    if ((saved._v || 1) < 2) {
+      delete saved.fingerColors;
+      saved._v = 2;
+    }
     current = {};
     Object.keys(DEFAULTS).forEach(function (k) {
       current[k] = Object.prototype.hasOwnProperty.call(saved, k) ? saved[k] : DEFAULTS[k];
@@ -142,8 +153,9 @@
       options: [[true, 'on'], [false, 'off']]
     },
     {
-      key: 'fingerColors', name: 'Finger colours', desc: 'Colour-codes each key by which finger owns it.',
-      options: [[false, 'off'], [true, 'on']]
+      key: 'fingerColors', name: 'Finger colours',
+      desc: 'Colour-codes each key by the finger that presses it — mirrored, so both hands share the same colours.',
+      options: [[true, 'on'], [false, 'off']]
     },
     {
       key: 'sound', name: 'Keypress sound', desc: 'A short synthesised click on each key.',

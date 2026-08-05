@@ -39,8 +39,12 @@ There is nothing to install and nothing to compile.
 Plus punctuation and number toggles, and a word-difficulty setting that controls
 how deep into the frequency list the tests draw from.
 
-**Lessons** — 22 per language, home row through to full passages. Each has a
-target speed and accuracy; clear it to earn stars and unlock the next.
+**Lessons** — 40+ per language, home row through to full passages. Every level
+introduces at most two new keys — always the mirror pair, the same finger on
+each hand — as a lesson over just that pair, followed by a review over every
+key learned so far. Late in the track a *slowest combinations* lesson drills
+the key transitions your own typing history shows to be slowest. Each lesson
+has a target speed and accuracy; clear it to earn stars and unlock the next.
 
 **Editing that behaves like a real editor**
 - `Ctrl`/`Alt`/`Cmd` + `Backspace` wipes the whole current word. Press it again on
@@ -51,10 +55,12 @@ target speed and accuracy; clear it to earn stars and unlock the next.
 - `Tab` restarts, `Esc` releases focus (both configurable).
 - *Confidence mode* turns backspace off entirely.
 
-**Per-word timing and the hardest-words drill** — every word you type in any mode
-is timed and the history accumulates permanently. A word's time runs from the
-previous word's commit to its own, so the hesitation *before* a hard word counts
-towards it, which is where most of the difficulty actually lives.
+**Per-word timing and the hardest-words drill** — every word you type is timed
+and the history accumulates permanently. A word's time runs from the previous
+word's commit to its own, so the hesitation *before* a hard word counts towards
+it, which is where most of the difficulty actually lives. Only real dictionary
+words enter the ranking: finger drills and pattern practice type random letter
+chunks, which are excluded so the drill never asks you to practise gibberish.
 
 Words are ranked by **milliseconds per keystroke** — the average gap between key
 presses while typing that word — not by raw time, which would just surface your

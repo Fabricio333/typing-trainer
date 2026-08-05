@@ -82,6 +82,17 @@ function check(name, cond, detail) {
   check('words rendered', (await page.$$('#words .word')).length > 10);
   check('keyboard rendered', (await page.$$('.kb-key')).length > 40);
 
+  const fingerColours = await page.evaluate(() => {
+    const colour = f => getComputedStyle(
+      document.querySelector(".kb-key[data-finger='" + f + "']")).borderBottomColor;
+    return { lp: colour('lp'), rp: colour('rp'), li: colour('li'), ri: colour('ri') };
+  });
+  check('finger colours are on by default and mirrored across hands',
+    fingerColours.lp === fingerColours.rp &&
+    fingerColours.li === fingerColours.ri &&
+    fingerColours.lp !== fingerColours.li,
+    JSON.stringify(fingerColours));
+
   // Read the actual target words so assertions are deterministic.
   const targets = await page.$$eval('#words .word', els =>
     els.slice(0, 8).map(e => e.textContent));
@@ -287,16 +298,30 @@ function check(name, cond, detail) {
   console.log('\n— hardest-words drill —');
   // Seed a word history directly: typing enough real tests to rank 20 words
   // would take minutes, and the recording path is covered by the unit tests.
-  await page.evaluate(() => {
+  // Only dictionary words may rank, so the seeds come from the real word list.
+  const seedSets = await page.evaluate(() => {
+    const dict = window.TT.data.words.en;
+    const fast = dict.slice(0, 15);
+    const slow = dict.slice(15, 30);
     const map = {};
-    // 30 words at a spread of speeds; "zzz*" words are the slow ones.
-    for (let i = 0; i < 15; i++) map['fast' + i] = { n: 4, ms: 4 * 200, best: 200, err: 0 };
-    for (let i = 0; i < 15; i++) map['zzz' + i] = { n: 4, ms: 4 * 2000, best: 2000, err: 0 };
+    // Per keystroke: ~150ms for the fast set, ~900ms for the slow set.
+    fast.forEach(w => {
+      const u = 4 * (w.length + 1);
+      map[w] = { n: 4, ms: u * 150, u: u, best: 150 * (w.length + 1), err: 0 };
+    });
+    slow.forEach(w => {
+      const u = 4 * (w.length + 1);
+      map[w] = { n: 4, ms: u * 900, u: u, best: 900 * (w.length + 1), err: 0 };
+    });
+    // Letter-chunk debris, as an old finger drill would have recorded it: the
+    // slowest entry of all, but not a word — it must never surface.
+    map['fjjf'] = { n: 6, ms: 6 * 5 * 1800, u: 6 * 5, best: 5 * 1800, err: 0 };
     window.TT.storage.write('wordstats', { en: map });
     window.TT.settings.set('lang', 'en');
     window.TT.settings.set('drillSize', 10);
     window.TT.settings.set('mode', 'hardest');
     window.location.hash = '#/test';
+    return { fast, slow };
   });
   await page.reload({ waitUntil: 'networkidle0' });
   await page.waitForSelector('#words .word');
@@ -307,7 +332,9 @@ function check(name, cond, detail) {
   const chosen = await page.$$eval('#drill-words .drill-word b', e => e.map(x => x.textContent));
   check('drill picks the configured number of words', chosen.length === 10, 'got ' + chosen.length);
   check('drill picks the slowest words',
-    chosen.every(w => w.startsWith('zzz')), chosen.join(' '));
+    chosen.every(w => seedSets.slow.indexOf(w) !== -1), chosen.join(' '));
+  check('letter chunks never surface as drill words',
+    chosen.indexOf('fjjf') === -1, chosen.join(' '));
 
   const drillWords = await page.$$eval('#words .word', e => e.map(x => x.textContent));
   check('the test text is drawn from the drill set',
@@ -317,13 +344,15 @@ function check(name, cond, detail) {
 
   /* The whole point: getting faster must not silently swap words out of the
    * set mid-session, or you could never finish practising anything. */
-  await page.evaluate(() => {
+  await page.evaluate(slowWords => {
     const store = window.TT.storage.read('wordstats', {});
-    Object.keys(store.en).forEach(w => {
-      if (w.startsWith('zzz')) store.en[w] = { n: 40, ms: 40 * 100, best: 100, err: 0 };
+    slowWords.forEach(w => {
+      const u = 40 * (w.length + 1);
+      // Now faster than the "fast" set's 150ms per keystroke.
+      store.en[w] = { n: 40, ms: u * 100, u: u, best: 100 * (w.length + 1), err: 0 };
     });
     window.TT.storage.write('wordstats', store);
-  });
+  }, seedSets.slow);
   await page.click('#restart-btn');
   await new Promise(r => setTimeout(r, 200));
   const afterImproving = await page.$$eval('#drill-words .drill-word b',
@@ -340,7 +369,7 @@ function check(name, cond, detail) {
   const afterRepick = await page.$$eval('#drill-words .drill-word b',
     e => e.map(x => x.textContent));
   check('picking a new set does react to the new rankings',
-    afterRepick.some(w => w.startsWith('fast')), afterRepick.join(' '));
+    afterRepick.some(w => seedSets.fast.indexOf(w) !== -1), afterRepick.join(' '));
 
   await shot(page, 'drill');
 

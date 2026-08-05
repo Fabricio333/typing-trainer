@@ -73,6 +73,7 @@
       if (!Object.prototype.hasOwnProperty.call(map, word)) continue;
       var e = map[word];
       if (!e || e.n < minSamples || !word.length) continue;
+      if (o.allow && !o.allow(word)) continue;
 
       var avgMs = e.ms / e.n;
       // Records written before unit tracking existed fall back to the nominal
@@ -118,14 +119,35 @@
     return store[lang];
   }
 
+  /* Only real dictionary words may surface as "hardest": older histories can
+   * carry letter chunks from finger drills and pattern practice ("fjjf"), and
+   * quote or punctuation runs record decorated tokens ("The,") — none of which
+   * belong in a word drill. The junk stays in storage but never ranks. */
+  function dictionary(lang) {
+    var list = (TT.data && TT.data.words && TT.data.words[lang]) || [];
+    if (!list.length) return null;
+    var set = Object.create(null);
+    for (var i = 0; i < list.length; i++) set[list[i]] = true;
+    return set;
+  }
+
   function hardest(lang, limit, minSamples) {
-    return rank(all(lang), { limit: limit, minSamples: minSamples });
+    var dict = dictionary(lang);
+    return rank(all(lang), {
+      limit: limit,
+      minSamples: minSamples,
+      allow: dict && function (w) { return dict[w] === true; }
+    });
   }
 
   /* How many words have enough samples to be ranked — used to tell the user
    * whether the drill has anything to work with yet. */
   function rankableCount(lang, minSamples) {
-    return rank(all(lang), { minSamples: minSamples }).length;
+    var dict = dictionary(lang);
+    return rank(all(lang), {
+      minSamples: minSamples,
+      allow: dict && function (w) { return dict[w] === true; }
+    }).length;
   }
 
   function totals(lang) {
