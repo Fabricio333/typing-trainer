@@ -94,6 +94,22 @@
             ' <b>' + Math.round(w.rate * 100) + '%</b> missed</span>';
         }).join('');
 
+    // Slowest words, hardest first.
+    var slow = TT.wordstats.hardest(lang, 25, TT.wordstats.DEFAULT_MIN_SAMPLES);
+    els.slowWords.innerHTML = slow.length === 0
+      ? '<tr><td colspan="6" class="dim">Not enough word history yet — each word ' +
+        'needs a couple of clean attempts before it can be ranked.</td></tr>'
+      : slow.map(function (r) {
+          return '<tr>' +
+            '<td>' + escapeHtml(r.word) + '</td>' +
+            '<td>' + Math.round(r.wpm) + '</td>' +
+            '<td class="dim">' + Math.round(r.avgMs) + 'ms</td>' +
+            '<td class="dim">' + Math.round(r.bestMs) + 'ms</td>' +
+            '<td class="dim">' + r.n + '</td>' +
+            '<td class="dim">' + (r.err || 0) + '</td>' +
+            '</tr>';
+        }).join('');
+
     // Recent tests, newest first.
     var recent = rows.slice(-25).reverse();
     els.historyBody.innerHTML = recent.length === 0

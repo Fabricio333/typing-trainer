@@ -16,6 +16,7 @@
     patternKind: 'mixed',
     patternAdaptive: true,
     poolSize: 200,
+    drillSize: 20,
 
     punctuation: false,
     numbers: false,

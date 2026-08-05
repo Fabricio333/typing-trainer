@@ -20,11 +20,25 @@
     time: [[15, '15'], [30, '30'], [60, '60'], [120, '120']],
     words: [[10, '10'], [25, '25'], [50, '50'], [100, '100']],
     quote: [['short', 'short'], ['medium', 'medium'], ['long', 'long'], ['any', 'any']],
-    patterns: [['bigrams', 'pairs'], ['trigrams', 'triples'], ['clusters', 'chunks'], ['mixed', 'mixed']]
+    patterns: [['bigrams', 'pairs'], ['trigrams', 'triples'], ['clusters', 'chunks'], ['mixed', 'mixed']],
+    hardest: [[10, '10'], [20, '20'], [30, '30'], [50, '50']]
   };
   var VALUE_KEY = {
-    time: 'timeValue', words: 'wordsValue', quote: 'quoteLength', patterns: 'patternKind'
+    time: 'timeValue', words: 'wordsValue', quote: 'quoteLength',
+    patterns: 'patternKind', hardest: 'drillSize'
   };
+
+  /* The hardest-words drill deliberately freezes its set for the session.
+   *
+   * If it re-picked the slowest words every test, a word would drop out the
+   * moment you got quicker at it — so you would never actually get to practise
+   * anything to completion, and the set would churn under you. Instead the set
+   * is chosen once and held, with each word's live speed shown next to it so
+   * the improvement is visible. `drillBaseline` is the speed each word had when
+   * the set was picked, which is what "improved" is measured against. */
+  var drillSet = null;
+  var drillLang = null;
+  var drillBaseline = {};
 
   /* Active-time clock: pauses whenever the input loses focus, so walking away
    * mid-test does not wreck the WPM. */
@@ -46,9 +60,15 @@
       liveCounter: id('live-counter'),
       liveWpm: id('live-wpm'),
       quoteSource: id('quote-source'),
+      drillPanel: id('drill-panel'),
+      drillWords: id('drill-words'),
+      drillSub: id('drill-sub'),
+      drillRepick: id('drill-repick'),
+      drillEmpty: id('drill-empty'),
       capsAlert: id('caps-alert'),
       capsAlertText: id('caps-alert-text'),
       configBar: id('config-bar'),
+      configSepToggles: id('config-sep-toggles'),
       configValues: id('config-values'),
       configSepValues: id('config-sep-values'),
       restartBtn: id('restart-btn'),
@@ -67,7 +87,7 @@
       statTiles: id('stat-tiles'), historyChart: id('history-chart'),
       pbGrid: id('pb-grid'),
       heatmapHost: id('heatmap-host'), worstKeys: id('worst-keys'),
-      historyBody: id('history-body'),
+      slowWords: id('slow-words-body'), historyBody: id('history-body'),
 
       settingsGrid: id('settings-grid'), dataExport: id('data-export'),
       dataImport: id('data-import'), dataReset: id('data-reset'),
@@ -347,6 +367,15 @@
           keyStats: TT.statsview.keyStats()
         });
 
+      case 'hardest':
+        var set = ensureDrillSet();
+        // Nothing ranked yet: fall back to ordinary words so the screen still
+        // works. renderDrillPanel explains why there is no drill.
+        if (!set.length) {
+          return TT.generator.words({ lang: lang, count: count || 25, poolSize: s.poolSize });
+        }
+        return TT.generator.drill(set, count || (s.drillSize || 20) * 2);
+
       case 'words':
         return TT.generator.words({
           lang: lang, count: count || s.wordsValue, poolSize: s.poolSize,
@@ -361,6 +390,80 @@
     }
   }
 
+  /* ── hardest-words drill ───────────────────────────────────────── */
+
+  var MIN_DRILL_SAMPLES = 2;
+
+  /* Picks the set once and remembers each word's speed at that moment. */
+  function pickDrillSet() {
+    var lang = TT.settings.get('lang');
+    var size = TT.settings.get('drillSize') || 20;
+    var rows = TT.wordstats.hardest(lang, size, MIN_DRILL_SAMPLES);
+
+    drillSet = rows.map(function (r) { return r.word; });
+    drillLang = lang;
+    drillBaseline = {};
+    rows.forEach(function (r) { drillBaseline[r.word] = r.wpm; });
+    return drillSet;
+  }
+
+  function ensureDrillSet() {
+    // Re-pick when the language changed or the size no longer matches, but
+    // never merely because the rankings moved.
+    var size = TT.settings.get('drillSize') || 20;
+    if (!drillSet || drillLang !== TT.settings.get('lang') || drillSet.length > size) {
+      pickDrillSet();
+    }
+    return drillSet;
+  }
+
+  function renderDrillPanel() {
+    var isDrill = TT.settings.get('mode') === 'hardest' && !context.lessonDef;
+    els.drillPanel.hidden = !isDrill;
+    els.drillEmpty.hidden = true;
+    if (!isDrill) return;
+
+    var lang = TT.settings.get('lang');
+    var set = ensureDrillSet();
+
+    if (!set.length) {
+      els.drillPanel.hidden = true;
+      els.drillEmpty.hidden = false;
+      var have = TT.wordstats.rankableCount(lang, MIN_DRILL_SAMPLES);
+      els.drillEmpty.textContent = have === 0
+        ? 'No word history yet. Run a few time or words tests first — every word you ' +
+          'type is timed, and the slowest ones will show up here.'
+        : 'Only ' + have + ' word' + (have === 1 ? '' : 's') + ' typed enough times so far. ' +
+          'Each word needs at least ' + MIN_DRILL_SAMPLES + ' clean attempts before it can be ranked.';
+      return;
+    }
+
+    // Live speeds, so improvement shows up as you drill.
+    var current = {};
+    TT.wordstats.rank(TT.wordstats.all(lang), { minSamples: 1 }).forEach(function (r) {
+      current[r.word] = r;
+    });
+
+    els.drillSub.textContent =
+      set.length + ' words, fixed for this session · sorted slowest first when picked';
+
+    els.drillWords.innerHTML = set.map(function (word) {
+      var row = current[word];
+      var wpm = row ? Math.round(row.wpm) : 0;
+      var was = drillBaseline[word] || 0;
+      var improved = was > 0 && row && row.wpm > was + 1;
+      return '<span class="drill-word' + (improved ? ' is-improved' : '') + '">' +
+        '<b>' + escapeHtml(word) + '</b>' +
+        '<span class="drill-wpm">' + (wpm ? wpm + ' wpm' : '—') +
+        (improved ? ' ▲' : '') + '</span></span>';
+    }).join('');
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
   function currentMode() {
     var s = TT.settings.all();
     if (context.lessonDef) return { type: 'lesson', value: 0 };
@@ -369,6 +472,7 @@
       case 'words': return { type: 'words', value: s.wordsValue };
       case 'quote': return { type: 'quote', value: 0 };
       case 'patterns': return { type: 'patterns', value: 0 };
+      case 'hardest': return { type: 'hardest', value: s.drillSize || 20 };
       default: return { type: 'zen', value: 0 };
     }
   }
@@ -398,6 +502,7 @@
       ? context.lessonDef.title
       : (context.quoteSource || '');
 
+    renderDrillPanel();
     focusInput();
   }
 
@@ -436,6 +541,10 @@
     }
 
     TT.statsview.addKeyStats(summary.keys);
+
+    // Every mode contributes to the per-word history, which is what the
+    // hardest-words drill is built from.
+    TT.wordstats.record(context.lang, TT.stats.wordTimings(state));
 
     var ctx = {
       lang: context.lang,
@@ -484,6 +593,13 @@
 
     els.restartBtn.addEventListener('click', restart);
 
+    els.drillRepick.addEventListener('click', function () {
+      pickDrillSet();
+      renderDrillPanel();
+      startTest();
+      toast('New set picked.');
+    });
+
     els.langToggle.addEventListener('click', function () {
       TT.settings.set('lang', TT.settings.get('lang') === 'en' ? 'es' : 'en');
     });
@@ -526,6 +642,8 @@
     Array.prototype.forEach.call(els.configBar.querySelectorAll('[data-toggle]'), function (b) {
       b.hidden = !generated;
     });
+    // Hide the divider too, or it leaves a gap where the toggles were.
+    els.configSepToggles.hidden = !generated;
   }
 
   function syncKeyboard() {
@@ -550,6 +668,7 @@
       TT.statsview.invalidateLayout();
       board = null;
       context.lessonDef = null;
+      drillSet = null;   // word history is per language
       if (TT.router.current() === 'test') startTest();
       if (TT.router.current() === 'lessons') renderLessons();
     }
@@ -567,6 +686,13 @@
       state.opts = TT.settings.engineOpts();
     }
     if (key === 'poolSize' || key === 'punctuation' || key === 'numbers') {
+      if (TT.router.current() === 'test') startTest();
+    }
+    if (key === 'drillSize') {
+      // An explicit size change is a request for a different set, unlike the
+      // rankings shifting underneath an existing one.
+      pickDrillSet();
+      renderDrillPanel();
       if (TT.router.current() === 'test') startTest();
     }
   }
@@ -607,6 +733,7 @@
       pbGrid: els.pbGrid,
       heatmap: els.heatmapHost,
       worst: els.worstKeys,
+      slowWords: els.slowWords,
       historyBody: els.historyBody
     }, TT.settings.get('lang'));
   }

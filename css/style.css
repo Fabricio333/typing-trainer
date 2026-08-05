@@ -343,6 +343,60 @@ body.blind .word.has-error { border-bottom-color: transparent; }
   text-align: right;
 }
 
+/* ── hardest-words drill ───────────────────────────────────────────── */
+
+.drill {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin-top: 2rem;
+}
+.drill[hidden] { display: none; }
+
+.drill-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.9rem;
+}
+.drill-title { color: var(--text); font-size: 1rem; font-weight: 600; }
+.drill-sub { color: var(--sub); font-size: 0.85rem; margin-top: 0.2rem; }
+
+.drill-words { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+.drill-word {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  background: var(--surface-2);
+  border: 1px solid transparent;
+  border-radius: 7px;
+  padding: 0.3rem 0.6rem;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--text);
+}
+.drill-word b { font-weight: 400; }
+.drill-word .drill-wpm { color: var(--sub); font-size: 0.75rem; }
+/* Beat your starting speed on a word and it turns green. */
+.drill-word.is-improved {
+  border-color: var(--main);
+}
+.drill-word.is-improved .drill-wpm { color: var(--main); }
+
+.drill-empty {
+  color: var(--sub);
+  font-size: 0.9rem;
+  text-align: center;
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: var(--surface);
+  border-radius: var(--radius);
+}
+.drill-empty[hidden] { display: none; }
+
 .stage-actions {
   display: flex;
   align-items: center;

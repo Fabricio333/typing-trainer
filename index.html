@@ -46,12 +46,13 @@
         <button type="button" class="opt" data-toggle="punctuation" aria-pressed="false">@ punctuation</button>
         <button type="button" class="opt" data-toggle="numbers" aria-pressed="false"># numbers</button>
       </div>
-      <div class="config-sep" aria-hidden="true"></div>
+      <div class="config-sep" id="config-sep-toggles" aria-hidden="true"></div>
       <div class="config-group" role="group" aria-label="Test mode">
         <button type="button" class="opt" data-mode="time">time</button>
         <button type="button" class="opt" data-mode="words">words</button>
         <button type="button" class="opt" data-mode="quote">quote</button>
         <button type="button" class="opt" data-mode="patterns">patterns</button>
+        <button type="button" class="opt" data-mode="hardest">hardest words</button>
         <button type="button" class="opt" data-mode="zen">zen</button>
       </div>
       <div class="config-sep" id="config-sep-values" aria-hidden="true"></div>
@@ -88,6 +89,19 @@
       </div>
 
       <p class="quote-source" id="quote-source" hidden></p>
+
+      <section class="drill" id="drill-panel" hidden>
+        <header class="drill-head">
+          <div>
+            <h2 class="drill-title">Your hardest words</h2>
+            <p class="drill-sub" id="drill-sub"></p>
+          </div>
+          <button type="button" class="ghost-btn" id="drill-repick">pick a new set</button>
+        </header>
+        <div class="drill-words" id="drill-words"></div>
+      </section>
+
+      <p class="drill-empty" id="drill-empty" hidden></p>
 
       <div class="stage-actions">
         <button type="button" class="ghost-btn" id="restart-btn" title="Restart (Tab)">
@@ -173,6 +187,20 @@
     </section>
 
     <section class="panel">
+      <h2>Slowest words</h2>
+      <p class="panel-sub">Ranked by time per character, so long words are not
+         penalised for being long. These are what the "hardest words" drill uses.</p>
+      <div class="table-scroll">
+        <table class="history-table">
+          <thead>
+            <tr><th>word</th><th>wpm</th><th>avg</th><th>best</th><th>typed</th><th>missed</th></tr>
+          </thead>
+          <tbody id="slow-words-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
       <h2>Recent tests</h2>
       <div class="table-scroll">
         <table class="history-table">
@@ -235,6 +263,7 @@
 <script src="js/core/generator.js"></script>
 <script src="js/core/engine.js"></script>
 <script src="js/core/stats.js"></script>
+<script src="js/core/wordstats.js"></script>
 
 <script src="js/ui/chart.js"></script>
 <script src="js/ui/render.js"></script>

@@ -157,6 +157,46 @@
     return out.filter(function (w) { return typeof w === 'string' && w.length > 0; });
   }
 
+  function shuffle(list, random) {
+    var rnd = random || defaultRandom;
+    var out = list.slice();
+    for (var i = out.length - 1; i > 0; i--) {
+      var j = Math.floor(rnd() * (i + 1));
+      var tmp = out[i];
+      out[i] = out[j];
+      out[j] = tmp;
+    }
+    return out;
+  }
+
+  /* Repetition drill over a fixed set of words.
+   *
+   * Draws by cycling a reshuffled copy rather than picking at random, so every
+   * word in the set comes up the same number of times — the point of the drill
+   * is even practice, not a random sample. */
+  function drill(list, count, random) {
+    var rnd = random || defaultRandom;
+    var clean = (list || []).filter(function (w) {
+      return typeof w === 'string' && w.length > 0;
+    });
+    if (!clean.length) return [];
+
+    var out = [];
+    var bag = [];
+    while (out.length < count) {
+      if (!bag.length) bag = shuffle(clean, rnd);
+      var next = bag.pop();
+      // Avoid an immediate repeat across a bag boundary.
+      if (out.length && next === out[out.length - 1] && bag.length) {
+        var alt = bag.pop();
+        bag.push(next);
+        next = alt;
+      }
+      out.push(next);
+    }
+    return out;
+  }
+
   /* Splits a quote into engine words. Returns { words, source, text }. */
   function quote(opts) {
     var o = opts || {};
@@ -232,6 +272,8 @@
     words: words,
     quote: quote,
     lesson: lesson,
+    drill: drill,
+    shuffle: shuffle,
     punctuate: punctuate,
     sprinkleNumbers: sprinkleNumbers,
     weightPatterns: weightPatterns,

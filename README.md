@@ -33,6 +33,7 @@ There is nothing to install and nothing to compile.
 - **quote** — real passages, short to long
 - **patterns** — drills the highest-frequency letter pairs, triples and chunks,
   and can weight them adaptively toward the keys you actually miss
+- **hardest words** — repetition drill over your own slowest words (see below)
 - **zen** — untimed, no end
 
 Plus punctuation and number toggles, and a word-difficulty setting that controls
@@ -50,8 +51,26 @@ target speed and accuracy; clear it to earn stars and unlock the next.
 - `Tab` restarts, `Esc` releases focus (both configurable).
 - *Confidence mode* turns backspace off entirely.
 
+**Per-word timing and the hardest-words drill** — every word you type in any mode
+is timed and the history accumulates permanently. A word's time runs from the
+previous word's commit to its own, so the hesitation *before* a hard word counts
+towards it, which is where most of the difficulty actually lives.
+
+Words are ranked by **milliseconds per character**, not raw time — ranking by raw
+time would just surface the longest words rather than the hard ones.
+
+The **hardest words** mode takes the slowest N (10–50) and drills them by
+repetition, cycling the set so every word gets an equal share. The set is
+deliberately **frozen for the session**: if it re-picked the slowest words after
+every test, a word would drop out the moment you improved at it and the set would
+churn under you, so you would never practise anything to completion. Each word
+shows its live speed and is marked when you beat the speed it had when the set was
+picked, so progress is visible while the set stays put. "Pick a new set" re-ranks
+on demand.
+
 **Statistics** — WPM, raw WPM, accuracy, consistency, a per-second chart, personal
-bests per mode, a trend graph, and a per-key heatmap showing which keys you miss.
+bests per mode, a trend graph, a per-key heatmap showing which keys you miss, and
+a slowest-words table.
 
 **Spanish support** — Spanish word lists, quotes, lessons and patterns, plus a
 Latin American keyboard layout. Accented characters typed with dead keys
@@ -78,7 +97,7 @@ index.html
 css/     style.css  themes.css  keyboard.css
 js/
   data/  words.{en,es}.js  quotes.{en,es}.js  patterns.js  layouts.js  lessons.js
-  core/  storage.js  generator.js  engine.js  stats.js      # DOM-free, unit tested
+  core/  storage.js  generator.js  engine.js  stats.js  wordstats.js  # DOM-free
   ui/    render.js  keyboard.js  chart.js  sound.js  results.js
          settings.js  lessons.js  statsview.js  router.js
   app.js                                                    # wiring, loaded last
@@ -100,17 +119,20 @@ Two details worth knowing if you change things:
 ## Tests
 
 ```bash
-node tests/run.js        # 89 unit tests — no dependencies, no install
-node tests/browser.js    # 35 end-to-end checks — needs puppeteer, skips without it
+node tests/run.js        # 111 unit tests — no dependencies, no install
+node tests/browser.js    # 53 end-to-end checks — needs puppeteer, skips without it
 ```
 
-The unit tests cover the engine's backspace semantics, the statistics maths, the
-generator, and the data files (duplicate words, untypeable characters, lesson
-definitions that fail to generate, keys missing from a layout).
+The unit tests cover the engine's backspace semantics, the statistics maths,
+per-word timing and ranking, the generator, and the data files (duplicate words,
+untypeable characters, lesson definitions that fail to generate, keys missing from
+a layout).
 
 The browser test drives the real page in headless Chrome over `file://` and checks
-typing, `Ctrl+Backspace` walking backwards, accented input, a full lesson unlock
-cycle, persistence across reloads, and that nothing logs to the console. Run it
+typing, caret position across a whole line, `Ctrl+Backspace` walking backwards,
+Caps Lock warning, accented input, a full lesson unlock cycle, the drill set
+staying frozen as speeds improve, persistence across reloads, and that nothing
+logs to the console. Run it
 with `SHOTS=1` to also write screenshots to `tests/screenshots/`.
 
 Point it at a deployed site to verify a release — a broken script path only shows

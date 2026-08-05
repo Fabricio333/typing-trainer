@@ -151,6 +151,51 @@
     return v < lo ? lo : v > hi ? hi : v;
   }
 
+  /* How long each individual word took.
+   *
+   * A word's time runs from the moment the previous word was committed to the
+   * moment this one is — so the pause before starting to type it counts, which
+   * is where most of the difficulty in a hard word actually lives.
+   *
+   * A word committed more than once (because the user stepped back to fix it)
+   * is only recorded the first time; the later timing would span everything
+   * typed in between and be meaningless. */
+  function wordTimings(state) {
+    var out = [];
+    var segmentStart = 0;
+    var recorded = {};
+
+    function push(index, ms) {
+      if (recorded[index]) return;
+      var want = typeof state.words[index] === 'string' ? state.words[index] : '';
+      var typed = typeof state.input[index] === 'string' ? state.input[index] : '';
+      if (!want) return;
+      recorded[index] = true;
+      out.push({
+        word: want,
+        typed: typed,
+        correct: typed === want,
+        chars: want.length,
+        ms: ms
+      });
+    }
+
+    for (var i = 0; i < state.log.length; i++) {
+      var e = state.log[i];
+      if (e.char !== ' ') continue;
+      push(e.word, e.t - segmentStart);
+      segmentStart = e.t;
+    }
+
+    // The final word of a finite test completes without a trailing space.
+    var last = state.log[state.log.length - 1];
+    if (state.finishedAt !== null && last && last.char !== ' ') {
+      push(last.word, last.t - segmentStart);
+    }
+
+    return out;
+  }
+
   function summarize(state, endedAt) {
     var end = state.finishedAt === null ? endedAt : state.finishedAt;
     var seconds = state.startedAt === null ? 0 : (end - state.startedAt) / 1000;
@@ -177,6 +222,7 @@
 
   TT.stats = {
     summarize: summarize,
+    wordTimings: wordTimings,
     breakdown: breakdown,
     accuracyFromLog: accuracyFromLog,
     consistency: consistency,

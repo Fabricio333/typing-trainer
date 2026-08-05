@@ -21,7 +21,8 @@ const ROOT = path.join(__dirname, '..');
   'js/data/lessons.js',
   'js/core/generator.js',
   'js/core/engine.js',
-  'js/core/stats.js'
+  'js/core/stats.js',
+  'js/core/wordstats.js'
 ].forEach(function (rel) {
   require(path.join(ROOT, rel));
 });
@@ -84,6 +85,7 @@ require('./engine.test.js');
 require('./stats.test.js');
 require('./generator.test.js');
 require('./data.test.js');
+require('./wordstats.test.js');
 
 /* ---------- report ---------- */
 

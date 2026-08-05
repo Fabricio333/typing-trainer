@@ -1,0 +1,150 @@
+/* Per-word speed history, accumulated across every test you ever run.
+ *
+ * The pure parts (mergeTimings, rank) take and return plain objects so they can
+ * be unit tested without a browser; the rest is a thin persistence wrapper. */
+(function (TT) {
+  'use strict';
+
+  /* Timings outside this range are not typing, they are life happening —
+   * a phone call mid-word would otherwise permanently mark that word as hard. */
+  var MIN_MS = 40;
+  var MAX_MS = 10000;
+
+  var DEFAULT_MIN_SAMPLES = 2;
+
+  function emptyEntry() {
+    return { n: 0, ms: 0, best: 0, err: 0 };
+  }
+
+  /* Folds one test's timings into an existing map. Pure: returns a new map. */
+  function mergeTimings(map, timings) {
+    var out = {};
+    var k;
+    for (k in map || {}) {
+      if (Object.prototype.hasOwnProperty.call(map, k)) {
+        out[k] = {
+          n: map[k].n || 0,
+          ms: map[k].ms || 0,
+          best: map[k].best || 0,
+          err: map[k].err || 0
+        };
+      }
+    }
+
+    (timings || []).forEach(function (t) {
+      if (!t || !t.word) return;
+      if (!out[t.word]) out[t.word] = emptyEntry();
+      var e = out[t.word];
+
+      if (!t.correct) {
+        e.err++;
+        return;   // a mistyped word tells us nothing useful about speed
+      }
+      if (!(t.ms >= MIN_MS && t.ms <= MAX_MS)) return;
+
+      e.n++;
+      e.ms += t.ms;
+      e.best = e.best === 0 ? t.ms : Math.min(e.best, t.ms);
+    });
+
+    return out;
+  }
+
+  /* Ranks words hardest-first.
+   *
+   * Ranking by raw time would just surface the longest words, so the metric is
+   * milliseconds per character — that is what "this word is hard for me" means
+   * independently of how many letters it happens to have. */
+  function rank(map, opts) {
+    var o = opts || {};
+    var minSamples = o.minSamples === undefined ? DEFAULT_MIN_SAMPLES : o.minSamples;
+    var rows = [];
+
+    for (var word in map || {}) {
+      if (!Object.prototype.hasOwnProperty.call(map, word)) continue;
+      var e = map[word];
+      if (!e || e.n < minSamples || !word.length) continue;
+
+      var avgMs = e.ms / e.n;
+      var msPerChar = avgMs / word.length;
+      rows.push({
+        word: word,
+        n: e.n,
+        err: e.err || 0,
+        avgMs: avgMs,
+        bestMs: e.best,
+        msPerChar: msPerChar,
+        wpm: msPerChar > 0 ? 60000 / (msPerChar * 5) : 0
+      });
+    }
+
+    rows.sort(function (a, b) {
+      return b.msPerChar - a.msPerChar || b.n - a.n || a.word.localeCompare(b.word);
+    });
+
+    return o.limit ? rows.slice(0, o.limit) : rows;
+  }
+
+  /* ── persistence ───────────────────────────────────────────────── */
+
+  function readAll() {
+    if (!TT.storage) return {};
+    var raw = TT.storage.read('wordstats', {});
+    return raw && typeof raw === 'object' ? raw : {};
+  }
+
+  function all(lang) {
+    var store = readAll();
+    return store[lang] && typeof store[lang] === 'object' ? store[lang] : {};
+  }
+
+  function record(lang, timings) {
+    if (!TT.storage) return {};
+    var store = readAll();
+    store[lang] = mergeTimings(store[lang] || {}, timings);
+    TT.storage.write('wordstats', store);
+    return store[lang];
+  }
+
+  function hardest(lang, limit, minSamples) {
+    return rank(all(lang), { limit: limit, minSamples: minSamples });
+  }
+
+  /* How many words have enough samples to be ranked — used to tell the user
+   * whether the drill has anything to work with yet. */
+  function rankableCount(lang, minSamples) {
+    return rank(all(lang), { minSamples: minSamples }).length;
+  }
+
+  function totals(lang) {
+    var map = all(lang);
+    var words = 0, plays = 0, ms = 0;
+    for (var k in map) {
+      if (!Object.prototype.hasOwnProperty.call(map, k)) continue;
+      words++;
+      plays += map[k].n || 0;
+      ms += map[k].ms || 0;
+    }
+    return { words: words, plays: plays, ms: ms };
+  }
+
+  function reset() {
+    if (TT.storage) TT.storage.remove('wordstats');
+  }
+
+  TT.wordstats = {
+    mergeTimings: mergeTimings,
+    rank: rank,
+    all: all,
+    record: record,
+    hardest: hardest,
+    rankableCount: rankableCount,
+    totals: totals,
+    reset: reset,
+    MIN_MS: MIN_MS,
+    MAX_MS: MAX_MS,
+    DEFAULT_MIN_SAMPLES: DEFAULT_MIN_SAMPLES
+  };
+})(typeof window !== 'undefined'
+  ? (window.TT = window.TT || {})
+  : (global.TT = global.TT || {}));

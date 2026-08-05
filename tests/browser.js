@@ -284,6 +284,78 @@ function check(name, cond, detail) {
     e => e.classList.contains('is-active'));
   check('time mode does not self-complete', stillRunning);
 
+  console.log('\n— hardest-words drill —');
+  // Seed a word history directly: typing enough real tests to rank 20 words
+  // would take minutes, and the recording path is covered by the unit tests.
+  await page.evaluate(() => {
+    const map = {};
+    // 30 words at a spread of speeds; "zzz*" words are the slow ones.
+    for (let i = 0; i < 15; i++) map['fast' + i] = { n: 4, ms: 4 * 200, best: 200, err: 0 };
+    for (let i = 0; i < 15; i++) map['zzz' + i] = { n: 4, ms: 4 * 2000, best: 2000, err: 0 };
+    window.TT.storage.write('wordstats', { en: map });
+    window.TT.settings.set('lang', 'en');
+    window.TT.settings.set('drillSize', 10);
+    window.TT.settings.set('mode', 'hardest');
+    window.location.hash = '#/test';
+  });
+  await page.reload({ waitUntil: 'networkidle0' });
+  await page.waitForSelector('#words .word');
+
+  const drillPanelShown = await page.$eval('#drill-panel', e => !e.hidden);
+  check('drill panel is shown', drillPanelShown);
+
+  const chosen = await page.$$eval('#drill-words .drill-word b', e => e.map(x => x.textContent));
+  check('drill picks the configured number of words', chosen.length === 10, 'got ' + chosen.length);
+  check('drill picks the slowest words',
+    chosen.every(w => w.startsWith('zzz')), chosen.join(' '));
+
+  const drillWords = await page.$$eval('#words .word', e => e.map(x => x.textContent));
+  check('the test text is drawn from the drill set',
+    drillWords.every(w => chosen.indexOf(w) !== -1), drillWords.slice(0, 6).join(' '));
+  check('drill repeats the set rather than listing it once',
+    drillWords.length > chosen.length, drillWords.length + ' vs ' + chosen.length);
+
+  /* The whole point: getting faster must not silently swap words out of the
+   * set mid-session, or you could never finish practising anything. */
+  await page.evaluate(() => {
+    const store = window.TT.storage.read('wordstats', {});
+    Object.keys(store.en).forEach(w => {
+      if (w.startsWith('zzz')) store.en[w] = { n: 40, ms: 40 * 100, best: 100, err: 0 };
+    });
+    window.TT.storage.write('wordstats', store);
+  });
+  await page.click('#restart-btn');
+  await new Promise(r => setTimeout(r, 200));
+  const afterImproving = await page.$$eval('#drill-words .drill-word b',
+    e => e.map(x => x.textContent));
+  check('the drill set stays frozen even after those words get faster',
+    JSON.stringify(afterImproving) === JSON.stringify(chosen),
+    'was ' + chosen.join(',') + ' now ' + afterImproving.join(','));
+  check('improved words are marked',
+    (await page.$$('#drill-words .drill-word.is-improved')).length > 0);
+
+  // But an explicit re-pick must react to the new rankings.
+  await page.click('#drill-repick');
+  await new Promise(r => setTimeout(r, 200));
+  const afterRepick = await page.$$eval('#drill-words .drill-word b',
+    e => e.map(x => x.textContent));
+  check('picking a new set does react to the new rankings',
+    afterRepick.some(w => w.startsWith('fast')), afterRepick.join(' '));
+
+  await shot(page, 'drill');
+
+  // With no history at all the mode must explain itself, not break.
+  await page.evaluate(() => {
+    window.TT.storage.remove('wordstats');
+    window.location.hash = '#/test';
+  });
+  await page.reload({ waitUntil: 'networkidle0' });
+  await page.waitForSelector('#words .word');
+  const emptyShown = await page.$eval('#drill-empty', e => !e.hidden && e.textContent.length > 30);
+  check('with no history the drill explains what to do', emptyShown);
+  const stillTypeable = await page.$$eval('#words .word', e => e.length);
+  check('and still gives you something to type', stillTypeable > 5, 'got ' + stillTypeable);
+
   console.log('\n— views —');
   for (const view of ['lessons', 'stats', 'settings']) {
     await page.evaluate(v => { window.location.hash = '#/' + v; }, view);
