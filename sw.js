@@ -1,13 +1,18 @@
 /* Offline support. The whole app is static and self-contained, so the service
- * worker precaches every file on first visit and serves stale-while-revalidate
- * after that: pages load instantly from cache, and any update fetched in the
- * background appears on the next reload.
+ * worker precaches every file on first visit and afterwards serves
+ * network-first with a cache fallback: online loads always run one consistent
+ * deploy, and only an actual failure to fetch reaches into the cache.
+ *
+ * Cache-first was deliberately rejected: refreshing files independently in the
+ * background lets a single page load mix two deploys — an old index.html with
+ * a new script — which is exactly the kind of breakage (a missing module
+ * throwing at the end of a test) that is impossible to reproduce locally.
  *
  * All paths are relative so the same worker serves a project page
  * (username.github.io/typing-trainer/) and a local server root alike. */
 'use strict';
 
-var CACHE = 'typing-trainer-v1';
+var CACHE = 'typing-trainer-v2';
 
 var ASSETS = [
   './',
@@ -67,18 +72,17 @@ self.addEventListener('fetch', function (e) {
 
   e.respondWith(
     caches.open(CACHE).then(function (cache) {
-      return cache.match(e.request, { ignoreSearch: true }).then(function (cached) {
-        var fresh = fetch(e.request).then(function (res) {
-          if (res && res.ok) cache.put(e.request, res.clone());
-          return res;
-        }).catch(function () {
-          // Offline and not individually cached: a navigation can still fall
-          // back to the app shell, which handles its own routing by hash.
+      return fetch(e.request).then(function (res) {
+        if (res && res.ok) cache.put(e.request, res.clone());
+        return res;
+      }).catch(function () {
+        return cache.match(e.request, { ignoreSearch: true }).then(function (cached) {
           if (cached) return cached;
+          // A navigation can still fall back to the app shell, which handles
+          // its own routing by hash.
           if (e.request.mode === 'navigate') return cache.match('./');
           return Promise.reject(new Error('offline and uncached: ' + url.pathname));
         });
-        return cached || fresh;
       });
     })
   );

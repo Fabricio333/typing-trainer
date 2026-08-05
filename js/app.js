@@ -80,7 +80,8 @@
 
       resWpm: id('res-wpm'), resAcc: id('res-acc'), resMeta: id('res-meta'),
       resChart: id('res-chart'), resGrid: id('res-grid'), resNote: id('res-note'),
-      resAgain: id('res-again'), resRepeat: id('res-repeat'), resBack: id('res-back'),
+      resAgain: id('res-again'), resAgainLabel: id('res-again-label'),
+      resRepeat: id('res-repeat'), resBack: id('res-back'),
 
       lessonList: id('lesson-list'), lessonProgress: id('lesson-progress'),
 
@@ -261,7 +262,7 @@
 
     if (view === 'results') {
       if (e.key === 'Enter') { e.preventDefault(); nextTest(); }
-      else if (e.key === 'Escape') { e.preventDefault(); TT.router.go('test'); }
+      else if (e.key === 'Escape') { e.preventDefault(); backToMenu(); }
       else if (e.key === 'Tab') { e.preventDefault(); nextTest(); }
       return;
     }
@@ -539,6 +540,13 @@
   }
 
   function nextTest() {
+    // After a passed lesson, "next" advances the track instead of replaying.
+    if (context.lessonDef && context.lessonNext) {
+      var found = TT.lessons.find(context.lang, context.lessonNext.id);
+      context.lessonDef = context.lessonNext;
+      context.lessonIndex = found ? found.index : 0;
+      context.lessonNext = null;
+    }
     TT.router.go('test');
     startTest();
   }
@@ -561,40 +569,64 @@
       return;
     }
 
-    TT.statsview.addKeyStats(summary.keys);
-
-    // The per-word history only wants real words: finger drills and pattern
-    // practice type random letter chunks, which would otherwise surface in the
-    // hardest-words drill as gibberish.
-    var chunkText = state.mode.type === 'patterns' ||
-      !!(context.lessonDef &&
-         (context.lessonDef.chars || context.lessonDef.patterns || context.lessonDef.slowest));
-    if (!chunkText) {
-      TT.wordstats.record(context.lang, TT.stats.wordTimings(state));
-    }
-
-    // Transition speed is real regardless of what was typed, so every mode
-    // feeds the slowest-combinations history.
-    TT.keyspeed.record(context.lang, TT.keyspeed.fromLog(state.log));
-
     var ctx = {
       lang: context.lang,
       quoteLength: TT.settings.get('quoteLength'),
       lessonId: context.lessonDef ? context.lessonDef.id : null
     };
 
+    // The lesson outcome and the next step for the "next" button. Marking the
+    // lesson complete comes before any history recording: bookkeeping must
+    // never be able to eat a pass.
+    context.lessonNext = null;
     if (context.lessonDef) {
       var outcome = TT.lessons.complete(context.lang, context.lessonDef, summary);
       ctx.note = outcome.passed
         ? 'Lesson passed — ' + outcome.stars + (outcome.stars === 1 ? ' star.' : ' stars.')
         : 'Not passed yet. Target is ' + context.lessonDef.target.wpm + ' wpm at ' +
           context.lessonDef.target.acc + '% accuracy.';
+
+      // Once the lesson has ever been passed, "next" means the next lesson.
+      if (TT.lessons.passed(context.lessonDef.id)) {
+        var found = TT.lessons.find(context.lang, context.lessonDef.id);
+        var track = TT.lessons.track(context.lang);
+        if (found && found.index + 1 < track.length) {
+          context.lessonNext = track[found.index + 1];
+        }
+      }
+      els.resAgainLabel.textContent = context.lessonNext ? 'next lesson'
+        : TT.lessons.passed(context.lessonDef.id) ? 'repeat lesson' : 'try again';
+    } else {
+      els.resAgainLabel.textContent = 'next test';
     }
 
     var record = TT.results.toRecord(summary, ctx);
     TT.results.save(record);
     TT.results.render(summary, ctx, record);
     TT.router.go('results');
+
+    // History recording, after the result is safely on screen. A stats module
+    // that fails here — say a half-updated cache mid-deploy left old and new
+    // files mixed — must not take the result or the lesson pass down with it.
+    try {
+      TT.statsview.addKeyStats(summary.keys);
+
+      // The per-word history only wants real words: finger drills and pattern
+      // practice type random letter chunks, which would otherwise surface in
+      // the hardest-words drill as gibberish.
+      var chunkText = state.mode.type === 'patterns' ||
+        !!(context.lessonDef &&
+           (context.lessonDef.chars || context.lessonDef.patterns || context.lessonDef.slowest));
+      if (!chunkText) {
+        TT.wordstats.record(context.lang, TT.stats.wordTimings(state));
+      }
+
+      // Transition speed is real regardless of what was typed, so every mode
+      // feeds the slowest-combinations history.
+      TT.keyspeed.record(context.lang, TT.keyspeed.fromLog(state.log));
+    } catch (err) {
+      // The result still stands; only this test's history entry is lost.
+    }
   }
 
   /* ── chrome ────────────────────────────────────────────────────── */
@@ -730,9 +762,15 @@
 
   /* ── results view ──────────────────────────────────────────────── */
 
+  /* "Back to menu" means the place the run came from: the lessons list for a
+   * lesson, the test screen for everything else. */
+  function backToMenu() {
+    TT.router.go(context.lessonDef ? 'lessons' : 'test');
+  }
+
   function wireResults() {
     els.resAgain.addEventListener('click', nextTest);
-    els.resBack.addEventListener('click', function () { TT.router.go('test'); });
+    els.resBack.addEventListener('click', backToMenu);
     els.resRepeat.addEventListener('click', function () {
       TT.router.go('test');
       startTest(lastWords ? lastWords.slice() : null);

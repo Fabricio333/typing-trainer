@@ -468,6 +468,19 @@ function check(name, cond, detail) {
   check('lesson result reports pass/fail', /Lesson passed|Not passed/.test(lessonNote),
     JSON.stringify(lessonNote));
 
+  // A passed lesson's "next" must advance the track, not replay the lesson.
+  const expectNext = await page.evaluate(() =>
+    window.TT.data.lessons[window.TT.settings.get('lang')][1].title);
+  const againLabel = await page.$eval('#res-again-label', e => e.textContent);
+  check('the next button is relabelled for the next lesson',
+    againLabel === 'next lesson', 'label reads "' + againLabel + '"');
+  await page.keyboard.press('Enter');
+  await page.waitForSelector('#view-test.is-active');
+  await new Promise(r => setTimeout(r, 200));
+  const nowRunning = await page.$eval('#quote-source', e => e.textContent);
+  check('enter on a passed lesson starts the next lesson',
+    nowRunning === expectNext, 'running "' + nowRunning + '", expected "' + expectNext + '"');
+
   await page.evaluate(() => { window.location.hash = '#/lessons'; });
   await page.waitForSelector('#view-lessons.is-active');
   await new Promise(r => setTimeout(r, 200));
