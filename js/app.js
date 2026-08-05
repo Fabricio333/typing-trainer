@@ -14,6 +14,8 @@
   var lastWords = null;      // for "repeat same text"
   var toastTimer = null;
 
+  var CAPS_TEXT = { en: 'caps lock is on', es: 'bloq mayús activado' };
+
   var VALUES = {
     time: [[15, '15'], [30, '30'], [60, '60'], [120, '120']],
     words: [[10, '10'], [25, '25'], [50, '50'], [100, '100']],
@@ -44,6 +46,8 @@
       liveCounter: id('live-counter'),
       liveWpm: id('live-wpm'),
       quoteSource: id('quote-source'),
+      capsAlert: id('caps-alert'),
+      capsAlertText: id('caps-alert-text'),
       configBar: id('config-bar'),
       configValues: id('config-values'),
       configSepValues: id('config-sep-values'),
@@ -122,6 +126,19 @@
 
     // Shortcuts that must work even when the typing field is not focused.
     document.addEventListener('keydown', onGlobalKey);
+
+    // Both edges: pressing Caps Lock itself reports the new state on one of
+    // keydown/keyup depending on the browser, so listen for both.
+    document.addEventListener('keydown', updateCapsLock);
+    document.addEventListener('keyup', updateCapsLock);
+  }
+
+  /* Caps Lock turns every letter into a mistake with no visible cause. */
+  function updateCapsLock(e) {
+    if (!e.getModifierState) return;
+    var on = e.getModifierState('CapsLock');
+    els.capsAlertText.textContent = CAPS_TEXT[TT.settings.get('lang')] || CAPS_TEXT.en;
+    els.capsAlert.hidden = !on;
   }
 
   /* Text always arrives through the `input` event rather than keydown, because a

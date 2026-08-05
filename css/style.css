@@ -208,6 +208,30 @@ body.is-typing .live { opacity: 1; }
 .live-primary { font-size: 1.9rem; line-height: 1; }
 .live-secondary { font-size: 1rem; color: var(--sub); }
 
+/* Caps Lock silently makes every keystroke wrong, and a beginner has no way to
+ * tell why. This stays put even while the rest of the chrome fades out. */
+.caps-alert {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--error);
+  color: var(--bg);
+  border-radius: 999px;
+  padding: 0.3rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  /* Its own keyframe: the toast's `rise` carries a translate(-50%) for
+   * horizontal centring, which would drag this out of the content column. */
+  animation: pop-in 200ms ease;
+}
+.caps-alert[hidden] { display: none; }
+
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
 .typing { position: relative; }
 
 .hidden-input {

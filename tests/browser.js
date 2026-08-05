@@ -84,7 +84,7 @@ function check(name, cond, detail) {
 
   // Read the actual target words so assertions are deterministic.
   const targets = await page.$$eval('#words .word', els =>
-    els.slice(0, 4).map(e => e.textContent));
+    els.slice(0, 8).map(e => e.textContent));
 
   console.log('\n— typing —');
   await page.click('#typing-area');
@@ -104,13 +104,98 @@ function check(name, cond, detail) {
   check('caret is actually visible',
     caret.w > 0 && caret.h > 4 && caret.display !== 'none', JSON.stringify(caret));
 
+  /* Where the caret *is* matters as much as that it moved. Checking only that
+   * it advanced hid a double-counted offset that grew the further right the
+   * caret went, so this walks across a whole line and compares the caret
+   * against the character it should be sitting on. */
+  async function caretDrift() {
+    return page.evaluate(() => {
+      const wordsEl = document.getElementById('words');
+      const caretEl = document.getElementById('caret');
+      // Rebuild the engine's idea of the caret: first word with untyped letters.
+      let target = null;
+      for (const word of wordsEl.children) {
+        const untyped = [...word.children].find(
+          l => !l.classList.contains('is-correct') && !l.classList.contains('is-wrong'));
+        if (untyped) { target = untyped; break; }
+      }
+      if (!target) return null;
+      const t = target.getBoundingClientRect();
+      const c = caretEl.getBoundingClientRect();
+      return {
+        ch: target.textContent,
+        dx: Math.round(c.left - t.left),
+        // The caret is deliberately inset vertically to centre it in the line
+        // box, so the meaningful question is whether it stays inside that box.
+        insideLine: c.top >= t.top - 2 && c.bottom <= t.bottom + 2
+      };
+    });
+  }
+
+  // Disable the caret's easing so measurements are not caught mid-transition.
+  await page.addStyleTag({ content: '.caret { transition: none !important; }' });
+
+  // Each word is committed with a trailing space, so the caret is always parked
+  // on the next word's first letter — which is what caretDrift() looks for.
+  let worstDx = 0;
+  let alwaysInLine = true;
+  for (let i = 1; i < 5; i++) {
+    await page.keyboard.type(' ' + targets[i] + ' ', { delay: 12 });
+    await new Promise(r => setTimeout(r, 60));
+    const d = await caretDrift();
+    if (!d) continue;
+    worstDx = Math.max(worstDx, Math.abs(d.dx));
+    alwaysInLine = alwaysInLine && d.insideLine;
+  }
+  check('caret sits on the character it points at across a line',
+    worstDx <= 2, 'worst horizontal drift ' + worstDx + 'px');
+  check('caret stays within the line box', alwaysInLine);
+
   // The on-screen keyboard is the main learning aid; it must not fade out
   // exactly when a beginner needs it.
   const kbVisible = await page.$eval('#keyboard-host',
     e => parseFloat(getComputedStyle(e).opacity));
   check('keyboard stays visible while typing', kbVisible > 0.9, 'opacity ' + kbVisible);
 
+  console.log('\n— caps lock —');
+  /* Puppeteer's key map has no Caps Lock modifier, so drive the handler with a
+   * synthetic event carrying the modifier state a real keypress would report. */
+  const capsOn = await page.evaluate(() => {
+    const e = new KeyboardEvent('keydown', { key: 'a', bubbles: true });
+    Object.defineProperty(e, 'getModifierState', { value: k => k === 'CapsLock' });
+    document.dispatchEvent(e);
+    const el = document.getElementById('caps-alert');
+    return { hidden: el.hidden, text: document.getElementById('caps-alert-text').textContent };
+  });
+  check('caps lock warning appears', capsOn.hidden === false, JSON.stringify(capsOn));
+  check('caps lock warning is in English', capsOn.text === 'caps lock is on', capsOn.text);
+
+  await new Promise(r => setTimeout(r, 260));   // let the entry animation settle
+  const capsAligned = await page.evaluate(() => {
+    const a = document.getElementById('caps-alert').getBoundingClientRect();
+    const w = document.getElementById('words').getBoundingClientRect();
+    return Math.round(a.left - w.left);
+  });
+  check('caps lock warning aligns with the text column',
+    Math.abs(capsAligned) <= 2, 'offset ' + capsAligned + 'px');
+
+  const capsOff = await page.evaluate(() => {
+    const e = new KeyboardEvent('keyup', { key: 'a', bubbles: true });
+    Object.defineProperty(e, 'getModifierState', { value: () => false });
+    document.dispatchEvent(e);
+    return document.getElementById('caps-alert').hidden;
+  });
+  check('caps lock warning clears again', capsOff === true);
+
   console.log('\n— ctrl+backspace —');
+  // Restart so these checks run against a clean test rather than whatever the
+  // caret-tracking loop above left behind.
+  await page.keyboard.press('Tab');
+  await new Promise(r => setTimeout(r, 150));
+  const fresh = await page.$$eval('#words .word', els =>
+    els.slice(0, 4).map(e => e.textContent));
+
+  await page.keyboard.type(fresh[0], { delay: 12 });
   await page.keyboard.down('Control');
   await page.keyboard.press('Backspace');
   await page.keyboard.up('Control');
@@ -122,10 +207,10 @@ function check(name, cond, detail) {
     JSON.stringify(letters));
 
   // Retype, commit, then walk backwards over a wrong word.
-  await page.keyboard.type(targets[0] + ' ', { delay: 12 });
+  await page.keyboard.type(fresh[0] + ' ', { delay: 12 });
   await page.keyboard.type('zzz', { delay: 12 });          // deliberately wrong word 2
   await page.keyboard.press('Space');
-  await page.keyboard.type(targets[2].slice(0, 2), { delay: 12 });
+  await page.keyboard.type(fresh[2].slice(0, 2), { delay: 12 });
 
   await page.keyboard.down('Control');
   await page.keyboard.press('Backspace');                   // clears the partial word 3
