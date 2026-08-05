@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="carbon">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Typing Trainer — learn to type properly</title>
+<meta name="description" content="A free, offline-capable typing tutor: progressive lessons, common-word and pattern tests, live WPM and per-key statistics. English and Spanish.">
+<meta name="color-scheme" content="dark light">
+<link rel="stylesheet" href="css/themes.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/keyboard.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⌨️</text></svg>">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <a class="brand" href="#/test" aria-label="Typing Trainer home">
+    <span class="brand-mark" aria-hidden="true">⌨</span>
+    <span class="brand-name">typing<b>trainer</b></span>
+  </a>
+
+  <nav class="nav" aria-label="Main">
+    <a href="#/test"     data-nav="test">test</a>
+    <a href="#/lessons"  data-nav="lessons">lessons</a>
+    <a href="#/stats"    data-nav="stats">stats</a>
+    <a href="#/settings" data-nav="settings">settings</a>
+  </nav>
+
+  <div class="topbar-tools">
+    <button type="button" class="chip" id="lang-toggle" title="Switch language" aria-label="Switch language">
+      <span id="lang-label">EN</span>
+    </button>
+    <button type="button" class="chip" id="theme-cycle" title="Next theme" aria-label="Next theme">◐</button>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ─────────────────────────── TEST ─────────────────────────── -->
+  <section class="view" id="view-test" data-view="test">
+
+    <div class="config" id="config-bar">
+      <div class="config-group" role="group" aria-label="Content options">
+        <button type="button" class="opt" data-toggle="punctuation" aria-pressed="false">@ punctuation</button>
+        <button type="button" class="opt" data-toggle="numbers" aria-pressed="false"># numbers</button>
+      </div>
+      <div class="config-sep" aria-hidden="true"></div>
+      <div class="config-group" role="group" aria-label="Test mode">
+        <button type="button" class="opt" data-mode="time">time</button>
+        <button type="button" class="opt" data-mode="words">words</button>
+        <button type="button" class="opt" data-mode="quote">quote</button>
+        <button type="button" class="opt" data-mode="patterns">patterns</button>
+        <button type="button" class="opt" data-mode="zen">zen</button>
+      </div>
+      <div class="config-sep" id="config-sep-values" aria-hidden="true"></div>
+      <div class="config-group" id="config-values" role="group" aria-label="Test length"></div>
+    </div>
+
+    <div class="stage">
+      <div class="live" id="live-stats" aria-live="off">
+        <span class="live-primary" id="live-counter">30</span>
+        <span class="live-secondary" id="live-wpm"></span>
+      </div>
+
+      <div class="typing" id="typing-area">
+        <!-- The real keyboard target. Visually hidden but focusable, so mobile
+             raises a soft keyboard and IME/dead-key composition works. -->
+        <input id="hidden-input" class="hidden-input"
+               type="text" autocomplete="off" autocorrect="off"
+               autocapitalize="off" spellcheck="false"
+               aria-label="Typing input">
+
+        <div class="words-window" id="words-window">
+          <div class="words" id="words" aria-hidden="true"></div>
+          <div class="caret" id="caret"></div>
+        </div>
+
+        <div class="focus-veil" id="focus-veil">
+          <span>click here or press any key to focus</span>
+        </div>
+      </div>
+
+      <p class="quote-source" id="quote-source" hidden></p>
+
+      <div class="stage-actions">
+        <button type="button" class="ghost-btn" id="restart-btn" title="Restart (Tab)">
+          <span aria-hidden="true">↻</span> restart
+        </button>
+        <span class="hint" id="restart-hint"><kbd>Tab</kbd> restart · <kbd>Ctrl</kbd>+<kbd>⌫</kbd> delete word · <kbd>Esc</kbd> menu</span>
+      </div>
+    </div>
+
+    <div class="keyboard-host" id="keyboard-host"></div>
+  </section>
+
+  <!-- ────────────────────────── RESULTS ───────────────────────── -->
+  <section class="view" id="view-results" data-view="results">
+    <div class="results">
+      <div class="results-head">
+        <div class="score">
+          <div class="score-label">wpm</div>
+          <div class="score-value" id="res-wpm">0</div>
+        </div>
+        <div class="score">
+          <div class="score-label">accuracy</div>
+          <div class="score-value" id="res-acc">0%</div>
+        </div>
+        <div class="results-meta" id="res-meta"></div>
+      </div>
+
+      <div class="chart-wrap">
+        <canvas id="res-chart" width="900" height="260" role="img"
+                aria-label="Words per minute over the course of the test"></canvas>
+      </div>
+
+      <dl class="results-grid" id="res-grid"></dl>
+
+      <div class="results-actions">
+        <button type="button" class="primary-btn" id="res-again">next test <kbd>Enter</kbd></button>
+        <button type="button" class="ghost-btn" id="res-repeat">repeat same text</button>
+        <button type="button" class="ghost-btn" id="res-back">back to menu <kbd>Esc</kbd></button>
+      </div>
+      <p class="results-note" id="res-note" hidden></p>
+    </div>
+  </section>
+
+  <!-- ────────────────────────── LESSONS ───────────────────────── -->
+  <section class="view" id="view-lessons" data-view="lessons">
+    <header class="view-head">
+      <h1>Lessons</h1>
+      <p class="view-sub">Work through these in order. Each one unlocks the next once you
+         hit its target speed and accuracy.</p>
+    </header>
+    <div class="lesson-progress" id="lesson-progress"></div>
+    <ol class="lesson-list" id="lesson-list"></ol>
+  </section>
+
+  <!-- ─────────────────────────── STATS ────────────────────────── -->
+  <section class="view" id="view-stats" data-view="stats">
+    <header class="view-head">
+      <h1>Your statistics</h1>
+      <p class="view-sub">Everything below is stored only in this browser.</p>
+    </header>
+
+    <div class="stat-tiles" id="stat-tiles"></div>
+
+    <section class="panel">
+      <h2>Speed over time</h2>
+      <div class="chart-wrap">
+        <canvas id="history-chart" width="900" height="240" role="img"
+                aria-label="Words per minute across your recent tests"></canvas>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Personal bests</h2>
+      <div class="pb-grid" id="pb-grid"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Key accuracy</h2>
+      <p class="panel-sub">Redder keys are the ones you miss most. These feed the adaptive
+         pattern drill.</p>
+      <div class="keyboard-host" id="heatmap-host"></div>
+      <div class="worst-keys" id="worst-keys"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Recent tests</h2>
+      <div class="table-scroll">
+        <table class="history-table">
+          <thead>
+            <tr><th>when</th><th>mode</th><th>wpm</th><th>acc</th><th>consistency</th></tr>
+          </thead>
+          <tbody id="history-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </section>
+
+  <!-- ────────────────────────── SETTINGS ──────────────────────── -->
+  <section class="view" id="view-settings" data-view="settings">
+    <header class="view-head">
+      <h1>Settings</h1>
+      <p class="view-sub">Saved automatically in this browser.</p>
+    </header>
+    <div class="settings-grid" id="settings-grid"></div>
+
+    <section class="panel">
+      <h2>Your data</h2>
+      <p class="panel-sub">Results, lesson progress and settings live in this browser's
+         local storage. Export them to move to another machine.</p>
+      <div class="settings-actions">
+        <button type="button" class="ghost-btn" id="data-export">export as JSON</button>
+        <button type="button" class="ghost-btn" id="data-import">import from JSON</button>
+        <button type="button" class="ghost-btn danger" id="data-reset">reset everything</button>
+      </div>
+      <input type="file" id="import-file" accept="application/json,.json" hidden>
+      <p class="storage-warning" id="storage-warning" hidden>
+        This browser is blocking local storage, so your progress will be lost when you
+        close the tab.
+      </p>
+    </section>
+
+    <section class="panel">
+      <h2>About</h2>
+      <p class="panel-sub">
+        A dependency-free typing tutor. No accounts, no network requests, no tracking —
+        open <code>index.html</code> and it works, online or off.
+      </p>
+    </section>
+  </section>
+
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<!-- Load order matters: no modules, so dependencies must come first. -->
+<script src="js/data/words.en.js"></script>
+<script src="js/data/words.es.js"></script>
+<script src="js/data/quotes.en.js"></script>
+<script src="js/data/quotes.es.js"></script>
+<script src="js/data/patterns.js"></script>
+<script src="js/data/layouts.js"></script>
+<script src="js/data/lessons.js"></script>
+
+<script src="js/core/storage.js"></script>
+<script src="js/core/generator.js"></script>
+<script src="js/core/engine.js"></script>
+<script src="js/core/stats.js"></script>
+
+<script src="js/ui/chart.js"></script>
+<script src="js/ui/render.js"></script>
+<script src="js/ui/keyboard.js"></script>
+<script src="js/ui/sound.js"></script>
+<script src="js/ui/results.js"></script>
+<script src="js/ui/settings.js"></script>
+<script src="js/ui/lessons.js"></script>
+<script src="js/ui/statsview.js"></script>
+<script src="js/ui/router.js"></script>
+
+<script src="js/app.js"></script>
+</body>
+</html>

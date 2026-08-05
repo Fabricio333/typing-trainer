@@ -1,0 +1,127 @@
+/* Colour palettes. Every theme sets the same custom properties, so switching is a
+ * single attribute write on <html data-theme="…">.
+ *
+ *   --bg          page background
+ *   --surface     panels and cards
+ *   --surface-2   chips, inputs, hover states
+ *   --border      hairlines
+ *   --sub         untyped text and muted UI
+ *   --sub-alt     dimmer still (disabled, watermarks)
+ *   --text        correctly typed text, headings
+ *   --main        accent: caret, active state, primary numbers
+ *   --error       incorrectly typed characters
+ *   --error-extra characters typed past the end of a word
+ */
+
+:root,
+[data-theme='carbon'] {
+  color-scheme: dark;
+  --bg: #131316;
+  --surface: #1b1b1f;
+  --surface-2: #26262c;
+  --border: #2f2f37;
+  --sub: #61616b;
+  --sub-alt: #3a3a42;
+  --text: #e8e8ea;
+  --main: #ffb86b;
+  --error: #ff5f5f;
+  --error-extra: #7a2c2c;
+}
+
+[data-theme='paper'] {
+  color-scheme: light;
+  --bg: #f5f3ee;
+  --surface: #fffdf8;
+  --surface-2: #eae7de;
+  --border: #ddd9cd;
+  --sub: #9d9787;
+  --sub-alt: #c4bfb2;
+  --text: #23211c;
+  --main: #b5651d;
+  --error: #c0392b;
+  --error-extra: #e3b4ae;
+}
+
+[data-theme='nord'] {
+  color-scheme: dark;
+  --bg: #2e3440;
+  --surface: #333b4a;
+  --surface-2: #3b4252;
+  --border: #434c5e;
+  --sub: #68758c;
+  --sub-alt: #4c566a;
+  --text: #eceff4;
+  --main: #88c0d0;
+  --error: #bf616a;
+  --error-extra: #6d3b41;
+}
+
+[data-theme='dracula'] {
+  color-scheme: dark;
+  --bg: #282a36;
+  --surface: #31333f;
+  --surface-2: #3b3d4d;
+  --border: #44475a;
+  --sub: #6f7290;
+  --sub-alt: #4a4d63;
+  --text: #f8f8f2;
+  --main: #bd93f9;
+  --error: #ff5555;
+  --error-extra: #7c3535;
+}
+
+[data-theme='solarized'] {
+  color-scheme: light;
+  --bg: #fdf6e3;
+  --surface: #fffbf0;
+  --surface-2: #eee8d5;
+  --border: #e0dac4;
+  --sub: #93a1a1;
+  --sub-alt: #c3ccc6;
+  --text: #073642;
+  --main: #268bd2;
+  --error: #dc322f;
+  --error-extra: #edaba6;
+}
+
+[data-theme='matrix'] {
+  color-scheme: dark;
+  --bg: #0a0f0a;
+  --surface: #101a10;
+  --surface-2: #16261a;
+  --border: #1d3320;
+  --sub: #3f6b45;
+  --sub-alt: #294a2e;
+  --text: #b9f6ca;
+  --main: #4ade80;
+  --error: #ff6b6b;
+  --error-extra: #6b2b2b;
+}
+
+[data-theme='ocean'] {
+  color-scheme: dark;
+  --bg: #0f1c2e;
+  --surface: #16283f;
+  --surface-2: #1e3450;
+  --border: #26415f;
+  --sub: #5b7fa6;
+  --sub-alt: #3a5a7d;
+  --text: #e3f0ff;
+  --main: #4cc9f0;
+  --error: #ff6b8a;
+  --error-extra: #6d2c3d;
+}
+
+[data-theme='sepia'] {
+  color-scheme: light;
+  --bg: #efe6d6;
+  --surface: #f8f1e4;
+  --surface-2: #e2d6c1;
+  --border: #d3c4ab;
+  --sub: #a1917a;
+  --sub-alt: #c2b49c;
+  --text: #3b2f22;
+  --main: #8a6d3b;
+  --error: #a83232;
+  --error-extra: #d5a9a3;
+}

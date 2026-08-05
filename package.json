@@ -1,0 +1,16 @@
+{
+  "name": "typing-trainer",
+  "version": "1.0.0",
+  "description": "A dependency-free typing tutor: progressive lessons, speed tests and per-key statistics, in English and Spanish.",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "test": "node tests/run.js",
+    "test:browser": "node tests/browser.js",
+    "start": "python3 -m http.server 8000"
+  },
+  "//": "The site itself needs nothing installed. puppeteer is only for tests/browser.js, which skips cleanly when it is absent.",
+  "devDependencies": {
+    "puppeteer": "^23.0.0"
+  }
+}

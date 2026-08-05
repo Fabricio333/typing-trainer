@@ -1,0 +1,110 @@
+/* On-screen keyboard, used both as a typing hint and as a per-key heatmap. */
+
+.keyboard-host {
+  margin-top: 3rem;
+  transition: opacity 250ms ease;
+}
+.keyboard-host[hidden] { display: none; }
+
+.kb {
+  display: grid;
+  gap: 0.3rem;
+  max-width: 780px;
+  margin: 0 auto;
+  font-family: var(--mono);
+  user-select: none;
+}
+
+.kb-row { display: flex; gap: 0.3rem; }
+
+.kb-key {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 2.4rem;
+  padding: 0.25rem;
+  border-radius: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--sub);
+  font-size: 0.82rem;
+  transition: background 120ms ease, color 120ms ease, border-color 120ms ease,
+              transform 80ms ease;
+  overflow: hidden;
+}
+
+.kb-main { line-height: 1.1; }
+.kb-shift { font-size: 0.62rem; color: var(--sub-alt); line-height: 1; }
+.kb-special { font-size: 0.62rem; color: var(--sub-alt); }
+.kb-space { flex-grow: 6; }
+
+/* The home row sits slightly brighter; F and J carry the locating bumps. */
+.kb-home { color: var(--text); }
+.kb-bump::after {
+  content: '';
+  position: absolute;
+  bottom: 0.3rem;
+  width: 0.7rem;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--sub-alt);
+}
+
+.kb-key.is-next {
+  background: var(--main);
+  border-color: var(--main);
+  color: var(--bg);
+  transform: translateY(1px);
+}
+.kb-key.is-next .kb-shift { color: var(--bg); opacity: 0.7; }
+
+.kb-key.is-shift {
+  border-color: var(--main);
+  color: var(--main);
+}
+
+.kb-key.is-hit {
+  background: var(--surface-2);
+  color: var(--text);
+  transform: translateY(2px);
+}
+.kb-key.is-miss {
+  background: var(--error);
+  border-color: var(--error);
+  color: var(--bg);
+  transform: translateY(2px);
+}
+
+/* Finger colouring — off by default, toggled in settings. */
+.kb-fingers .kb-key[data-finger='lp'] { border-bottom: 3px solid #e05c5c; }
+.kb-fingers .kb-key[data-finger='lr'] { border-bottom: 3px solid #e0a35c; }
+.kb-fingers .kb-key[data-finger='lm'] { border-bottom: 3px solid #d9e05c; }
+.kb-fingers .kb-key[data-finger='li'] { border-bottom: 3px solid #6ce05c; }
+.kb-fingers .kb-key[data-finger='ri'] { border-bottom: 3px solid #5ce0c4; }
+.kb-fingers .kb-key[data-finger='rm'] { border-bottom: 3px solid #5c9ee0; }
+.kb-fingers .kb-key[data-finger='rr'] { border-bottom: 3px solid #9b5ce0; }
+.kb-fingers .kb-key[data-finger='rp'] { border-bottom: 3px solid #e05cb4; }
+.kb-fingers .kb-key[data-finger='th'] { border-bottom: 3px solid var(--sub-alt); }
+
+/* Heatmap: --heat runs 0 (clean) to 1 (missed a quarter of the time or worse). */
+.kb-key[style*='--heat'] {
+  background: color-mix(in srgb, var(--error) calc(var(--heat) * 75%), var(--surface));
+  border-color: color-mix(in srgb, var(--error) calc(var(--heat) * 60%), var(--border));
+  color: var(--text);
+}
+.kb-key.is-cold { opacity: 0.4; }
+
+@media (max-width: 700px) {
+  .kb { gap: 0.2rem; }
+  .kb-row { gap: 0.2rem; }
+  .kb-key { min-height: 1.9rem; font-size: 0.68rem; padding: 0.15rem; }
+  .kb-shift, .kb-special { font-size: 0.5rem; }
+  .kb-bump::after { bottom: 0.15rem; width: 0.5rem; }
+}
+
+@media (max-width: 460px) {
+  .keyboard-host { display: none; }
+}
