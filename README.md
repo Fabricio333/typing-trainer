@@ -113,10 +113,30 @@ typing, `Ctrl+Backspace` walking backwards, accented input, a full lesson unlock
 cycle, persistence across reloads, and that nothing logs to the console. Run it
 with `SHOTS=1` to also write screenshots to `tests/screenshots/`.
 
+Point it at a deployed site to verify a release — a broken script path only shows
+up over HTTP, never on `file://`:
+
+```bash
+APP_URL=https://fabricio333.github.io/typing-trainer/ node tests/browser.js
+```
+
 ## Deployment
 
-Pushing to `main` publishes to GitHub Pages via `.github/workflows/deploy.yml`.
-There is no build step — the workflow uploads the repository as-is.
+GitHub Pages serves the `main` branch root directly, so every push is live. There
+is no build step to run.
+
+`.github/workflows/deploy.yml` is an optional upgrade that runs the unit tests
+first and only then publishes. Pushing it needs the `workflow` OAuth scope:
+
+```bash
+gh auth refresh -s workflow
+```
+
+Then push the workflow and switch Pages over to it:
+
+```bash
+gh api -X PUT repos/Fabricio333/typing-trainer/pages -f build_type=workflow
+```
 
 ## Licence
 
