@@ -430,6 +430,26 @@ function check(name, cond, detail) {
     await shot(page, view);
   }
 
+  // The stats tables live in clickable cards; opening one must reveal content.
+  await page.evaluate(() => { window.location.hash = '#/stats'; });
+  await page.waitForSelector('#view-stats.is-active');
+  await new Promise(r => setTimeout(r, 250));
+  const statCards = await page.evaluate(() => {
+    const out = {};
+    for (const id of ['card-slow-words', 'card-slow-patterns', 'card-slow-lessons', 'card-history']) {
+      const d = document.getElementById(id);
+      d.querySelector('summary').click();
+      out[id] = d.open && d.querySelectorAll('tbody tr').length > 0;
+    }
+    return out;
+  });
+  check('all four stat cards open with content',
+    Object.values(statCards).every(Boolean), JSON.stringify(statCards));
+
+  await page.evaluate(() => { window.location.hash = '#/lessons'; });
+  await page.waitForSelector('#view-lessons.is-active');
+  await new Promise(r => setTimeout(r, 200));
+
   const stacked = await page.$eval('#lesson-list .lesson', el => {
     const t = el.querySelector('.lesson-title').getBoundingClientRect();
     const d = el.querySelector('.lesson-desc').getBoundingClientRect();
@@ -529,6 +549,17 @@ function check(name, cond, detail) {
   check('theme cycles', before !== after, before + ' -> ' + after);
 
   console.log('\n— persistence —');
+  // Refreshing mid-test must bring back the same text, not a fresh draw.
+  await page.evaluate(() => { window.location.hash = '#/test'; });
+  await page.waitForSelector('#view-test.is-active');
+  await new Promise(r => setTimeout(r, 300));
+  const textBefore = await page.$$eval('#words .word', els => els.map(e => e.textContent).join(' '));
+  await page.reload({ waitUntil: 'networkidle0' });
+  await page.waitForSelector('#words .word');
+  const textAfter = await page.$$eval('#words .word', els => els.map(e => e.textContent).join(' '));
+  check('refreshing brings back the same test text', textAfter === textBefore,
+    'before "' + textBefore.slice(0, 40) + '…", after "' + textAfter.slice(0, 40) + '…"');
+
   // Reloading on a non-test route must still boot cleanly and restore settings.
   await page.reload({ waitUntil: 'networkidle0' });
   await page.waitForSelector('#view-lessons.is-active');

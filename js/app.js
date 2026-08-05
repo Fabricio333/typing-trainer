@@ -40,6 +40,8 @@
   var drillLang = null;
   var drillBaseline = {};
 
+  var pendingResume = null;  // words to restore after a refresh, used once
+
   /* Active-time clock: pauses whenever the input loses focus, so walking away
    * mid-test does not wreck the WPM. */
   function now() {
@@ -88,7 +90,8 @@
       statTiles: id('stat-tiles'), historyChart: id('history-chart'),
       pbGrid: id('pb-grid'),
       heatmapHost: id('heatmap-host'), worstKeys: id('worst-keys'),
-      slowWords: id('slow-words-body'), historyBody: id('history-body'),
+      slowWords: id('slow-words-body'), slowPatterns: id('slow-patterns-body'),
+      slowLessons: id('slow-lessons-body'), historyBody: id('history-body'),
 
       settingsGrid: id('settings-grid'), dataExport: id('data-export'),
       dataImport: id('data-import'), dataReset: id('data-reset'),
@@ -112,6 +115,11 @@
     wireResults();
     wireSettingsView();
     registerRoutes();
+
+    // A refresh on the test (or its results) lands back in the same test —
+    // same lesson, same quote, same words — rather than a newly drawn one.
+    var initialView = (window.location.hash.replace(/^#\/?/, '') || 'test').split('/')[0];
+    if (initialView === 'test' || initialView === 'results') pendingResume = loadResume();
 
     TT.settings.onChange(onSettingChange);
     TT.router.start();
@@ -509,6 +517,16 @@
     if (!list.length) list = ['the'];
     lastWords = list.slice();
 
+    // Remembered so a refresh can bring back this exact test.
+    var m = currentMode();
+    TT.storage.write('session', {
+      lang: TT.settings.get('lang'),
+      mode: m.type + ':' + m.value,
+      lessonId: context.lessonDef ? context.lessonDef.id : null,
+      quoteSource: context.quoteSource || null,
+      words: lastWords
+    });
+
     state = TT.engine.create(list, currentMode(), TT.settings.engineOpts());
     context.lang = TT.settings.get('lang');
 
@@ -533,6 +551,26 @@
     if (m.type === 'time') els.liveCounter.textContent = String(m.value);
     else if (m.type === 'zen') els.liveCounter.textContent = '0:00';
     else els.liveCounter.textContent = '0 / ' + state.words.length;
+  }
+
+  /* What was on screen before a refresh: the lesson, the quote source and the
+   * exact word list. Applied once, to the first test after load. */
+  function loadResume() {
+    var saved = TT.storage.read('session', null);
+    if (!saved || saved.lang !== TT.settings.get('lang')) return null;
+    if (saved.lessonId) {
+      var found = TT.lessons.find(saved.lang, saved.lessonId);
+      if (!found) return null;
+      context.lessonDef = found.def;
+      context.lessonIndex = found.index;
+    } else {
+      // The saved words belong to a mode. If the mode changed since — from the
+      // settings screen, or another tab — a stale list must not leak into it.
+      var m = currentMode();
+      if (saved.mode !== m.type + ':' + m.value) return null;
+    }
+    context.quoteSource = saved.quoteSource || null;
+    return Array.isArray(saved.words) && saved.words.length ? saved.words : null;
   }
 
   function restart() {
@@ -806,6 +844,8 @@
       heatmap: els.heatmapHost,
       worst: els.worstKeys,
       slowWords: els.slowWords,
+      slowPatterns: els.slowPatterns,
+      slowLessons: els.slowLessons,
       historyBody: els.historyBody
     }, TT.settings.get('lang'));
   }
@@ -872,8 +912,12 @@
         els.langLabel.textContent = TT.settings.get('lang').toUpperCase();
         renderConfig();
         syncKeyboard();
-        if (!state || state.finishedAt !== null) startTest();
-        else focusInput();
+        if (!state || state.finishedAt !== null) {
+          startTest(pendingResume);
+          pendingResume = null;
+        } else {
+          focusInput();
+        }
       },
       leave: function () {
         stopTick();
@@ -881,7 +925,17 @@
       }
     });
 
-    TT.router.register('results', { enter: function () { els.input.blur(); } });
+    TT.router.register('results', {
+      enter: function () {
+        // A refresh on this route has no result to show; fall through to the
+        // test screen, which restores the interrupted test.
+        if (!state) {
+          TT.router.go('test');
+          return;
+        }
+        els.input.blur();
+      }
+    });
 
     TT.router.register('lessons', { enter: renderLessons });
 

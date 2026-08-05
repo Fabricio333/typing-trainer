@@ -235,8 +235,8 @@
       <div class="worst-keys" id="worst-keys"></div>
     </section>
 
-    <section class="panel">
-      <h2>Slowest words</h2>
+    <details class="panel stat-card" id="card-slow-words">
+      <summary><h2>Slowest words</h2></summary>
       <p class="panel-sub">Ranked by time per character, so long words are not
          penalised for being long. These are what the "hardest words" drill uses.</p>
       <div class="table-scroll">
@@ -247,10 +247,37 @@
           <tbody id="slow-words-body"></tbody>
         </table>
       </div>
-    </section>
+    </details>
 
-    <section class="panel">
-      <h2>Recent tests</h2>
+    <details class="panel stat-card" id="card-slow-patterns">
+      <summary><h2>Slowest patterns</h2></summary>
+      <p class="panel-sub">Key-to-key transitions, ranked by the average gap between
+         the two presses. These are what the "slowest combinations" lesson drills.</p>
+      <div class="table-scroll">
+        <table class="history-table">
+          <thead>
+            <tr><th>pair</th><th>wpm</th><th>avg gap</th><th>best</th><th>typed</th></tr>
+          </thead>
+          <tbody id="slow-patterns-body"></tbody>
+        </table>
+      </div>
+    </details>
+
+    <details class="panel stat-card" id="card-slow-lessons">
+      <summary><h2>Slowest lessons</h2></summary>
+      <p class="panel-sub">Every lesson you have attempted, slowest personal best first.</p>
+      <div class="table-scroll">
+        <table class="history-table">
+          <thead>
+            <tr><th>lesson</th><th>best wpm</th><th>best acc</th><th>stars</th><th>attempts</th></tr>
+          </thead>
+          <tbody id="slow-lessons-body"></tbody>
+        </table>
+      </div>
+    </details>
+
+    <details class="panel stat-card" id="card-history">
+      <summary><h2>Recent tests</h2></summary>
       <div class="table-scroll">
         <table class="history-table">
           <thead>
@@ -259,7 +286,7 @@
           <tbody id="history-body"></tbody>
         </table>
       </div>
-    </section>
+    </details>
   </section>
 
   <!-- ────────────────────────── SETTINGS ──────────────────────── -->

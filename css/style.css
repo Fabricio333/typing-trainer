@@ -502,6 +502,28 @@ body.blind .word.has-error { border-bottom-color: transparent; }
   margin-bottom: 0.35rem;
 }
 .panel-sub { color: var(--sub); font-size: 0.88rem; margin-bottom: 1rem; }
+
+/* Clickable stat cards: native <details> styled as panels, so they work with
+ * the keyboard and no JavaScript. */
+details.stat-card > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  user-select: none;
+}
+details.stat-card > summary::-webkit-details-marker { display: none; }
+details.stat-card > summary h2 { margin-bottom: 0; }
+details.stat-card > summary::after {
+  content: '▸';
+  color: var(--sub);
+  transition: transform 150ms ease;
+}
+details.stat-card[open] > summary::after { transform: rotate(90deg); }
+details.stat-card[open] > summary { margin-bottom: 0.8rem; }
+details.stat-card > summary:hover h2 { color: var(--main); }
 .empty-note { color: var(--sub); font-size: 0.9rem; text-align: center; padding: 2rem 0; }
 
 .stat-tiles {

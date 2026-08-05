@@ -110,6 +110,42 @@
             '</tr>';
         }).join('');
 
+    // Slowest key-to-key transitions — what the slowest-combinations lesson drills.
+    var pairs = TT.keyspeed.slowest(lang, 20, TT.keyspeed.DEFAULT_MIN_SAMPLES);
+    els.slowPatterns.innerHTML = pairs.length === 0
+      ? '<tr><td colspan="5" class="dim">Not enough history yet — every pair of keys ' +
+        'you type cleanly is timed, and the slow ones will show up here.</td></tr>'
+      : pairs.map(function (r) {
+          var wpm = r.avgMs > 0 ? 60000 / (r.avgMs * 5) : 0;
+          return '<tr>' +
+            '<td>' + escapeHtml(r.pair) + '</td>' +
+            '<td>' + Math.round(wpm) + '</td>' +
+            '<td class="dim">' + Math.round(r.avgMs) + 'ms</td>' +
+            '<td class="dim">' + Math.round(r.bestMs) + 'ms</td>' +
+            '<td class="dim">' + r.n + '</td>' +
+            '</tr>';
+        }).join('');
+
+    // Lessons attempted, slowest personal best first.
+    var attempted = TT.lessons.track(lang)
+      .map(function (def) {
+        var rec = TT.lessons.recordFor(def.id);
+        return rec && rec.attempts ? { def: def, rec: rec } : null;
+      })
+      .filter(Boolean)
+      .sort(function (a, b) { return a.rec.bestWpm - b.rec.bestWpm; });
+    els.slowLessons.innerHTML = attempted.length === 0
+      ? '<tr><td colspan="5" class="dim">No lessons attempted yet.</td></tr>'
+      : attempted.slice(0, 20).map(function (row) {
+          return '<tr>' +
+            '<td>' + escapeHtml(row.def.title) + '</td>' +
+            '<td>' + Math.round(row.rec.bestWpm) + '</td>' +
+            '<td>' + Math.round(row.rec.bestAcc) + '%</td>' +
+            '<td class="dim">' + TT.lessons.starMarkup(row.rec.stars) + '</td>' +
+            '<td class="dim">' + row.rec.attempts + '</td>' +
+            '</tr>';
+        }).join('');
+
     // Recent tests, newest first.
     var recent = rows.slice(-25).reverse();
     els.historyBody.innerHTML = recent.length === 0
