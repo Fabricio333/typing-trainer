@@ -30,6 +30,7 @@
     blind: false,
     showKeyboard: true,
     fingerColors: true,
+    keyboardLayout: 'auto',
 
     stopOnError: 'off',
     freeBackspace: false,
@@ -151,6 +152,12 @@
     {
       key: 'showKeyboard', name: 'On-screen keyboard', desc: 'Shows the next key to press.',
       options: [[true, 'on'], [false, 'off']]
+    },
+    {
+      key: 'keyboardLayout', name: 'Keyboard layout',
+      desc: 'The distribution the on-screen keyboard and key hints follow. Auto matches the language.',
+      options: [['auto', 'auto'], ['ansi', 'US qwerty'], ['latam', 'latam'],
+                ['es', 'spanish iso'], ['uk', 'UK iso']]
     },
     {
       key: 'fingerColors', name: 'Finger colours',

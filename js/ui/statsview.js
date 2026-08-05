@@ -78,8 +78,8 @@
             '</div>';
         }).join('');
 
-    // Key heatmap. Rebuild when the layout (i.e. language) changes.
-    var layout = TT.data.layouts.forLanguage(lang);
+    // Key heatmap. Rebuild when the layout (language or explicit choice) changes.
+    var layout = TT.data.layouts.resolve(TT.settings.get('keyboardLayout'), lang);
     if (!heatBoard || heatBoard.layout.id !== layout.id) {
       heatBoard = TT.keyboard.build(els.heatmap, layout, { fingerColors: false });
     }

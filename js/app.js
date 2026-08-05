@@ -717,7 +717,7 @@
       board = null;
       return;
     }
-    var layout = TT.data.layouts.forLanguage(s.lang);
+    var layout = TT.data.layouts.resolve(s.keyboardLayout, s.lang);
     if (!board || board.layout.id !== layout.id ||
         els.keyboardHost.dataset.fingers !== String(s.fingerColors)) {
       board = TT.keyboard.build(els.keyboardHost, layout, { fingerColors: s.fingerColors });
@@ -735,7 +735,8 @@
       if (TT.router.current() === 'test') startTest();
       if (TT.router.current() === 'lessons') renderLessons();
     }
-    if (key === 'showKeyboard' || key === 'fingerColors') {
+    if (key === 'showKeyboard' || key === 'fingerColors' || key === 'keyboardLayout') {
+      if (key === 'keyboardLayout') TT.statsview.invalidateLayout();
       board = null;
       syncKeyboard();
       if (state) TT.keyboard.highlight(board, expectedChar());

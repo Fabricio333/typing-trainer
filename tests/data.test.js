@@ -162,8 +162,8 @@ test('character drills only use characters present on the layout', function () {
 
 suite('data / layouts');
 
-test('both layouts expose a home row, bumps and an index', function () {
-  ['ansi', 'latam'].forEach(function (id) {
+test('every layout exposes a home row, bumps and an index', function () {
+  D.layouts.ids.forEach(function (id) {
     const l = D.layouts[id];
     eq(l.homeRow.length, 8, id + ': home row should be eight keys');
     eq(l.bumps, ['f', 'j'], id + ': bumps should be F and J');
@@ -171,12 +171,21 @@ test('both layouts expose a home row, bumps and an index', function () {
   });
 });
 
-test('every letter of the alphabet is reachable on both layouts', function () {
-  'abcdefghijklmnopqrstuvwxyz'.split('').forEach(function (c) {
-    ok(D.layouts.ansi.index[c], 'ansi is missing ' + c);
-    ok(D.layouts.latam.index[c], 'latam is missing ' + c);
+test('every letter of the alphabet is reachable on every layout', function () {
+  D.layouts.ids.forEach(function (id) {
+    'abcdefghijklmnopqrstuvwxyz'.split('').forEach(function (c) {
+      ok(D.layouts[id].index[c], id + ' is missing ' + c);
+    });
   });
   ok(D.layouts.latam.index['ñ'], 'latam is missing ñ');
+  ok(D.layouts.es.index['ñ'], 'es is missing ñ');
+});
+
+test('an explicit layout choice wins and auto follows the language', function () {
+  eq(D.layouts.resolve('uk', 'es').id, 'uk', 'explicit choice must override the language');
+  eq(D.layouts.resolve('auto', 'es').id, 'latam');
+  eq(D.layouts.resolve('auto', 'en').id, 'ansi');
+  eq(D.layouts.resolve(undefined, 'en').id, 'ansi', 'a missing setting behaves like auto');
 });
 
 test('accented characters resolve to their dead key on the Latin American layout', function () {
@@ -188,18 +197,20 @@ test('accented characters resolve to their dead key on the Latin American layout
   });
 });
 
-test('every Spanish word can be produced on the Latin American layout', function () {
-  const idx = D.layouts.latam.index;
-  const missing = {};
-  D.words.es.forEach(function (w) {
-    w.split('').forEach(function (c) { if (!idx[c]) missing[c] = true; });
+test('every Spanish word can be produced on both Spanish-capable layouts', function () {
+  ['latam', 'es'].forEach(function (id) {
+    const idx = D.layouts[id].index;
+    const missing = {};
+    D.words.es.forEach(function (w) {
+      w.split('').forEach(function (c) { if (!idx[c]) missing[c] = true; });
+    });
+    eq(Object.keys(missing), [], id + ': characters with no key: ' + Object.keys(missing).join(', '));
   });
-  eq(Object.keys(missing), [], 'characters with no key: ' + Object.keys(missing).join(', '));
 });
 
 test('every finger assignment is a known finger', function () {
   const valid = ['lp', 'lr', 'lm', 'li', 'ri', 'rm', 'rr', 'rp', 'th'];
-  ['ansi', 'latam'].forEach(function (id) {
+  D.layouts.ids.forEach(function (id) {
     D.layouts[id].rows.forEach(function (row) {
       row.forEach(function (k) {
         ok(valid.indexOf(k.finger) !== -1, id + ': "' + k.main + '" has finger "' + k.finger + '"');

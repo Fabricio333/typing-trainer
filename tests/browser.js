@@ -93,6 +93,16 @@ function check(name, cond, detail) {
     fingerColours.lp !== fingerColours.li,
     JSON.stringify(fingerColours));
 
+  // The layout setting overrides the language's default distribution.
+  const spanishIso = await page.evaluate(() => {
+    window.TT.settings.set('keyboardLayout', 'es');
+    const keys = [...document.querySelectorAll('.kb-key .kb-main')].map(e => e.textContent);
+    window.TT.settings.set('keyboardLayout', 'auto');
+    return { hasEnye: keys.includes('ñ'), hasCedilla: keys.includes('ç') };
+  });
+  check('an explicit keyboard layout overrides the language default',
+    spanishIso.hasEnye && spanishIso.hasCedilla, JSON.stringify(spanishIso));
+
   // Read the actual target words so assertions are deterministic.
   const targets = await page.$$eval('#words .word', els =>
     els.slice(0, 8).map(e => e.textContent));

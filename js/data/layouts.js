@@ -95,6 +95,86 @@
     }
   };
 
+  var ES_ISO = {
+    id: 'es',
+    name: 'Spanish (Spain, ISO)',
+    rows: [
+      [
+        key('º', 'ª', 'lp'), key('1', '!', 'lp'), key('2', '"', 'lr'), key('3', '·', 'lm'),
+        key('4', '$', 'li'), key('5', '%', 'li'), key('6', '&', 'ri'), key('7', '/', 'ri'),
+        key('8', '(', 'rm'), key('9', ')', 'rr'), key('0', '=', 'rp'), key("'", '?', 'rp'),
+        key('¡', '¿', 'rp'), key('Backspace', null, 'rp', 2)
+      ],
+      [
+        key('Tab', null, 'lp', 1.5), key('q', 'Q', 'lp'), key('w', 'W', 'lr'), key('e', 'E', 'lm'),
+        key('r', 'R', 'li'), key('t', 'T', 'li'), key('y', 'Y', 'ri'), key('u', 'U', 'ri'),
+        key('i', 'I', 'rm'), key('o', 'O', 'rr'), key('p', 'P', 'rp'), key('`', '^', 'rp'),
+        key('+', '*', 'rp'), key('Enter', null, 'rp', 1.5)
+      ],
+      [
+        key('Caps', null, 'lp', 1.75), key('a', 'A', 'lp'), key('s', 'S', 'lr'), key('d', 'D', 'lm'),
+        key('f', 'F', 'li'), key('g', 'G', 'li'), key('h', 'H', 'ri'), key('j', 'J', 'ri'),
+        key('k', 'K', 'rm'), key('l', 'L', 'rr'), key('ñ', 'Ñ', 'rp'), key('´', '¨', 'rp'),
+        key('ç', 'Ç', 'rp', 1.25)
+      ],
+      [
+        key('Shift', null, 'lp', 1.25), key('<', '>', 'lp'), key('z', 'Z', 'lp'),
+        key('x', 'X', 'lr'), key('c', 'C', 'lm'), key('v', 'V', 'li'), key('b', 'B', 'li'),
+        key('n', 'N', 'ri'), key('m', 'M', 'ri'), key(',', ';', 'rm'), key('.', ':', 'rr'),
+        key('-', '_', 'rp'), key('Shift', null, 'rp', 2.75)
+      ],
+      [
+        key('Ctrl', null, 'lp', 1.25), key('Alt', null, 'lp', 1.25), key(' ', null, 'th', 6.25),
+        key('AltGr', null, 'rp', 1.25), key('Ctrl', null, 'rp', 1.25)
+      ]
+    ],
+    homeRow: ['a', 's', 'd', 'f', 'j', 'k', 'l', 'ñ'],
+    bumps: ['f', 'j'],
+    dead: {
+      'á': ['´', 'a'], 'é': ['´', 'e'], 'í': ['´', 'i'], 'ó': ['´', 'o'], 'ú': ['´', 'u'],
+      'Á': ['´', 'A'], 'É': ['´', 'E'], 'Í': ['´', 'I'], 'Ó': ['´', 'O'], 'Ú': ['´', 'U'],
+      'ü': ['¨', 'u'], 'Ü': ['¨', 'U']
+    }
+  };
+
+  var UK_ISO = {
+    id: 'uk',
+    name: 'English (UK, ISO)',
+    rows: [
+      [
+        key('`', '¬', 'lp'), key('1', '!', 'lp'), key('2', '"', 'lr'), key('3', '£', 'lm'),
+        key('4', '$', 'li'), key('5', '%', 'li'), key('6', '^', 'ri'), key('7', '&', 'ri'),
+        key('8', '*', 'rm'), key('9', '(', 'rr'), key('0', ')', 'rp'), key('-', '_', 'rp'),
+        key('=', '+', 'rp'), key('Backspace', null, 'rp', 2)
+      ],
+      [
+        key('Tab', null, 'lp', 1.5), key('q', 'Q', 'lp'), key('w', 'W', 'lr'), key('e', 'E', 'lm'),
+        key('r', 'R', 'li'), key('t', 'T', 'li'), key('y', 'Y', 'ri'), key('u', 'U', 'ri'),
+        key('i', 'I', 'rm'), key('o', 'O', 'rr'), key('p', 'P', 'rp'), key('[', '{', 'rp'),
+        key(']', '}', 'rp'), key('Enter', null, 'rp', 1.5)
+      ],
+      [
+        key('Caps', null, 'lp', 1.75), key('a', 'A', 'lp'), key('s', 'S', 'lr'), key('d', 'D', 'lm'),
+        key('f', 'F', 'li'), key('g', 'G', 'li'), key('h', 'H', 'ri'), key('j', 'J', 'ri'),
+        key('k', 'K', 'rm'), key('l', 'L', 'rr'), key(';', ':', 'rp'), key("'", '@', 'rp'),
+        key('#', '~', 'rp', 1.25)
+      ],
+      [
+        key('Shift', null, 'lp', 1.25), key('\\', '|', 'lp'), key('z', 'Z', 'lp'),
+        key('x', 'X', 'lr'), key('c', 'C', 'lm'), key('v', 'V', 'li'), key('b', 'B', 'li'),
+        key('n', 'N', 'ri'), key('m', 'M', 'ri'), key(',', '<', 'rm'), key('.', '>', 'rr'),
+        key('/', '?', 'rp'), key('Shift', null, 'rp', 2.75)
+      ],
+      [
+        key('Ctrl', null, 'lp', 1.25), key('Alt', null, 'lp', 1.25), key(' ', null, 'th', 6.25),
+        key('Alt', null, 'rp', 1.25), key('Ctrl', null, 'rp', 1.25)
+      ]
+    ],
+    homeRow: ['a', 's', 'd', 'f', 'j', 'k', 'l', ';'],
+    bumps: ['f', 'j'],
+    dead: {}
+  };
+
   /* char -> { key, shift, dead } so the renderer can find the physical key to light up. */
   function index(layout) {
     var map = {};
@@ -117,11 +197,27 @@
 
   ANSI.index = index(ANSI);
   LATAM.index = index(LATAM);
+  ES_ISO.index = index(ES_ISO);
+  UK_ISO.index = index(UK_ISO);
+
+  var BY_ID = { ansi: ANSI, latam: LATAM, es: ES_ISO, uk: UK_ISO };
+
+  function forLanguage(lang) { return lang === 'es' ? LATAM : ANSI; }
+
+  /* An explicit layout choice wins; 'auto' (or anything unknown) follows the
+   * language, which is what the app did before the setting existed. */
+  function resolve(choice, lang) {
+    return BY_ID[choice] || forLanguage(lang);
+  }
 
   TT.data = TT.data || {};
   TT.data.layouts = {
     ansi: ANSI,
     latam: LATAM,
-    forLanguage: function (lang) { return lang === 'es' ? LATAM : ANSI; }
+    es: ES_ISO,
+    uk: UK_ISO,
+    ids: ['ansi', 'latam', 'es', 'uk'],
+    forLanguage: forLanguage,
+    resolve: resolve
   };
 })(window.TT = window.TT || {});
