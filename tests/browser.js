@@ -446,6 +446,22 @@ function check(name, cond, detail) {
   check('all four stat cards open with content',
     Object.values(statCards).every(Boolean), JSON.stringify(statCards));
 
+  // The cards double as launch pads for practice.
+  await page.click('#practice-slow-words');
+  await page.waitForSelector('#view-test.is-active');
+  const cardDrillMode = await page.evaluate(() => window.TT.settings.get('mode'));
+  check('slowest-words card launches the hardest-words drill', cardDrillMode === 'hardest',
+    'mode is ' + cardDrillMode);
+
+  await page.evaluate(() => { window.location.hash = '#/stats'; });
+  await page.waitForSelector('#view-stats.is-active');
+  await page.click('#practice-slow-patterns');
+  await page.waitForSelector('#view-test.is-active');
+  await new Promise(r => setTimeout(r, 200));
+  const cardLesson = await page.$eval('#quote-source', e => e.textContent);
+  check('slowest-patterns card launches the slowest-combinations lesson',
+    /slowest combinations/i.test(cardLesson), 'running "' + cardLesson + '"');
+
   await page.evaluate(() => { window.location.hash = '#/lessons'; });
   await page.waitForSelector('#view-lessons.is-active');
   await new Promise(r => setTimeout(r, 200));

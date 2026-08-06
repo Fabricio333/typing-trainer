@@ -137,7 +137,7 @@
     els.slowLessons.innerHTML = attempted.length === 0
       ? '<tr><td colspan="5" class="dim">No lessons attempted yet.</td></tr>'
       : attempted.slice(0, 20).map(function (row) {
-          return '<tr>' +
+          return '<tr data-lesson-id="' + escapeHtml(row.def.id) + '" tabindex="0">' +
             '<td>' + escapeHtml(row.def.title) + '</td>' +
             '<td>' + Math.round(row.rec.bestWpm) + '</td>' +
             '<td>' + Math.round(row.rec.bestAcc) + '%</td>' +

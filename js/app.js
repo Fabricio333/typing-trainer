@@ -113,6 +113,7 @@
     wireInput();
     wireChrome();
     wireResults();
+    wireStatsActions();
     wireSettingsView();
     registerRoutes();
 
@@ -835,6 +836,42 @@
   }
 
   /* ── stats view ────────────────────────────────────────────────── */
+
+  /* The stat cards double as launch pads: what they diagnose, you can drill. */
+  function wireStatsActions() {
+    document.getElementById('practice-slow-words').addEventListener('click', function () {
+      context.lessonDef = null;
+      TT.settings.set('mode', 'hardest');
+      pickDrillSet();
+      TT.router.go('test');
+      startTest();
+    });
+
+    document.getElementById('practice-slow-patterns').addEventListener('click', function () {
+      var lang = TT.settings.get('lang');
+      var found = TT.lessons.find(lang, lang + '-slowest');
+      if (!found) return;
+      context.lessonDef = found.def;
+      context.lessonIndex = found.index;
+      TT.router.go('test');
+      startTest();
+    });
+
+    function startLessonRow(target) {
+      var tr = target.closest('tr[data-lesson-id]');
+      if (!tr) return;
+      var found = TT.lessons.find(TT.settings.get('lang'), tr.dataset.lessonId);
+      if (!found) return;
+      context.lessonDef = found.def;
+      context.lessonIndex = found.index;
+      TT.router.go('test');
+      startTest();
+    }
+    els.slowLessons.addEventListener('click', function (e) { startLessonRow(e.target); });
+    els.slowLessons.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') startLessonRow(e.target);
+    });
+  }
 
   function renderStats() {
     TT.statsview.render({
