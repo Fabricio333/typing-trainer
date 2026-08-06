@@ -81,12 +81,79 @@
     { text: 'No expliques tu filosofía. Encárnala.', source: 'Epicteto' },
     { text: 'Tenemos dos orejas y una boca para escuchar el doble de lo que hablamos.', source: 'Epicteto' },
     { text: 'Primero dite a ti mismo qué quieres ser; luego haz lo que tengas que hacer.', source: 'Epicteto, Disertaciones' },
-    { text: 'No pidas que las cosas sucedan como tú quieres; quiere que sucedan como suceden, y tu vida tendrá un curso sereno.', source: 'Epicteto, Enquiridión' }
+    { text: 'No pidas que las cosas sucedan como tú quieres; quiere que sucedan como suceden, y tu vida tendrá un curso sereno.', source: 'Epicteto, Enquiridión' },
+
+    { text: 'Contempla la belleza de la vida. Mira las estrellas, y mírate corriendo con ellas.', source: 'Marco Aurelio, Meditaciones' },
+    { text: 'La felicidad de tu vida depende de la calidad de tus pensamientos.', source: 'Marco Aurelio, Meditaciones' },
+    { text: 'Cuánto tiempo gana el que no mira lo que dice, hace o piensa su vecino.', source: 'Marco Aurelio, Meditaciones' },
+    { text: 'No es la muerte lo que un hombre debe temer; debe temer no empezar nunca a vivir.', source: 'Marco Aurelio, Meditaciones' },
+    { text: 'Acepta las cosas a las que el destino te ata, y ama a las personas que el destino pone a tu lado.', source: 'Marco Aurelio, Meditaciones' },
+    { text: 'El alma se tiñe del color de sus pensamientos.', source: 'Marco Aurelio, Meditaciones' },
+    { text: 'Lo que hacemos ahora resuena en la eternidad.', source: 'Marco Aurelio, Meditaciones' },
+    { text: 'Sé como el acantilado contra el que rompen las olas sin descanso: se mantiene firme y doma la furia del agua a su alrededor.', source: 'Marco Aurelio, Meditaciones' },
+    { text: 'Si algo externo te angustia, el dolor no se debe a la cosa misma sino a tu juicio sobre ella, y está en tu poder revocar ese juicio en cualquier momento.', source: 'Marco Aurelio, Meditaciones' },
+    { text: 'Recibe sin orgullo, suelta sin apego.', source: 'Marco Aurelio, Meditaciones' },
+    { text: 'Hoy escapé de la ansiedad. O no: la descarté, porque estaba dentro de mí, en mis propias percepciones, no afuera.', source: 'Marco Aurelio, Meditaciones' },
+    { text: 'Piénsate muerto. Ya viviste tu vida. Ahora toma lo que queda y vívelo como corresponde.', source: 'Marco Aurelio, Meditaciones' },
+    { text: 'En ningún lugar encuentra el hombre un retiro más tranquilo y sereno que en su propia alma.', source: 'Marco Aurelio, Meditaciones' },
+    { text: 'Haz cada acto de tu vida como si fuera el último acto de tu vida.', source: 'Marco Aurelio, Meditaciones' },
+    { text: 'El valor de un hombre no es mayor que el valor de sus ambiciones.', source: 'Marco Aurelio, Meditaciones' },
+    { text: 'Regálate algo: el momento presente.', source: 'Marco Aurelio, Meditaciones' },
+
+    { text: 'Empieza a vivir de una vez, y cuenta cada día como una vida entera.', source: 'Séneca' },
+    { text: 'Las dificultades fortalecen la mente, como el trabajo fortalece el cuerpo.', source: 'Séneca' },
+    { text: 'El que es valiente es libre.', source: 'Séneca' },
+    { text: 'Sufre más de lo necesario el que sufre antes de que sea necesario.', source: 'Séneca' },
+    { text: 'Mientras posponemos, la vida pasa de largo.', source: 'Séneca' },
+    { text: 'Nadie llegó a sabio por casualidad.', source: 'Séneca' },
+    { text: 'Es un camino áspero el que lleva a las cumbres de la grandeza.', source: 'Séneca' },
+    { text: 'La vida es como una historia: no importa lo larga que sea, sino lo buena que sea.', source: 'Séneca' },
+    { text: 'Donde hay un ser humano, hay una oportunidad para la bondad.', source: 'Séneca' },
+    { text: 'La vida es muy corta y ansiosa para quienes olvidan el pasado, descuidan el presente y temen el futuro.', source: 'Séneca, Sobre la brevedad de la vida' },
+    { text: 'Quien teme a la muerte nunca hará nada digno de un hombre vivo.', source: 'Séneca' },
+    { text: 'Actúan como mortales en todo lo que temen, y como inmortales en todo lo que desean.', source: 'Séneca, Sobre la brevedad de la vida' },
+    { text: 'Una gema no puede pulirse sin fricción, ni un hombre perfeccionarse sin pruebas.', source: 'Séneca' },
+    { text: 'La mente ansiosa por lo que vendrá es desdichada.', source: 'Séneca' },
+    { text: 'Es poder de la mente ser inconquistable.', source: 'Séneca' },
+    { text: 'No es pobre el que tiene poco, sino el que ansía más.', source: 'Séneca, Cartas a Lucilio' },
+    { text: 'Nada demuestra mejor una mente ordenada que la capacidad de un hombre de detenerse donde está y pasar un tiempo en su propia compañía.', source: 'Séneca, Cartas a Lucilio' },
+
+    { text: '¿Cuánto tiempo más vas a esperar para exigirte lo mejor de ti mismo?', source: 'Epicteto' },
+    { text: 'Si quieres mejorar, confórmate con parecer necio y tonto.', source: 'Epicteto' },
+    { text: 'La riqueza no consiste en tener grandes posesiones, sino en tener pocas necesidades.', source: 'Epicteto' },
+    { text: 'Es imposible que un hombre aprenda lo que cree que ya sabe.', source: 'Epicteto' },
+    { text: 'Las circunstancias no hacen al hombre; sólo lo revelan ante sí mismo.', source: 'Epicteto' },
+    { text: 'La clave es rodearte sólo de gente que te eleve, cuya presencia saque lo mejor de ti.', source: 'Epicteto' },
+    { text: 'Sólo los educados son libres.', source: 'Epicteto' },
+    { text: 'Sabio es el que no se lamenta por lo que le falta, sino que se alegra por lo que tiene.', source: 'Epicteto' },
+    { text: 'Haz el mejor uso de lo que está en tu poder, y toma el resto como venga.', source: 'Epicteto' },
+    { text: 'Al hombre no lo preocupan tanto los problemas reales como sus ansiedades imaginadas sobre los problemas reales.', source: 'Epicteto' },
+    { text: 'Culpar a otros de las propias desgracias es señal de falta de educación. Culparse a uno mismo muestra que la educación ha comenzado.', source: 'Epicteto' },
+    { text: 'La libertad es la única meta digna de la vida. Se gana desatendiendo las cosas que están más allá de nuestro control.', source: 'Epicteto' },
+    { text: 'Algunas cosas están bajo nuestro control y otras no. Bajo nuestro control están la opinión, el impulso, el deseo, la aversión y, en una palabra, todo lo que es acción nuestra. Fuera de nuestro control están el cuerpo, la propiedad, la reputación, el mando y, en una palabra, todo lo que no es acción nuestra.', source: 'Epicteto, Enquiridión' },
+
+    { text: 'El hombre conquista el mundo conquistándose a sí mismo.', source: 'Zenón de Citio' },
+    { text: 'Mejor tropezar con los pies que con la lengua.', source: 'Zenón de Citio' },
+    { text: 'Los hados guían al que quiere, y arrastran al que no quiere.', source: 'Cleantes' },
+    { text: 'El carácter es destino.', source: 'Heráclito' },
+    { text: 'Una vida sin examen no merece ser vivida.', source: 'Sócrates, según Platón' },
+    { text: 'Somos lo que hacemos repetidamente. La excelencia, entonces, no es un acto, sino un hábito.', source: 'Atribuida a Aristóteles' },
+
+    { text: 'Nunca dejes que el futuro te perturbe. Lo enfrentarás, si hace falta, con las mismas armas de la razón que hoy te defienden del presente.', source: 'Marco Aurelio, Meditaciones' },
+    { text: 'Cuando despiertes por la mañana, dite a ti mismo: las personas con las que trataré hoy serán entrometidas, ingratas, arrogantes, deshonestas, envidiosas y hurañas. Son así porque no saben distinguir el bien del mal. Pero yo he visto la belleza del bien y la fealdad del mal.', source: 'Marco Aurelio, Meditaciones' },
+    { text: 'Todo lo que oyes es una opinión, no un hecho. Todo lo que ves es una perspectiva, no la verdad. Las cosas en las que piensas determinan la calidad de tu mente. Tu alma toma el color de tus pensamientos.', source: 'Atribuida a Marco Aurelio' },
+    { text: 'Hasta que empezamos a prescindir de ellas, no nos damos cuenta de lo innecesarias que son muchas cosas. Las usábamos no porque las necesitáramos, sino porque las teníamos.', source: 'Séneca, Cartas a Lucilio' },
+    { text: 'Reserva cierto número de días para contentarte con la comida más escasa y barata, con ropa tosca y áspera, mientras te dices: ¿es esta la condición que yo temía?', source: 'Séneca, Cartas a Lucilio' },
+    { text: 'Piensa tu camino a través de las dificultades: las condiciones duras pueden ablandarse, las estrechas pueden ensancharse, y las pesadas pesan menos sobre quien sabe llevarlas.', source: 'Séneca, Sobre la tranquilidad del ánimo' },
+    { text: 'Nadie puede progresar mientras vacila entre cosas opuestas.', source: 'Epicteto' },
+    { text: 'Pregúntate: ¿esta impresión concierne a las cosas que están bajo mi control, o a las que no? Y si concierne a algo fuera de tu control, prepárate para decir que no es nada para ti.', source: 'Epicteto, Enquiridión' }
   ];
 
+  /* Sized for aphorisms rather than literary passages: a quick line, a
+   * sentence or two, a full thought. */
   function classify(n) {
-    if (n < 120) return 'short';
-    if (n <= 250) return 'medium';
+    if (n < 60) return 'short';
+    if (n <= 150) return 'medium';
     return 'long';
   }
 

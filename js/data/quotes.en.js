@@ -81,12 +81,79 @@
     { text: 'Do not explain your philosophy. Embody it.', source: 'Epictetus' },
     { text: 'We have two ears and one mouth so that we can listen twice as much as we speak.', source: 'Epictetus' },
     { text: 'First say to yourself what you would be; and then do what you have to do.', source: 'Epictetus, Discourses' },
-    { text: 'Seek not that the things which happen should happen as you wish; but wish the things which happen to be as they are, and you will have a tranquil flow of life.', source: 'Epictetus, Enchiridion' }
+    { text: 'Seek not that the things which happen should happen as you wish; but wish the things which happen to be as they are, and you will have a tranquil flow of life.', source: 'Epictetus, Enchiridion' },
+
+    { text: 'Dwell on the beauty of life. Watch the stars, and see yourself running with them.', source: 'Marcus Aurelius, Meditations' },
+    { text: 'The happiness of your life depends upon the quality of your thoughts.', source: 'Marcus Aurelius, Meditations' },
+    { text: 'How much time he gains who does not look to see what his neighbour says or does or thinks.', source: 'Marcus Aurelius, Meditations' },
+    { text: 'It is not death that a man should fear, but he should fear never beginning to live.', source: 'Marcus Aurelius, Meditations' },
+    { text: 'Accept the things to which fate binds you, and love the people with whom fate brings you together.', source: 'Marcus Aurelius, Meditations' },
+    { text: 'The soul becomes dyed with the colour of its thoughts.', source: 'Marcus Aurelius, Meditations' },
+    { text: 'What we do now echoes in eternity.', source: 'Marcus Aurelius, Meditations' },
+    { text: 'Be like the cliff against which the waves continually break: it stands firm, and tames the fury of the water around it.', source: 'Marcus Aurelius, Meditations' },
+    { text: 'If you are distressed by anything external, the pain is not due to the thing itself but to your estimate of it, and this you have the power to revoke at any moment.', source: 'Marcus Aurelius, Meditations' },
+    { text: 'Receive without pride, let go without attachment.', source: 'Marcus Aurelius, Meditations' },
+    { text: 'Today I escaped anxiety. Or no, I discarded it, because it was within me, in my own perceptions, not outside.', source: 'Marcus Aurelius, Meditations' },
+    { text: 'Think of yourself as dead. You have lived your life. Now take what is left and live it properly.', source: 'Marcus Aurelius, Meditations' },
+    { text: 'Nowhere can a man find a quieter or more untroubled retreat than in his own soul.', source: 'Marcus Aurelius, Meditations' },
+    { text: 'Do every act of your life as though it were the very last act of your life.', source: 'Marcus Aurelius, Meditations' },
+    { text: 'A man\'s worth is no greater than the worth of his ambitions.', source: 'Marcus Aurelius, Meditations' },
+    { text: 'Give yourself a gift: the present moment.', source: 'Marcus Aurelius, Meditations' },
+
+    { text: 'Begin at once to live, and count each separate day as a separate life.', source: 'Seneca' },
+    { text: 'Difficulties strengthen the mind, as labour does the body.', source: 'Seneca' },
+    { text: 'He who is brave is free.', source: 'Seneca' },
+    { text: 'He suffers more than necessary, who suffers before it is necessary.', source: 'Seneca' },
+    { text: 'While we are postponing, life speeds by.', source: 'Seneca' },
+    { text: 'No man was ever wise by chance.', source: 'Seneca' },
+    { text: 'It is a rough road that leads to the heights of greatness.', source: 'Seneca' },
+    { text: 'As is a tale, so is life: not how long it is, but how good it is, is what matters.', source: 'Seneca' },
+    { text: 'Wherever there is a human being, there is an opportunity for a kindness.', source: 'Seneca' },
+    { text: 'Life is very short and anxious for those who forget the past, neglect the present, and fear the future.', source: 'Seneca, On the Shortness of Life' },
+    { text: 'He who fears death will never do anything worthy of a man who is alive.', source: 'Seneca' },
+    { text: 'You act like mortals in all that you fear, and like immortals in all that you desire.', source: 'Seneca, On the Shortness of Life' },
+    { text: 'A gem cannot be polished without friction, nor a man perfected without trials.', source: 'Seneca' },
+    { text: 'The mind that is anxious about future events is miserable.', source: 'Seneca' },
+    { text: 'It is the power of the mind to be unconquerable.', source: 'Seneca' },
+    { text: 'It is not the man who has too little, but the man who craves more, that is poor.', source: 'Seneca, Letters to Lucilius' },
+    { text: 'Nothing, to my way of thinking, is a better proof of a well ordered mind than a man\'s ability to stop just where he is and pass some time in his own company.', source: 'Seneca, Letters to Lucilius' },
+
+    { text: 'How long are you going to wait before you demand the best for yourself?', source: 'Epictetus' },
+    { text: 'If you want to improve, be content to be thought foolish and stupid.', source: 'Epictetus' },
+    { text: 'Wealth consists not in having great possessions, but in having few wants.', source: 'Epictetus' },
+    { text: 'It is impossible for a man to learn what he thinks he already knows.', source: 'Epictetus' },
+    { text: 'Circumstances don\'t make the man, they only reveal him to himself.', source: 'Epictetus' },
+    { text: 'The key is to keep company only with people who uplift you, whose presence calls forth your best.', source: 'Epictetus' },
+    { text: 'Only the educated are free.', source: 'Epictetus' },
+    { text: 'He is a wise man who does not grieve for the things which he has not, but rejoices for those which he has.', source: 'Epictetus' },
+    { text: 'Make the best use of what is in your power, and take the rest as it happens.', source: 'Epictetus' },
+    { text: 'Man is not worried by real problems so much as by his imagined anxieties about real problems.', source: 'Epictetus' },
+    { text: 'To accuse others for one\'s own misfortunes is a sign of want of education. To accuse oneself shows that one\'s education has begun.', source: 'Epictetus' },
+    { text: 'Freedom is the only worthy goal in life. It is won by disregarding things that lie beyond our control.', source: 'Epictetus' },
+    { text: 'Some things are in our control and others not. Things in our control are opinion, pursuit, desire, aversion, and, in a word, whatever are our own actions. Things not in our control are body, property, reputation, command, and, in one word, whatever are not our own actions.', source: 'Epictetus, Enchiridion' },
+
+    { text: 'Man conquers the world by conquering himself.', source: 'Zeno of Citium' },
+    { text: 'Better to trip with the feet than with the tongue.', source: 'Zeno of Citium' },
+    { text: 'The fates lead the willing, and drag the unwilling.', source: 'Cleanthes' },
+    { text: 'Character is destiny.', source: 'Heraclitus' },
+    { text: 'The unexamined life is not worth living.', source: 'Socrates, via Plato' },
+    { text: 'We are what we repeatedly do. Excellence, then, is not an act, but a habit.', source: 'Attributed to Aristotle' },
+
+    { text: 'Never let the future disturb you. You will meet it, if you have to, with the same weapons of reason which today arm you against the present.', source: 'Marcus Aurelius, Meditations' },
+    { text: 'When you wake up in the morning, tell yourself: the people I deal with today will be meddling, ungrateful, arrogant, dishonest, jealous and surly. They are like this because they cannot tell good from evil. But I have seen the beauty of good, and the ugliness of evil.', source: 'Marcus Aurelius, Meditations' },
+    { text: 'Everything you hear is an opinion, not a fact. Everything you see is a perspective, not the truth. The things you think about determine the quality of your mind. Your soul takes on the colour of your thoughts.', source: 'Attributed to Marcus Aurelius' },
+    { text: 'Until we have begun to go without them, we fail to realise how unnecessary many things are. We have been using them not because we needed them, but because we had them.', source: 'Seneca, Letters to Lucilius' },
+    { text: 'Set aside a certain number of days, during which you shall be content with the scantiest and cheapest fare, with coarse and rough dress, saying to yourself the while: is this the condition that I feared?', source: 'Seneca, Letters to Lucilius' },
+    { text: 'Think your way through difficulties: harsh conditions can be softened, restricted ones can be widened, and heavy ones can weigh less on those who know how to bear them.', source: 'Seneca, On Tranquillity of Mind' },
+    { text: 'No man is able to make progress when he is wavering between opposite things.', source: 'Epictetus' },
+    { text: 'Ask yourself: does this appearance concern the things which are in my own control, or those which are not? And if it concerns anything not in your control, be prepared to say that it is nothing to you.', source: 'Epictetus, Enchiridion' }
   ];
 
+  /* Sized for aphorisms rather than literary passages: a quick line, a
+   * sentence or two, a full thought. */
   function classify(n) {
-    if (n < 120) return 'short';
-    if (n <= 250) return 'medium';
+    if (n < 60) return 'short';
+    if (n <= 150) return 'medium';
     return 'long';
   }
 

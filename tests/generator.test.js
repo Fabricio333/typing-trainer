@@ -140,6 +140,18 @@ test('Spanish quotes are available', function () {
   ok(q.words.length > 3);
 });
 
+test('recently seen quotes are avoided', function () {
+  const all = global.TT.data.quotes.en.map(function (q) { return q.text; });
+  const q = G.quote({ lang: 'en', avoid: all.slice(1), random: seeded(7) });
+  eq(q.text, all[0], 'the only unseen quote must be the one picked');
+});
+
+test('avoiding every quote still returns one rather than nothing', function () {
+  const all = global.TT.data.quotes.en.map(function (q) { return q.text; });
+  const q = G.quote({ lang: 'en', avoid: all, random: seeded(3) });
+  ok(q.words.length > 0);
+});
+
 suite('generator / lessons');
 
 test('a char-drill lesson emits fixed-size chunks', function () {

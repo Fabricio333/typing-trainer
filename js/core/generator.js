@@ -210,6 +210,13 @@
       : all;
     if (!candidates.length) candidates = all;
 
+    // Recently shown quotes are skipped so the mode does not repeat itself —
+    // unless that would leave nothing to pick from.
+    if (o.avoid && o.avoid.length) {
+      var fresh = candidates.filter(function (q) { return o.avoid.indexOf(q.text) === -1; });
+      if (fresh.length) candidates = fresh;
+    }
+
     var q = pick(candidates, rnd);
     return {
       words: q.text.split(/\s+/).filter(Boolean),

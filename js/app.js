@@ -41,6 +41,7 @@
   var drillBaseline = {};
 
   var pendingResume = null;  // words to restore after a refresh, used once
+  var recentQuotes = [];     // last few quote texts, so quote mode does not repeat
 
   /* Active-time clock: pauses whenever the input loses focus, so walking away
    * mid-test does not wreck the WPM. */
@@ -384,8 +385,10 @@
 
     switch (s.mode) {
       case 'quote':
-        var q = TT.generator.quote({ lang: lang, length: s.quoteLength });
+        var q = TT.generator.quote({ lang: lang, length: s.quoteLength, avoid: recentQuotes });
         context.quoteSource = q.source;
+        recentQuotes.push(q.text);
+        if (recentQuotes.length > 10) recentQuotes.shift();
         return q.words;
 
       case 'patterns':
