@@ -26,16 +26,21 @@ test('a clean run scores 100% accuracy', function () {
 });
 
 test('accuracy counts a corrected mistake as a miss', function () {
-  const s = E.create(['ab'], { type: 'words', value: 1 });
+  // The correction happens on a non-final word: a final word at full length
+  // ends the test, mistakes and all.
+  const s = E.create(['ab', 'cd'], { type: 'words', value: 2 });
   E.typeChar(s, 'a', 100);
-  E.typeChar(s, 'x', 200);   // wrong
+  E.typeChar(s, 'x', 200);   // wrong — and the test carries on
   E.backspace(s);            // fixed — final state is now perfect
   E.typeChar(s, 'b', 300);
+  E.typeChar(s, ' ', 400);
+  E.typeChar(s, 'c', 500);
+  E.typeChar(s, 'd', 600);
 
-  const out = S.summarize(s, 400);
+  const out = S.summarize(s, 700);
   eq(out.chars.incorrect, 0, 'final state ends up clean');
-  eq(out.keystrokes, 3);
-  near(out.accuracy, (2 / 3) * 100, 0.001, 'but the log remembers the miss');
+  eq(out.keystrokes, 6);
+  near(out.accuracy, (5 / 6) * 100, 0.001, 'but the log remembers the miss');
 });
 
 test('WPM is computed from correct characters over elapsed time', function () {

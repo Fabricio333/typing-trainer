@@ -68,7 +68,9 @@ test('space on an unfinished word still advances and leaves it editable', functi
 });
 
 test('overflow characters are kept but capped', function () {
-  const s = fresh(['hi']);
+  // A non-final word: the final word finishes the test at full length, so it
+  // can never overflow.
+  const s = fresh(['hi', 'yo']);
   let t = 1000;
   for (let i = 0; i < 60; i++) {
     E.typeChar(s, 'z', t);
@@ -238,6 +240,16 @@ test('finishing the last word correctly ends the test without a trailing space',
   typeAll(s, 'ab cd');
   ok(s.finishedAt !== null, 'test should be finished');
   eq(s.wordIndex, 2);
+});
+
+test('a mistyped final word still finishes the test at full length', function () {
+  // The alternative is a test that silently refuses to end: the caret sits on
+  // the last word and typing does nothing visible to explain why.
+  const s = fresh(['ab', 'cd']);
+  typeAll(s, 'ab cx');
+  ok(s.finishedAt !== null, 'test should finish despite the error');
+  eq(s.wordIndex, 2);
+  eq(s.input[1], 'cx', 'the mistyped word is kept for the accuracy maths');
 });
 
 test('a finished test ignores further input', function () {

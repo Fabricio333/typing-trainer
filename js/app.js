@@ -83,6 +83,7 @@
 
       resWpm: id('res-wpm'), resAcc: id('res-acc'), resMeta: id('res-meta'),
       resChart: id('res-chart'), resGrid: id('res-grid'), resNote: id('res-note'),
+      resPrev: id('res-prev'),
       resAgain: id('res-again'), resAgainLabel: id('res-again-label'),
       resRepeat: id('res-repeat'), resBack: id('res-back'),
 
@@ -108,7 +109,7 @@
     TT.render.mount({ words: els.words, caret: els.caret, window: els.window });
     TT.results.mount({
       wpm: els.resWpm, acc: els.resAcc, meta: els.resMeta, chart: els.resChart,
-      grid: els.resGrid, note: els.resNote
+      grid: els.resGrid, note: els.resNote, prev: els.resPrev
     });
 
     wireInput();
@@ -614,7 +615,12 @@
     var ctx = {
       lang: context.lang,
       quoteLength: TT.settings.get('quoteLength'),
-      lessonId: context.lessonDef ? context.lessonDef.id : null
+      lessonId: context.lessonDef ? context.lessonDef.id : null,
+      // Fixed content gets an identity so runs of the same text compare:
+      // lessons by id, quotes by their (stable) opening words.
+      contentKey: context.lessonDef ? context.lessonDef.id
+        : state.mode.type === 'quote' ? 'q:' + lastWords.join(' ').slice(0, 80)
+        : null
     };
 
     // The lesson outcome and the next step for the "next" button. Marking the

@@ -538,6 +538,11 @@ function check(name, cond, detail) {
   check('lesson result reports pass/fail', /Lesson passed|Not passed/.test(lessonNote),
     JSON.stringify(lessonNote));
 
+  // Fixed content (lessons, quotes) compares against earlier runs of itself.
+  const prevLine = await page.$eval('#res-prev', e => ({ hidden: e.hidden, text: e.textContent }));
+  check('fixed content shows a previous-runs line',
+    !prevLine.hidden && /First run|best \d+ wpm/.test(prevLine.text), JSON.stringify(prevLine));
+
   // A passed lesson's "next" must advance the track, not replay the lesson.
   const expectNext = await page.evaluate(() =>
     window.TT.data.lessons[window.TT.settings.get('lang')][1].title);

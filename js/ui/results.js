@@ -59,6 +59,9 @@
       mode: modeLabel(summary.mode, context),
       lang: context && context.lang ? context.lang : 'en',
       lesson: context && context.lessonId ? context.lessonId : null,
+      // Identifies fixed content (a lesson, a particular quote) so later runs
+      // of the same text can be compared against each other.
+      content: context && context.contentKey ? context.contentKey : null,
       chars: summary.chars
     };
   }
@@ -119,6 +122,25 @@
     if (ctx.note) note = ctx.note;
     els.note.textContent = note;
     els.note.hidden = !note;
+
+    // Fixed content — a lesson or a particular quote — shows how the same
+    // text went on earlier runs.
+    var prevLine = '';
+    if (record && record.content) {
+      var runs = list().filter(function (r) {
+        return r.content === record.content && r.at !== record.at;
+      });
+      if (runs.length) {
+        var best = runs.reduce(function (m, r) { return Math.max(m, r.wpm); }, 0);
+        var lastFew = runs.slice(-5).map(function (r) { return Math.round(r.wpm); });
+        prevLine = 'This text before — best ' + Math.round(best) + ' wpm · previous runs: ' +
+          lastFew.join(', ') + ' wpm';
+      } else {
+        prevLine = 'First run on this text.';
+      }
+    }
+    els.prev.textContent = prevLine;
+    els.prev.hidden = !prevLine;
   }
 
   TT.results = {

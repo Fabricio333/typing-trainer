@@ -116,9 +116,11 @@
     state.input[i] = typed + ch;
     log(state, now, ch, expected, ok);
 
-    // Finishing the very last word correctly ends a finite test without
-    // needing a trailing space.
-    if (isFinalWord(state, i) && state.input[i] === want) {
+    // Typing the last word to its full length ends a finite test without
+    // needing a trailing space — even with mistakes in it, or the test would
+    // silently refuse to end and strand the caret. Strict practice is what
+    // the stop-on-error modes are for.
+    if (isFinalWord(state, i) && state.input[i].length >= want.length) {
       state.wordIndex = i + 1;
       return finish(state, now);
     }
