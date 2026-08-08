@@ -109,36 +109,43 @@
     TT.chart.results(els.chart, summary.series);
 
     // Highlight a personal best, but only once there is something to beat.
-    var note = '';
+    var notes = [];
     if (record) {
       var previous = list().filter(function (r) {
         return r.mode === record.mode && r.at !== record.at;
       });
       var top = previous.reduce(function (m, r) { return Math.max(m, r.wpm); }, 0);
       if (previous.length && record.wpm > top) {
-        note = 'New personal best for ' + record.mode + ' — beat ' + Math.round(top) + ' wpm.';
+        notes.push('New personal best for ' + record.mode + ' — beat ' + Math.round(top) + ' wpm.');
       }
     }
-    if (ctx.note) note = ctx.note;
-    els.note.textContent = note;
-    els.note.hidden = !note;
 
     // Fixed content — a lesson or a particular quote — shows how the same
     // text went on earlier runs.
     var prevLine = '';
     if (record && record.content) {
-      var runs = list().filter(function (r) {
+      var previousRuns = list().filter(function (r) {
         return r.content === record.content && r.at !== record.at;
       });
-      if (runs.length) {
-        var best = runs.reduce(function (m, r) { return Math.max(m, r.wpm); }, 0);
+      if (previousRuns.length) {
+        var previousBest = previousRuns.reduce(function (m, r) { return Math.max(m, r.wpm); }, 0);
+        if (record.wpm > previousBest && notes.length === 0) {
+          notes.push('New personal best for this text — beat ' + Math.round(previousBest) + ' wpm.');
+        }
+        var runs = previousRuns.concat(record);
+        var best = Math.max(previousBest, record.wpm);
         var lastFew = runs.slice(-5).map(function (r) { return Math.round(r.wpm); });
-        prevLine = 'This text before — best ' + Math.round(best) + ' wpm · previous runs: ' +
+        prevLine = 'Best ' + Math.round(best) + ' wpm · runs: ' +
           lastFew.join(', ') + ' wpm';
       } else {
-        prevLine = 'First run on this text.';
+        prevLine = 'Best ' + Math.round(record.wpm) + ' wpm · runs: ' +
+          Math.round(record.wpm) + ' wpm';
       }
     }
+    if (ctx.note) notes.unshift(ctx.note);
+    var note = notes.join(' ');
+    els.note.textContent = note;
+    els.note.hidden = !note;
     els.prev.textContent = prevLine;
     els.prev.hidden = !prevLine;
   }
