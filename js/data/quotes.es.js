@@ -5,6 +5,7 @@
   'use strict';
 
   var REGLAS = 'Ryan Holiday, reglas de vida';
+  var EGO = 'Ryan Holiday, El ego es el enemigo';
 
   var QUOTES = [
     { text: 'Concéntrate en lo que puedes controlar.', source: REGLAS },
@@ -146,7 +147,21 @@
     { text: 'Reserva cierto número de días para contentarte con la comida más escasa y barata, con ropa tosca y áspera, mientras te dices: ¿es esta la condición que yo temía?', source: 'Séneca, Cartas a Lucilio' },
     { text: 'Piensa tu camino a través de las dificultades: las condiciones duras pueden ablandarse, las estrechas pueden ensancharse, y las pesadas pesan menos sobre quien sabe llevarlas.', source: 'Séneca, Sobre la tranquilidad del ánimo' },
     { text: 'Nadie puede progresar mientras vacila entre cosas opuestas.', source: 'Epicteto' },
-    { text: 'Pregúntate: ¿esta impresión concierne a las cosas que están bajo mi control, o a las que no? Y si concierne a algo fuera de tu control, prepárate para decir que no es nada para ti.', source: 'Epicteto, Enquiridión' }
+    { text: 'Pregúntate: ¿esta impresión concierne a las cosas que están bajo mi control, o a las que no? Y si concierne a algo fuera de tu control, prepárate para decir que no es nada para ti.', source: 'Epicteto, Enquiridión' },
+
+    { text: 'Sé un anteambulo. Despeja el camino a quienes están por encima de ti y con el tiempo abrirás un camino para ti mismo.', source: EGO },
+    { text: 'Para llegar a ser grande, todo luchador necesita a alguien mejor de quien aprender, a alguien menor a quien enseñar y a alguien igual con quien medirse.', source: EGO },
+    { text: 'Si ya no estás aprendiendo, ya estás muriendo.', source: EGO },
+    { text: 'La pasión es forma por encima de función. El propósito es función, función y función.', source: EGO },
+    { text: 'Entrenar es como barrer el suelo. Haberlo hecho una vez no lo deja limpio para siempre. Cada día vuelve el polvo. Cada día hay que barrer. Con el ego pasa lo mismo.', source: EGO },
+    { text: 'Cada día del resto de tu vida te encontrarás en una de estas tres fases: aspiración, éxito, fracaso. En todas ellas tendrás que luchar contra el ego.', source: EGO },
+    { text: 'Cuando no estés practicando, recuerda: alguien en algún lugar está practicando, y cuando te encuentres con él, te ganará.', source: EGO },
+    { text: 'No puedes construir una reputación sobre lo que vas a hacer.', source: 'Henry Ford, citado en El ego es el enemigo' },
+    { text: 'Un gran destino es una gran esclavitud.', source: 'Séneca, citado en El ego es el enemigo' },
+    { text: '¿Y por qué habríamos de enfadarnos con el mundo? ¡Como si el mundo se diera cuenta!', source: 'Eurípides, citado en El ego es el enemigo' },
+    { text: 'Uno de los síntomas de una crisis nerviosa inminente es la creencia de que el propio trabajo es tremendamente importante.', source: 'Bertrand Russell, La conquista de la felicidad' },
+    { text: 'Te estás convirtiendo en quien vas a ser, así que más vale que no seas un imbécil.', source: 'Cheryl Strayed, citada en El ego es el enemigo' },
+    { text: 'Cuando miro al universo, sé que soy pequeño, pero también soy grande. Soy grande porque estoy conectado al universo y el universo está conectado a mí.', source: 'Neil deGrasse Tyson, citado en El ego es el enemigo' }
   ];
 
   /* Sized for aphorisms rather than literary passages: a quick line, a

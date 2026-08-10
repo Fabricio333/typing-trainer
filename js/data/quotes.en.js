@@ -5,6 +5,7 @@
   'use strict';
 
   var RULES = 'Ryan Holiday, rules for life';
+  var EGO = 'Ryan Holiday, Ego Is the Enemy';
 
   var QUOTES = [
     { text: 'Focus on what you can control.', source: RULES },
@@ -146,7 +147,21 @@
     { text: 'Set aside a certain number of days, during which you shall be content with the scantiest and cheapest fare, with coarse and rough dress, saying to yourself the while: is this the condition that I feared?', source: 'Seneca, Letters to Lucilius' },
     { text: 'Think your way through difficulties: harsh conditions can be softened, restricted ones can be widened, and heavy ones can weigh less on those who know how to bear them.', source: 'Seneca, On Tranquillity of Mind' },
     { text: 'No man is able to make progress when he is wavering between opposite things.', source: 'Epictetus' },
-    { text: 'Ask yourself: does this appearance concern the things which are in my own control, or those which are not? And if it concerns anything not in your control, be prepared to say that it is nothing to you.', source: 'Epictetus, Enchiridion' }
+    { text: 'Ask yourself: does this appearance concern the things which are in my own control, or those which are not? And if it concerns anything not in your control, be prepared to say that it is nothing to you.', source: 'Epictetus, Enchiridion' },
+
+    { text: 'Be an anteambulo. Clear the path for the people above you and you will eventually create a path for yourself.', source: EGO },
+    { text: 'Each fighter, to become great, needs someone better that they can learn from, someone lesser who they can teach, and someone equal that they can challenge themselves against.', source: EGO },
+    { text: 'If you are not still learning, you are already dying.', source: EGO },
+    { text: 'Passion is form over function. Purpose is function, function, function.', source: EGO },
+    { text: 'Training is like sweeping the floor. Doing it once does not leave the floor clean forever. Every day the dust comes back. Every day we must sweep. The same is true of ego.', source: EGO },
+    { text: 'Every day for the rest of your life you will find yourself at one of three phases: aspiration, success, failure. You will battle the ego in each of them.', source: EGO },
+    { text: 'When you are not practicing, remember: someone somewhere is practicing, and when you meet him he will win.', source: EGO },
+    { text: 'You cannot build a reputation on what you are going to do.', source: 'Henry Ford, via Ego Is the Enemy' },
+    { text: 'A great destiny is a great slavery.', source: 'Seneca, via Ego Is the Enemy' },
+    { text: 'And why should we feel anger at the world? As if the world would notice!', source: 'Euripides, via Ego Is the Enemy' },
+    { text: 'One of the symptoms of approaching nervous breakdown is the belief that one\'s work is terribly important.', source: 'Bertrand Russell, The Conquest of Happiness' },
+    { text: 'You are becoming who you are going to be, so you might as well not be an asshole.', source: 'Cheryl Strayed, via Ego Is the Enemy' },
+    { text: 'When I look up in the universe, I know I am small, but I am also big. I am big because I am connected to the universe and the universe is connected to me.', source: 'Neil deGrasse Tyson, via Ego Is the Enemy' }
   ];
 
   /* Sized for aphorisms rather than literary passages: a quick line, a
