@@ -73,6 +73,47 @@
     return o.limit ? rows.slice(0, o.limit) : rows;
   }
 
+  /* Per-key speed, folded out of the same transition map: a pair "ab" measures
+   * how long the b took once the a was already down, so every pair is a sample
+   * for its second key. The first key of a word has no preceding transition and
+   * simply contributes nothing — there is no honest interval to attribute to it.
+   *
+   * Slowest key first, same shape as rank(). */
+  function perKey(map, opts) {
+    var o = opts || {};
+    var minSamples = o.minSamples === undefined ? DEFAULT_MIN_SAMPLES : o.minSamples;
+    var acc = {};
+    for (var pair in map || {}) {
+      if (!Object.prototype.hasOwnProperty.call(map, pair)) continue;
+      var e = map[pair];
+      if (!e || pair.length !== 2 || !e.n) continue;
+      var ch = pair.charAt(1);
+      if (!acc[ch]) acc[ch] = { n: 0, ms: 0, best: 0 };
+      acc[ch].n += e.n;
+      acc[ch].ms += e.ms;
+      acc[ch].best = acc[ch].best === 0 ? e.best : Math.min(acc[ch].best, e.best || acc[ch].best);
+    }
+
+    var rows = [];
+    for (var key in acc) {
+      if (!Object.prototype.hasOwnProperty.call(acc, key)) continue;
+      var a = acc[key];
+      if (a.n < minSamples) continue;
+      var avgMs = a.ms / a.n;
+      rows.push({
+        key: key,
+        n: a.n,
+        avgMs: avgMs,
+        bestMs: a.best,
+        wpm: avgMs > 0 ? 60000 / (avgMs * 5) : 0
+      });
+    }
+    rows.sort(function (x, y) {
+      return y.avgMs - x.avgMs || y.n - x.n || x.key.localeCompare(y.key);
+    });
+    return o.limit ? rows.slice(0, o.limit) : rows;
+  }
+
   /* ── persistence ───────────────────────────────────────────────── */
 
   function readAll() {
@@ -98,6 +139,10 @@
     return rank(all(lang), { limit: limit, minSamples: minSamples });
   }
 
+  function keys(lang, limit, minSamples) {
+    return perKey(all(lang), { limit: limit, minSamples: minSamples });
+  }
+
   function reset() {
     if (TT.storage) TT.storage.remove('keyspeed');
   }
@@ -106,9 +151,11 @@
     fromLog: fromLog,
     merge: merge,
     rank: rank,
+    perKey: perKey,
     all: all,
     record: record,
     slowest: slowest,
+    keys: keys,
     reset: reset,
     MIN_MS: MIN_MS,
     MAX_MS: MAX_MS,

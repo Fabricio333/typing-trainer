@@ -4,6 +4,19 @@
   'use strict';
 
   var heatBoard = null;
+  var keyView = 'accuracy';   // 'accuracy' (heatmap) or 'speed' (bar chart)
+
+  var KEY_VIEW_SUB = {
+    accuracy: 'Redder keys are the ones you miss most. These feed the adaptive ' +
+              'pattern drill.',
+    speed: 'How fast each key comes out once the previous one is down, slowest ' +
+           'first. Timed from clean in-word keystrokes only.'
+  };
+
+  function setKeyView(mode) {
+    keyView = mode === 'speed' ? 'speed' : 'accuracy';
+    return keyView;
+  }
 
   function keyStats() {
     var m = TT.storage.read('keystats', {});
@@ -78,21 +91,42 @@
             '</div>';
         }).join('');
 
-    // Key heatmap. Rebuild when the layout (language or explicit choice) changes.
-    var layout = TT.data.layouts.resolve(TT.settings.get('keyboardLayout'), lang);
-    if (!heatBoard || heatBoard.layout.id !== layout.id) {
-      heatBoard = TT.keyboard.build(els.heatmap, layout, { fingerColors: false });
+    // Keyboard precision: either the miss-rate heatmap or the per-key speed
+    // chart. Both halves are toggled before drawing — a canvas inside a hidden
+    // element measures zero and would draw at the wrong size.
+    var speedView = keyView === 'speed';
+    if (els.keyViewSub) els.keyViewSub.textContent = KEY_VIEW_SUB[keyView];
+    if (els.keyViewToggle) {
+      Array.prototype.forEach.call(els.keyViewToggle.querySelectorAll('[data-keyview]'), function (b) {
+        var on = b.dataset.keyview === keyView;
+        b.classList.toggle('is-on', on);
+        b.setAttribute('aria-pressed', String(on));
+      });
     }
-    var keys = keyStats();
-    TT.keyboard.heatmap(heatBoard, keys);
+    els.heatmap.hidden = speedView;
+    els.worst.hidden = speedView;
+    if (els.keySpeedWrap) els.keySpeedWrap.hidden = !speedView;
 
-    var worst = TT.stats.worstKeys(keys, 8, 6);
-    els.worst.innerHTML = worst.length === 0
-      ? '<span class="tile-sub">Type a few more tests and your weakest keys will show up here.</span>'
-      : worst.map(function (w) {
-          return '<span class="worst-key">' + escapeHtml(w.key) +
-            ' <b>' + Math.round(w.rate * 100) + '%</b> missed</span>';
-        }).join('');
+    if (speedView) {
+      TT.chart.keySpeed(els.keySpeedChart,
+        TT.keyspeed.keys(lang, 40, TT.keyspeed.DEFAULT_MIN_SAMPLES));
+    } else {
+      // Rebuild when the layout (language or explicit choice) changes.
+      var layout = TT.data.layouts.resolve(TT.settings.get('keyboardLayout'), lang);
+      if (!heatBoard || heatBoard.layout.id !== layout.id) {
+        heatBoard = TT.keyboard.build(els.heatmap, layout, { fingerColors: false });
+      }
+      var keys = keyStats();
+      TT.keyboard.heatmap(heatBoard, keys);
+
+      var worst = TT.stats.worstKeys(keys, 8, 6);
+      els.worst.innerHTML = worst.length === 0
+        ? '<span class="tile-sub">Type a few more tests and your weakest keys will show up here.</span>'
+        : worst.map(function (w) {
+            return '<span class="worst-key">' + escapeHtml(w.key) +
+              ' <b>' + Math.round(w.rate * 100) + '%</b> missed</span>';
+          }).join('');
+    }
 
     // Slowest words, hardest first.
     var slow = TT.wordstats.hardest(lang, 25, TT.wordstats.DEFAULT_MIN_SAMPLES);
@@ -173,6 +207,7 @@
     render: render,
     keyStats: keyStats,
     addKeyStats: addKeyStats,
+    setKeyView: setKeyView,
     invalidateLayout: invalidateLayout,
     formatDuration: formatDuration
   };

@@ -202,6 +202,61 @@
     });
   }
 
+  /* One bar per key, slowest first — how fast each individual key comes out
+   * once the previous one is already down. */
+  function keySpeed(canvas, rows) {
+    if (!canvas) return;
+    var box = prepare(canvas);
+    var ctx = box.ctx;
+    var c = palette(canvas);
+
+    if (!rows || rows.length === 0) {
+      empty(ctx, box, c, 'not enough per-key timing yet');
+      return;
+    }
+
+    var plotH = box.h - PAD.top - PAD.bottom;
+    var plotW = box.w - PAD.left - PAD.right;
+    var peak = rows.reduce(function (m, r) { return Math.max(m, r.wpm); }, 0);
+    var maxY = niceMax(peak, TICKS);
+
+    axes(ctx, box, c, maxY, null);
+
+    var slot = plotW / rows.length;
+    var barW = Math.max(2, Math.min(26, slot * 0.68));
+    var baseY = PAD.top + plotH;
+
+    ctx.fillStyle = c.main;
+    rows.forEach(function (r, i) {
+      var h = (plotH * Math.min(r.wpm, maxY)) / maxY;
+      var x = PAD.left + slot * (i + 0.5) - barW / 2;
+      ctx.fillRect(x, baseY - h, barW, h);
+    });
+
+    // Key labels, dropped when the bars get too tight to read them.
+    if (slot >= 11) {
+      ctx.fillStyle = c.sub;
+      ctx.font = '11px ui-monospace, monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      rows.forEach(function (r, i) {
+        ctx.fillText(r.key, PAD.left + slot * (i + 0.5), baseY + 8);
+      });
+    }
+
+    // Your overall per-key average, so a bar reads as "slower/faster than me".
+    var totalN = rows.reduce(function (a, r) { return a + r.n; }, 0);
+    var avgMs = rows.reduce(function (a, r) { return a + r.avgMs * r.n; }, 0) / (totalN || 1);
+    var avgWpm = avgMs > 0 ? 60000 / (avgMs * 5) : 0;
+    var avgY = baseY - (plotH * Math.min(avgWpm, maxY)) / maxY;
+    line(ctx, [{ x: PAD.left, y: avgY }, { x: PAD.left + plotW, y: avgY }], c.text, 1.5, true);
+
+    legend(ctx, box, c, [
+      { colour: c.main, label: 'wpm per key' },
+      { colour: c.text, label: 'average ' + Math.round(avgWpm) }
+    ]);
+  }
+
   function legend(ctx, box, c, items) {
     ctx.font = '11px ui-monospace, monospace';
     ctx.textAlign = 'left';
@@ -225,5 +280,5 @@
     ctx.fillText(message, box.w / 2, box.h / 2);
   }
 
-  TT.chart = { results: results, history: history };
+  TT.chart = { results: results, history: history, keySpeed: keySpeed };
 })(window.TT = window.TT || {});

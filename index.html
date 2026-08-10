@@ -229,11 +229,21 @@
     </section>
 
     <section class="panel">
-      <h2>Key accuracy</h2>
-      <p class="panel-sub">Redder keys are the ones you miss most. These feed the adaptive
+      <div class="panel-head">
+        <h2>Keyboard precision</h2>
+        <div class="config-group" id="key-view-toggle" role="group" aria-label="Key metric">
+          <button type="button" class="opt is-on" data-keyview="accuracy" aria-pressed="true">accuracy</button>
+          <button type="button" class="opt" data-keyview="speed" aria-pressed="false">speed</button>
+        </div>
+      </div>
+      <p class="panel-sub" id="key-view-sub">Redder keys are the ones you miss most. These feed the adaptive
          pattern drill.</p>
       <div class="keyboard-host" id="heatmap-host"></div>
       <div class="worst-keys" id="worst-keys"></div>
+      <div class="chart-wrap" id="key-speed-wrap" hidden>
+        <canvas id="key-speed-chart" width="900" height="260" role="img"
+                aria-label="Typing speed for each key, slowest first"></canvas>
+      </div>
     </section>
 
     <details class="panel stat-card" id="card-slow-words">

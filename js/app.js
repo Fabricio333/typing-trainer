@@ -92,6 +92,8 @@
       statTiles: id('stat-tiles'), historyChart: id('history-chart'),
       pbGrid: id('pb-grid'),
       heatmapHost: id('heatmap-host'), worstKeys: id('worst-keys'),
+      keyViewToggle: id('key-view-toggle'), keyViewSub: id('key-view-sub'),
+      keySpeedWrap: id('key-speed-wrap'), keySpeedChart: id('key-speed-chart'),
       slowWords: id('slow-words-body'), slowPatterns: id('slow-patterns-body'),
       slowLessons: id('slow-lessons-body'), historyBody: id('history-body'),
 
@@ -876,6 +878,13 @@
       TT.router.go('test');
       startTest();
     }
+    els.keyViewToggle.addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-keyview]');
+      if (!btn) return;
+      TT.statsview.setKeyView(btn.dataset.keyview);
+      renderStats();
+    });
+
     els.slowLessons.addEventListener('click', function (e) { startLessonRow(e.target); });
     els.slowLessons.addEventListener('keydown', function (e) {
       if (e.key === 'Enter') startLessonRow(e.target);
@@ -889,6 +898,10 @@
       pbGrid: els.pbGrid,
       heatmap: els.heatmapHost,
       worst: els.worstKeys,
+      keyViewToggle: els.keyViewToggle,
+      keyViewSub: els.keyViewSub,
+      keySpeedWrap: els.keySpeedWrap,
+      keySpeedChart: els.keySpeedChart,
       slowWords: els.slowWords,
       slowPatterns: els.slowPatterns,
       slowLessons: els.slowLessons,

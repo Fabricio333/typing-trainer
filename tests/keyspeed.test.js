@@ -87,6 +87,53 @@ test('limit truncates to the slowest N', function () {
   eq(rows[0].pair, 'a9', 'slowest first');
 });
 
+suite('keyspeed / perKey');
+
+test('a pair is a sample for its second key', function () {
+  const map = {
+    th: { n: 2, ms: 2 * 100, best: 90 },
+    ah: { n: 2, ms: 2 * 300, best: 250 },
+    ab: { n: 4, ms: 4 * 200, best: 150 }
+  };
+  const rows = K.perKey(map, { minSamples: 1 });
+  const byKey = {};
+  rows.forEach(r => { byKey[r.key] = r; });
+  eq(Object.keys(byKey).sort(), ['b', 'h']);
+  eq(byKey.h.n, 4);
+  eq(byKey.h.avgMs, 200, 'weighted by sample count, not a mean of means');
+  eq(byKey.h.bestMs, 90);
+});
+
+test('slowest key first, with wpm derived from the average interval', function () {
+  const map = {
+    aq: { n: 3, ms: 3 * 400, best: 380 },
+    ae: { n: 3, ms: 3 * 120, best: 100 }
+  };
+  const rows = K.perKey(map, { minSamples: 1 });
+  eq(rows.map(r => r.key), ['q', 'e']);
+  eq(Math.round(rows[0].wpm), Math.round(60000 / (400 * 5)));
+});
+
+test('keys under the sample floor are left out', function () {
+  const map = { aq: { n: 2, ms: 2 * 400, best: 380 } };
+  eq(K.perKey(map).length, 0, 'default floor is ' + K.DEFAULT_MIN_SAMPLES);
+  eq(K.perKey(map, { minSamples: 2 }).length, 1);
+});
+
+test('limit truncates to the slowest N keys', function () {
+  const map = {};
+  'abcdefgh'.split('').forEach((ch, i) => {
+    map['x' + ch] = { n: 3, ms: 3 * (100 + i * 10), best: 100 };
+  });
+  const rows = K.perKey(map, { limit: 3 });
+  eq(rows.map(r => r.key), ['h', 'g', 'f']);
+});
+
+test('an empty map produces no rows', function () {
+  eq(K.perKey({}), []);
+  eq(K.perKey(null), []);
+});
+
 suite('generator / slowest-combinations lesson');
 
 test('drills the supplied slow pairs', function () {
