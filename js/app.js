@@ -878,12 +878,16 @@
       TT.router.go('test');
       startTest();
     }
-    els.keyViewToggle.addEventListener('click', function (e) {
-      var btn = e.target.closest('[data-keyview]');
-      if (!btn) return;
-      TT.statsview.setKeyView(btn.dataset.keyview);
-      renderStats();
-    });
+    // Guarded: a browser holding a stale index.html would otherwise throw here
+    // and take every listener wired after it down with it.
+    if (els.keyViewToggle) {
+      els.keyViewToggle.addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-keyview]');
+        if (!btn) return;
+        TT.statsview.setKeyView(btn.dataset.keyview);
+        renderStats();
+      });
+    }
 
     els.slowLessons.addEventListener('click', function (e) { startLessonRow(e.target); });
     els.slowLessons.addEventListener('keydown', function (e) {
