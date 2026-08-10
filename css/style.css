@@ -604,7 +604,6 @@ details.stat-card > summary:hover h2 { color: var(--main); }
   color: var(--text);
 }
 .worst-key b { color: var(--error); font-weight: 600; }
-.worst-keys[hidden] { display: none; }
 
 /* Panel heading with a control on the right (the accuracy/speed switch). */
 .panel-head {

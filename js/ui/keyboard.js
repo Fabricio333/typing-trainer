@@ -101,6 +101,14 @@
     });
   }
 
+  /* Both maps write their own custom property, so each has to wipe the other's
+   * before painting or a key keeps the colour of the view you just left. */
+  function resetPaint(el) {
+    el.classList.remove('is-cold');
+    el.style.removeProperty('--heat');
+    el.style.removeProperty('--speed');
+  }
+
   /* Paints each key by miss rate: transparent when clean, saturated when bad. */
   function heatmap(board, keyStats, minSamples) {
     if (!board) return;
@@ -109,8 +117,7 @@
     Object.keys(board.byChar).forEach(function (ch) {
       var el = board.byChar[ch];
       var s = keyStats[ch] || keyStats[ch.toLowerCase()];
-      el.classList.remove('is-cold');
-      el.style.removeProperty('--heat');
+      resetPaint(el);
 
       if (!s) {
         el.classList.add('is-cold');
@@ -131,11 +138,47 @@
     });
   }
 
+  /* Paints each key by how fast it comes out. The scale is relative to this
+   * typist's own range — fastest key to slowest key — because an absolute
+   * wpm scale paints a beginner's whole board red and an expert's whole board
+   * orange, and neither tells them which key to work on next.
+   *
+   * `rows` is what keyspeed.perKey() returns. */
+  function speedmap(board, rows) {
+    if (!board) return;
+    var byKey = {};
+    (rows || []).forEach(function (r) { byKey[r.key] = r; });
+
+    var times = (rows || []).map(function (r) { return r.avgMs; });
+    var fastest = times.length ? Math.min.apply(null, times) : 0;
+    var slowest = times.length ? Math.max.apply(null, times) : 0;
+    var span = slowest - fastest;
+
+    Object.keys(board.byChar).forEach(function (ch) {
+      var el = board.byChar[ch];
+      var r = byKey[ch] || byKey[ch.toLowerCase()];
+      resetPaint(el);
+
+      if (!r) {
+        el.classList.add('is-cold');
+        el.title = (FINGER_LABEL[el.dataset.finger] || '') + ' — no timing yet';
+        return;
+      }
+      // A single ranked key (or a dead-flat range) has nothing to be relative
+      // to, so it sits mid-scale rather than being called the slowest.
+      var t = span > 0 ? (r.avgMs - fastest) / span : 0.5;
+      el.style.setProperty('--speed', t.toFixed(3));
+      el.title = ch + ' — ' + Math.round(r.wpm) + ' wpm (' +
+        Math.round(r.avgMs) + 'ms) over ' + r.n + ' timed presses';
+    });
+  }
+
   TT.keyboard = {
     build: build,
     highlight: highlight,
     flash: flash,
     heatmap: heatmap,
+    speedmap: speedmap,
     FINGER_LABEL: FINGER_LABEL
   };
 })(window.TT = window.TT || {});

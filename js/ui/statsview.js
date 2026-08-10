@@ -9,8 +9,9 @@
   var KEY_VIEW_SUB = {
     accuracy: 'Redder keys are the ones you miss most. These feed the adaptive ' +
               'pattern drill.',
-    speed: 'How fast each key comes out once the previous one is down, slowest ' +
-           'first. Timed from clean in-word keystrokes only.'
+    speed: 'How fast each key comes out once the previous one is down, shaded ' +
+           'against your own fastest and slowest. Timed from clean in-word ' +
+           'keystrokes only.'
   };
 
   function setKeyView(mode) {
@@ -103,19 +104,28 @@
         b.setAttribute('aria-pressed', String(on));
       });
     }
-    els.heatmap.hidden = speedView;
-    els.worst.hidden = speedView;
     if (els.keySpeedWrap) els.keySpeedWrap.hidden = !speedView;
+    if (els.keyScale) els.keyScale.hidden = !speedView;
+
+    // The board is shared by both maps — same layout, different paint. Rebuild
+    // only when the layout (language or explicit choice) changes.
+    var layout = TT.data.layouts.resolve(TT.settings.get('keyboardLayout'), lang);
+    if (!heatBoard || heatBoard.layout.id !== layout.id) {
+      heatBoard = TT.keyboard.build(els.heatmap, layout, { fingerColors: false });
+    }
 
     if (speedView) {
-      TT.chart.keySpeed(els.keySpeedChart,
-        TT.keyspeed.keys(lang, 40, TT.keyspeed.DEFAULT_MIN_SAMPLES));
+      var speeds = TT.keyspeed.keys(lang, 0, TT.keyspeed.DEFAULT_MIN_SAMPLES);
+      TT.keyboard.speedmap(heatBoard, speeds);
+      TT.chart.keySpeed(els.keySpeedChart, speeds.slice(0, 40));
+
+      els.worst.innerHTML = speeds.length === 0
+        ? '<span class="tile-sub">Finish a few tests and your slowest keys will show up here.</span>'
+        : speeds.slice(0, 8).map(function (r) {
+            return '<span class="worst-key">' + escapeHtml(r.key) +
+              ' <b>' + Math.round(r.wpm) + '</b> wpm</span>';
+          }).join('');
     } else {
-      // Rebuild when the layout (language or explicit choice) changes.
-      var layout = TT.data.layouts.resolve(TT.settings.get('keyboardLayout'), lang);
-      if (!heatBoard || heatBoard.layout.id !== layout.id) {
-        heatBoard = TT.keyboard.build(els.heatmap, layout, { fingerColors: false });
-      }
       var keys = keyStats();
       TT.keyboard.heatmap(heatBoard, keys);
 

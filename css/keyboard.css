@@ -108,6 +108,35 @@
 }
 .kb-key.is-cold { opacity: 0.4; }
 
+/* Speed map: --speed runs 0 (your fastest key) to 1 (your slowest), so the
+ * scale always spans the hand in front of it rather than an absolute wpm that
+ * would leave a beginner's board uniformly red. */
+.kb-key[style*='--speed'] {
+  background: color-mix(in srgb, var(--error) calc(var(--speed) * 75%), var(--surface));
+  border-color: color-mix(in srgb, var(--error) calc(var(--speed) * 60%), var(--border));
+  color: var(--text);
+}
+
+/* The scale legend under the board, so the colours mean something. */
+.kb-scale {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  color: var(--sub);
+  font-size: 0.8rem;
+}
+.kb-scale[hidden] { display: none; }
+.kb-scale-bar {
+  flex: 1;
+  max-width: 16rem;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(to right, var(--surface),
+              color-mix(in srgb, var(--error) 75%, var(--surface)));
+  border: 1px solid var(--border);
+}
+
 @media (max-width: 700px) {
   .kb { gap: 0.2rem; }
   .kb-row { gap: 0.2rem; }
