@@ -27,6 +27,9 @@
     time: 'timeValue', words: 'wordsValue', quote: 'quoteLength',
     patterns: 'patternKind', hardest: 'drillSize'
   };
+  // What the "hardest" mode can drill: your slowest words, keys, key
+  // combinations, or the quote that works your slow spots hardest.
+  var HARDEST_KINDS = ['words', 'keys', 'combos', 'quotes'];
 
   /* The hardest-words drill deliberately freezes its set for the session.
    *
@@ -75,6 +78,7 @@
       configValues: id('config-values'),
       configSepValues: id('config-sep-values'),
       restartBtn: id('restart-btn'),
+      skipBtn: id('skip-btn'),
       keyboardHost: id('keyboard-host'),
       langToggle: id('lang-toggle'),
       langLabel: id('lang-label'),
@@ -108,6 +112,7 @@
     cache();
     TT.settings.load();
     TT.settings.apply();
+    TT.i18n.apply();
 
     TT.render.mount({ words: els.words, caret: els.caret, window: els.window });
     TT.results.mount({
@@ -406,13 +411,7 @@
         });
 
       case 'hardest':
-        var set = ensureDrillSet();
-        // Nothing ranked yet: fall back to ordinary words so the screen still
-        // works. renderDrillPanel explains why there is no drill.
-        if (!set.length) {
-          return TT.generator.words({ lang: lang, count: count || 25, poolSize: s.poolSize });
-        }
-        return TT.generator.drill(set, count || (s.drillSize || 20) * 2);
+        return hardestDrill(count);
 
       case 'words':
         return TT.generator.words({
@@ -426,6 +425,67 @@
           punctuation: s.punctuation, numbers: s.numbers
         });
     }
+  }
+
+  /* ── hardest-* drills ──────────────────────────────────────────── */
+
+  /* Serves whichever weakness the learner picked for the hardest mode. Every
+   * kind falls back to ordinary words until there is enough history to rank.
+   * context.keyDrill, set from the stats screen, narrows the keys kind to a
+   * specific key instead of the five slowest. */
+  function hardestDrill(count) {
+    var s = TT.settings.all();
+    var lang = s.lang;
+    var kind = context.keyDrill ? 'keys' : (s.hardestKind || 'words');
+
+    if (kind === 'keys') {
+      var keys = context.keyDrill ||
+        TT.keyspeed.keys(lang, 5).map(function (r) { return r.key; });
+      if (keys.length) {
+        // The learner's slowest transitions into these keys join the drill.
+        var into = TT.keyspeed.slowest(lang, 0).filter(function (r) {
+          return keys.indexOf(r.pair.charAt(1)) !== -1;
+        }).slice(0, 10).map(function (r) { return r.pair; });
+        var list = TT.generator.keyDrill({ lang: lang, keys: keys, pairs: into, count: count || 40 });
+        if (list.length) {
+          context.quoteSource = (keys.length === 1
+            ? TT.i18n.t('drill.keyLabel')
+            : TT.i18n.t('drill.slowKeysLabel')) + ': ' + keys.join(' · ');
+          return list;
+        }
+      }
+    }
+
+    if (kind === 'combos') {
+      var pairs = TT.keyspeed.slowest(lang, 12).map(function (r) { return r.pair; });
+      if (pairs.length) {
+        var combo = TT.generator.pairDrill({ lang: lang, pairs: pairs, count: count || 40 });
+        if (combo.length) {
+          context.quoteSource = TT.i18n.t('drill.slowCombosLabel') + ': ' + pairs.slice(0, 6).join(' ');
+          return combo;
+        }
+      }
+    }
+
+    if (kind === 'quotes') {
+      var slow = TT.keyspeed.slowest(lang, 12).map(function (r) { return r.pair; });
+      var q = TT.generator.hardestQuote({ lang: lang, pairs: slow, avoid: recentQuotes });
+      if (q.words.length) {
+        context.quoteSource = q.source;
+        recentQuotes.push(q.text);
+        if (recentQuotes.length > 10) recentQuotes.shift();
+        return q.words;
+      }
+    }
+
+    if (kind === 'words') {
+      var set = ensureDrillSet();
+      // Nothing ranked yet: fall back to ordinary words so the screen still
+      // works. renderDrillPanel explains why there is no drill.
+      if (set.length) return TT.generator.drill(set, count || (s.drillSize || 20) * 2);
+    }
+
+    return TT.generator.words({ lang: lang, count: count || 25, poolSize: s.poolSize });
   }
 
   /* ── hardest-words drill ───────────────────────────────────────── */
@@ -456,7 +516,8 @@
   }
 
   function renderDrillPanel() {
-    var isDrill = TT.settings.get('mode') === 'hardest' && !context.lessonDef;
+    var isDrill = TT.settings.get('mode') === 'hardest' && !context.lessonDef &&
+      !context.keyDrill && (TT.settings.get('hardestKind') || 'words') === 'words';
     els.drillPanel.hidden = !isDrill;
     els.drillEmpty.hidden = true;
     if (!isDrill) return;
@@ -519,9 +580,14 @@
     stopTick();
     pausedMs = 0;
     blurredAt = null;
+    var list = words;
+    if (!list) {
+      // Freshly drawn content sets its own source label; a stale one from the
+      // previous test must not survive into it.
+      context.quoteSource = null;
+      list = buildWords();
+    }
     context.quoteSource = context.quoteSource || null;
-
-    var list = words || buildWords();
     if (!list.length) list = ['the'];
     lastWords = list.slice();
 
@@ -585,6 +651,26 @@
     startTest();
   }
 
+  /* Skips the current text without finishing it: a lesson jumps ahead to the
+   * next one on the track — deliberately allowed even before a pass — and
+   * every other mode simply draws fresh content (the next quote, a new set of
+   * words). */
+  function skip() {
+    if (context.lessonDef) {
+      var lang = TT.settings.get('lang');
+      var found = TT.lessons.find(lang, context.lessonDef.id);
+      var track = TT.lessons.track(lang);
+      if (!found || found.index + 1 >= track.length) {
+        toast(TT.i18n.t('skip.lastLesson'));
+        return;
+      }
+      context.lessonDef = track[found.index + 1];
+      context.lessonIndex = found.index + 1;
+      toast(TT.i18n.t('skip.skippedTo') + ': ' + context.lessonDef.title);
+    }
+    startTest();
+  }
+
   function nextTest() {
     // After a passed lesson, "next" advances the track instead of replaying.
     if (context.lessonDef && context.lessonNext) {
@@ -645,10 +731,11 @@
           context.lessonNext = track[found.index + 1];
         }
       }
-      els.resAgainLabel.textContent = context.lessonNext ? 'next lesson'
-        : TT.lessons.passed(context.lessonDef.id) ? 'repeat lesson' : 'try again';
+      els.resAgainLabel.textContent = context.lessonNext ? TT.i18n.t('res.nextLesson')
+        : TT.lessons.passed(context.lessonDef.id) ? TT.i18n.t('res.repeatLesson')
+        : TT.i18n.t('res.tryAgain');
     } else {
-      els.resAgainLabel.textContent = 'next test';
+      els.resAgainLabel.textContent = TT.i18n.t('res.next');
     }
 
     var record = TT.results.toRecord(summary, ctx);
@@ -667,7 +754,11 @@
       // The per-word history only wants real words: finger drills and pattern
       // practice type random letter chunks, which would otherwise surface in
       // the hardest-words drill as gibberish.
+      var hardestKind = TT.settings.get('hardestKind') || 'words';
       var chunkText = state.mode.type === 'patterns' ||
+        // Key and combination drills mix bare letter pairs into the text.
+        (state.mode.type === 'hardest' &&
+          (context.keyDrill || hardestKind === 'keys' || hardestKind === 'combos')) ||
         !!(context.lessonDef &&
            (context.lessonDef.chars || context.lessonDef.patterns || context.lessonDef.slowest));
       if (!chunkText) {
@@ -691,7 +782,13 @@
 
       if (btn.dataset.mode) {
         context.lessonDef = null;
+        context.keyDrill = null;
         TT.settings.set('mode', btn.dataset.mode);
+        renderConfig();
+        startTest();
+      } else if (btn.dataset.kind) {
+        context.keyDrill = null;
+        TT.settings.set('hardestKind', btn.dataset.kind);
         renderConfig();
         startTest();
       } else if (btn.dataset.toggle) {
@@ -708,6 +805,7 @@
     });
 
     els.restartBtn.addEventListener('click', restart);
+    els.skipBtn.addEventListener('click', skip);
 
     els.drillRepick.addEventListener('click', function () {
       pickDrillSet();
@@ -737,22 +835,6 @@
       b.setAttribute('aria-pressed', String(on));
     });
 
-    var values = VALUES[s.mode];
-    els.configValues.innerHTML = '';
-    els.configValues.hidden = !values;
-    els.configSepValues.hidden = !values;
-    if (!values) return;
-
-    var active = s[VALUE_KEY[s.mode]];
-    values.forEach(function (pair) {
-      var btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'opt' + (pair[0] === active ? ' is-on' : '');
-      btn.dataset.value = pair[0];
-      btn.textContent = pair[1];
-      els.configValues.appendChild(btn);
-    });
-
     // Punctuation and numbers only mean anything for generated word lists.
     var generated = s.mode === 'time' || s.mode === 'words' || s.mode === 'zen';
     Array.prototype.forEach.call(els.configBar.querySelectorAll('[data-toggle]'), function (b) {
@@ -760,6 +842,49 @@
     });
     // Hide the divider too, or it leaves a gap where the toggles were.
     els.configSepToggles.hidden = !generated;
+
+    els.configValues.innerHTML = '';
+    var hardest = s.mode === 'hardest';
+    var values = VALUES[s.mode];
+
+    // The hardest mode picks what to drill first; a set size only applies to
+    // the words kind.
+    if (hardest) {
+      var activeKind = s.hardestKind || 'words';
+      HARDEST_KINDS.forEach(function (kind) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'opt' + (kind === activeKind ? ' is-on' : '');
+        btn.dataset.kind = kind;
+        btn.textContent = TT.i18n.t('kind.' + kind);
+        els.configValues.appendChild(btn);
+      });
+      if (activeKind !== 'words') values = null;
+    }
+
+    if (values) {
+      if (hardest) {
+        var sep = document.createElement('span');
+        sep.className = 'config-sep';
+        sep.setAttribute('aria-hidden', 'true');
+        els.configValues.appendChild(sep);
+      }
+      var active = s[VALUE_KEY[s.mode]];
+      values.forEach(function (pair) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'opt' + (pair[0] === active ? ' is-on' : '');
+        btn.dataset.value = pair[0];
+        btn.textContent = s.mode === 'quote' ? TT.i18n.t('len.' + pair[0])
+          : s.mode === 'patterns' ? TT.i18n.t('pat.' + pair[0])
+          : pair[1];
+        els.configValues.appendChild(btn);
+      });
+    }
+
+    var showValues = hardest || !!values;
+    els.configValues.hidden = !showValues;
+    els.configSepValues.hidden = !showValues;
   }
 
   function syncKeyboard() {
@@ -781,12 +906,15 @@
   function onSettingChange(key) {
     if (key === 'lang') {
       els.langLabel.textContent = TT.settings.get('lang').toUpperCase();
+      TT.i18n.apply();
       TT.statsview.invalidateLayout();
       board = null;
       context.lessonDef = null;
+      context.keyDrill = null;
       drillSet = null;   // word history is per language
-      if (TT.router.current() === 'test') startTest();
+      if (TT.router.current() === 'test') { renderConfig(); startTest(); }
       if (TT.router.current() === 'lessons') renderLessons();
+      if (TT.router.current() === 'stats') renderStats();
     }
     if (key === 'showKeyboard' || key === 'fingerColors' || key === 'keyboardLayout') {
       if (key === 'keyboardLayout') TT.statsview.invalidateLayout();
@@ -853,7 +981,9 @@
   function wireStatsActions() {
     document.getElementById('practice-slow-words').addEventListener('click', function () {
       context.lessonDef = null;
+      context.keyDrill = null;
       TT.settings.set('mode', 'hardest');
+      TT.settings.set('hardestKind', 'words');
       pickDrillSet();
       TT.router.go('test');
       startTest();
@@ -865,8 +995,35 @@
       if (!found) return;
       context.lessonDef = found.def;
       context.lessonIndex = found.index;
+      context.keyDrill = null;
       TT.router.go('test');
       startTest();
+    });
+
+    /* A session over specific keys. Passing null means the five slowest,
+     * re-picked on every restart; a single key comes from its stats chip. */
+    function startKeyDrill(keysOverride) {
+      if (!TT.keyspeed.keys(TT.settings.get('lang'), 1).length && !keysOverride) {
+        toast(TT.i18n.t('drill.noKeyHistory'));
+        return;
+      }
+      context.lessonDef = null;
+      context.keyDrill = keysOverride || null;
+      TT.settings.set('mode', 'hardest');
+      TT.settings.set('hardestKind', 'keys');
+      TT.router.go('test');
+      renderConfig();
+      startTest();
+    }
+
+    document.getElementById('practice-slow-keys').addEventListener('click', function () {
+      startKeyDrill(null);
+    });
+
+    // Every "worst key" chip is a launch pad for a session on that one key.
+    els.worstKeys.addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-key]');
+      if (btn) startKeyDrill([btn.dataset.key]);
     });
 
     function startLessonRow(target) {

@@ -597,11 +597,17 @@ details.stat-card > summary:hover h2 { color: var(--main); }
 }
 .worst-key {
   background: var(--surface-2);
+  border: 0;
   border-radius: 6px;
   padding: 0.4rem 0.7rem;
   font-family: var(--mono);
   font-size: 0.85rem;
   color: var(--text);
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+.worst-key:hover {
+  background: color-mix(in srgb, var(--main) 20%, var(--surface-2));
 }
 .worst-key b { color: var(--error); font-weight: 600; }
 

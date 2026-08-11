@@ -62,7 +62,7 @@
 </head>
 <body>
 
-<a class="skip-link" href="#main">Skip to content</a>
+<a class="skip-link" href="#main" data-i18n="a11y.skip">Skip to content</a>
 
 <header class="topbar">
   <a class="brand" href="#/test" aria-label="Typing Trainer home">
@@ -71,10 +71,10 @@
   </a>
 
   <nav class="nav" aria-label="Main">
-    <a href="#/test"     data-nav="test">test</a>
-    <a href="#/lessons"  data-nav="lessons">lessons</a>
-    <a href="#/stats"    data-nav="stats">stats</a>
-    <a href="#/settings" data-nav="settings">settings</a>
+    <a href="#/test"     data-nav="test"     data-i18n="nav.test">test</a>
+    <a href="#/lessons"  data-nav="lessons"  data-i18n="nav.lessons">lessons</a>
+    <a href="#/stats"    data-nav="stats"    data-i18n="nav.stats">stats</a>
+    <a href="#/settings" data-nav="settings" data-i18n="nav.settings">settings</a>
   </nav>
 
   <div class="topbar-tools">
@@ -92,17 +92,17 @@
 
     <div class="config" id="config-bar">
       <div class="config-group" role="group" aria-label="Content options">
-        <button type="button" class="opt" data-toggle="punctuation" aria-pressed="false">@ punctuation</button>
-        <button type="button" class="opt" data-toggle="numbers" aria-pressed="false"># numbers</button>
+        <button type="button" class="opt" data-toggle="punctuation" aria-pressed="false" data-i18n="cfg.punctuation">@ punctuation</button>
+        <button type="button" class="opt" data-toggle="numbers" aria-pressed="false" data-i18n="cfg.numbers"># numbers</button>
       </div>
       <div class="config-sep" id="config-sep-toggles" aria-hidden="true"></div>
       <div class="config-group" role="group" aria-label="Test mode">
-        <button type="button" class="opt" data-mode="time">time</button>
-        <button type="button" class="opt" data-mode="words">words</button>
-        <button type="button" class="opt" data-mode="quote">quote</button>
-        <button type="button" class="opt" data-mode="patterns">patterns</button>
-        <button type="button" class="opt" data-mode="hardest">hardest words</button>
-        <button type="button" class="opt" data-mode="zen">zen</button>
+        <button type="button" class="opt" data-mode="time" data-i18n="mode.time">time</button>
+        <button type="button" class="opt" data-mode="words" data-i18n="mode.words">words</button>
+        <button type="button" class="opt" data-mode="quote" data-i18n="mode.quote">quote</button>
+        <button type="button" class="opt" data-mode="patterns" data-i18n="mode.patterns">patterns</button>
+        <button type="button" class="opt" data-mode="hardest" data-i18n="mode.hardest">hardest</button>
+        <button type="button" class="opt" data-mode="zen" data-i18n="mode.zen">zen</button>
       </div>
       <div class="config-sep" id="config-sep-values" aria-hidden="true"></div>
       <div class="config-group" id="config-values" role="group" aria-label="Test length"></div>
@@ -133,7 +133,7 @@
         </div>
 
         <div class="focus-veil" id="focus-veil">
-          <span>click here or press any key to focus</span>
+          <span data-i18n="test.focus">click here or press any key to focus</span>
         </div>
       </div>
 
@@ -142,10 +142,10 @@
       <section class="drill" id="drill-panel" hidden>
         <header class="drill-head">
           <div>
-            <h2 class="drill-title">Your hardest words</h2>
+            <h2 class="drill-title" data-i18n="test.drillTitle">Your hardest words</h2>
             <p class="drill-sub" id="drill-sub"></p>
           </div>
-          <button type="button" class="ghost-btn" id="drill-repick">pick a new set</button>
+          <button type="button" class="ghost-btn" id="drill-repick" data-i18n="test.drillRepick">pick a new set</button>
         </header>
         <div class="drill-words" id="drill-words"></div>
       </section>
@@ -153,10 +153,13 @@
       <p class="drill-empty" id="drill-empty" hidden></p>
 
       <div class="stage-actions">
-        <button type="button" class="ghost-btn" id="restart-btn" title="Restart (Tab)">
-          <span aria-hidden="true">↻</span> restart
+        <button type="button" class="ghost-btn" id="restart-btn" title="Restart (Tab)" data-i18n-title="test.restartTitle">
+          <span aria-hidden="true">↻</span> <span data-i18n="test.restart">restart</span>
         </button>
-        <span class="hint" id="restart-hint"><kbd>Tab</kbd> restart · <kbd>Ctrl</kbd>+<kbd>⌫</kbd> delete word · <kbd>Esc</kbd> menu</span>
+        <button type="button" class="ghost-btn" id="skip-btn" title="Skip to the next text" data-i18n-title="test.skipTitle">
+          <span aria-hidden="true">»</span> <span data-i18n="test.skip">skip</span>
+        </button>
+        <span class="hint" id="restart-hint" data-i18n="test.hint"><kbd>Tab</kbd> restart · <kbd>Ctrl</kbd>+<kbd>⌫</kbd> delete word · <kbd>Esc</kbd> menu</span>
       </div>
     </div>
 
@@ -168,11 +171,11 @@
     <div class="results">
       <div class="results-head">
         <div class="score">
-          <div class="score-label">wpm</div>
+          <div class="score-label" data-i18n="res.wpm">wpm</div>
           <div class="score-value" id="res-wpm">0</div>
         </div>
         <div class="score">
-          <div class="score-label">accuracy</div>
+          <div class="score-label" data-i18n="res.acc">accuracy</div>
           <div class="score-value" id="res-acc">0%</div>
         </div>
         <div class="results-meta" id="res-meta"></div>
@@ -187,8 +190,8 @@
 
       <div class="results-actions">
         <button type="button" class="primary-btn" id="res-again"><span id="res-again-label">next test</span> <kbd>Enter</kbd></button>
-        <button type="button" class="ghost-btn" id="res-repeat">repeat same text</button>
-        <button type="button" class="ghost-btn" id="res-back">back to menu <kbd>Esc</kbd></button>
+        <button type="button" class="ghost-btn" id="res-repeat" data-i18n="res.repeat">repeat same text</button>
+        <button type="button" class="ghost-btn" id="res-back"><span data-i18n="res.back">back to menu</span> <kbd>Esc</kbd></button>
       </div>
       <p class="results-note" id="res-note" hidden></p>
       <p class="results-prev" id="res-prev" hidden></p>
@@ -198,8 +201,8 @@
   <!-- ────────────────────────── LESSONS ───────────────────────── -->
   <section class="view" id="view-lessons" data-view="lessons">
     <header class="view-head">
-      <h1>Lessons</h1>
-      <p class="view-sub">Work through these in order. Each one unlocks the next once you
+      <h1 data-i18n="lessons.title">Lessons</h1>
+      <p class="view-sub" data-i18n="lessons.sub">Work through these in order. Each one unlocks the next once you
          hit its target speed and accuracy.</p>
     </header>
     <div class="lesson-progress" id="lesson-progress"></div>
@@ -209,14 +212,14 @@
   <!-- ─────────────────────────── STATS ────────────────────────── -->
   <section class="view" id="view-stats" data-view="stats">
     <header class="view-head">
-      <h1>Your statistics</h1>
-      <p class="view-sub">Everything below is stored only in this browser.</p>
+      <h1 data-i18n="stats.title">Your statistics</h1>
+      <p class="view-sub" data-i18n="stats.sub">Everything below is stored only in this browser.</p>
     </header>
 
     <div class="stat-tiles" id="stat-tiles"></div>
 
     <section class="panel">
-      <h2>Speed over time</h2>
+      <h2 data-i18n="stats.trend">Speed over time</h2>
       <div class="chart-wrap">
         <canvas id="history-chart" width="900" height="240" role="img"
                 aria-label="Words per minute across your recent tests"></canvas>
@@ -224,44 +227,47 @@
     </section>
 
     <section class="panel">
-      <h2>Personal bests</h2>
+      <h2 data-i18n="stats.bests">Personal bests</h2>
       <div class="pb-grid" id="pb-grid"></div>
     </section>
 
     <section class="panel">
       <div class="panel-head">
-        <h2>Keyboard precision</h2>
+        <h2 data-i18n="stats.keys">Keyboard precision</h2>
         <div class="config-group" id="key-view-toggle" role="group" aria-label="Key metric">
-          <button type="button" class="opt is-on" data-keyview="accuracy" aria-pressed="true">accuracy</button>
-          <button type="button" class="opt" data-keyview="speed" aria-pressed="false">speed</button>
+          <button type="button" class="opt is-on" data-keyview="accuracy" aria-pressed="true" data-i18n="stats.keys.accuracy">accuracy</button>
+          <button type="button" class="opt" data-keyview="speed" aria-pressed="false" data-i18n="stats.keys.speed">speed</button>
         </div>
       </div>
       <p class="panel-sub" id="key-view-sub">Redder keys are the ones you miss most. These feed the adaptive
          pattern drill.</p>
       <div class="keyboard-host" id="heatmap-host"></div>
       <div class="kb-scale" id="key-scale" hidden>
-        <span>fastest</span>
+        <span data-i18n="stats.fastest">fastest</span>
         <span class="kb-scale-bar" aria-hidden="true"></span>
-        <span>slowest</span>
+        <span data-i18n="stats.slowest">slowest</span>
       </div>
       <div class="worst-keys" id="worst-keys"></div>
       <div class="chart-wrap" id="key-speed-wrap" hidden>
         <canvas id="key-speed-chart" width="900" height="260" role="img"
                 aria-label="Typing speed for each key, slowest first"></canvas>
       </div>
+      <div class="card-actions">
+        <button type="button" class="ghost-btn" id="practice-slow-keys" data-i18n="stats.drillKeys">drill your 5 slowest keys →</button>
+      </div>
     </section>
 
     <details class="panel stat-card" id="card-slow-words">
-      <summary><h2>Slowest words</h2></summary>
-      <p class="panel-sub">Ranked by time per character, so long words are not
+      <summary><h2 data-i18n="stats.slowWords">Slowest words</h2></summary>
+      <p class="panel-sub" data-i18n="stats.slowWordsSub">Ranked by time per character, so long words are not
          penalised for being long. These are what the "hardest words" drill uses.</p>
       <div class="card-actions">
-        <button type="button" class="ghost-btn" id="practice-slow-words">drill these words →</button>
+        <button type="button" class="ghost-btn" id="practice-slow-words" data-i18n="stats.drillWords">drill these words →</button>
       </div>
       <div class="table-scroll">
         <table class="history-table">
           <thead>
-            <tr><th>word</th><th>wpm</th><th>avg</th><th>best</th><th>typed</th><th>missed</th></tr>
+            <tr><th data-i18n="th.word">word</th><th data-i18n="th.wpm">wpm</th><th data-i18n="th.avg">avg</th><th data-i18n="th.best">best</th><th data-i18n="th.typed">typed</th><th data-i18n="th.missed">missed</th></tr>
           </thead>
           <tbody id="slow-words-body"></tbody>
         </table>
@@ -269,16 +275,16 @@
     </details>
 
     <details class="panel stat-card" id="card-slow-patterns">
-      <summary><h2>Slowest patterns</h2></summary>
-      <p class="panel-sub">Key-to-key transitions, ranked by the average gap between
-         the two presses. These are what the "slowest combinations" lesson drills.</p>
+      <summary><h2 data-i18n="stats.slowPatterns">Slowest patterns</h2></summary>
+      <p class="panel-sub" data-i18n="stats.slowPatternsSub">Key-to-key transitions, ranked by the average gap between
+         the two presses. The combinations drill practises them inside real words.</p>
       <div class="card-actions">
-        <button type="button" class="ghost-btn" id="practice-slow-patterns">drill these combinations →</button>
+        <button type="button" class="ghost-btn" id="practice-slow-patterns" data-i18n="stats.drillPatterns">drill these combinations →</button>
       </div>
       <div class="table-scroll">
         <table class="history-table">
           <thead>
-            <tr><th>pair</th><th>wpm</th><th>avg gap</th><th>best</th><th>typed</th></tr>
+            <tr><th data-i18n="th.pair">pair</th><th data-i18n="th.wpm">wpm</th><th data-i18n="th.gap">avg gap</th><th data-i18n="th.best">best</th><th data-i18n="th.typed">typed</th></tr>
           </thead>
           <tbody id="slow-patterns-body"></tbody>
         </table>
@@ -286,13 +292,13 @@
     </details>
 
     <details class="panel stat-card" id="card-slow-lessons">
-      <summary><h2>Slowest lessons</h2></summary>
-      <p class="panel-sub">Every lesson you have attempted, slowest personal best first.
+      <summary><h2 data-i18n="stats.slowLessons">Slowest lessons</h2></summary>
+      <p class="panel-sub" data-i18n="stats.slowLessonsSub">Every lesson you have attempted, slowest personal best first.
          Click one to practise it again.</p>
       <div class="table-scroll">
         <table class="history-table">
           <thead>
-            <tr><th>lesson</th><th>best wpm</th><th>best acc</th><th>stars</th><th>attempts</th></tr>
+            <tr><th data-i18n="th.lesson">lesson</th><th data-i18n="th.bestWpm">best wpm</th><th data-i18n="th.bestAcc">best acc</th><th data-i18n="th.stars">stars</th><th data-i18n="th.attempts">attempts</th></tr>
           </thead>
           <tbody id="slow-lessons-body"></tbody>
         </table>
@@ -300,11 +306,11 @@
     </details>
 
     <details class="panel stat-card" id="card-history">
-      <summary><h2>Recent tests</h2></summary>
+      <summary><h2 data-i18n="stats.recent">Recent tests</h2></summary>
       <div class="table-scroll">
         <table class="history-table">
           <thead>
-            <tr><th>when</th><th>mode</th><th>wpm</th><th>acc</th><th>consistency</th></tr>
+            <tr><th data-i18n="th.when">when</th><th data-i18n="th.mode">mode</th><th data-i18n="th.wpm">wpm</th><th data-i18n="th.acc">acc</th><th data-i18n="th.consistency">consistency</th></tr>
           </thead>
           <tbody id="history-body"></tbody>
         </table>
@@ -315,22 +321,22 @@
   <!-- ────────────────────────── SETTINGS ──────────────────────── -->
   <section class="view" id="view-settings" data-view="settings">
     <header class="view-head">
-      <h1>Settings</h1>
-      <p class="view-sub">Saved automatically in this browser.</p>
+      <h1 data-i18n="set.title">Settings</h1>
+      <p class="view-sub" data-i18n="set.sub">Saved automatically in this browser.</p>
     </header>
     <div class="settings-grid" id="settings-grid"></div>
 
     <section class="panel">
-      <h2>Your data</h2>
-      <p class="panel-sub">Results, lesson progress and settings live in this browser's
+      <h2 data-i18n="set.data">Your data</h2>
+      <p class="panel-sub" data-i18n="set.dataSub">Results, lesson progress and settings live in this browser's
          local storage. Export them to move to another machine.</p>
       <div class="settings-actions">
-        <button type="button" class="ghost-btn" id="data-export">export as JSON</button>
-        <button type="button" class="ghost-btn" id="data-import">import from JSON</button>
-        <button type="button" class="ghost-btn danger" id="data-reset">reset everything</button>
+        <button type="button" class="ghost-btn" id="data-export" data-i18n="set.export">export as JSON</button>
+        <button type="button" class="ghost-btn" id="data-import" data-i18n="set.import">import from JSON</button>
+        <button type="button" class="ghost-btn danger" id="data-reset" data-i18n="set.reset">reset everything</button>
       </div>
       <input type="file" id="import-file" accept="application/json,.json" hidden>
-      <p class="storage-warning" id="storage-warning" hidden>
+      <p class="storage-warning" id="storage-warning" hidden data-i18n="set.storageWarning">
         This browser is blocking local storage, so your progress will be lost when you
         close the tab.
       </p>
@@ -371,6 +377,7 @@
 <script src="js/ui/sound.js"></script>
 <script src="js/ui/results.js"></script>
 <script src="js/ui/settings.js"></script>
+<script src="js/ui/i18n.js"></script>
 <script src="js/ui/lessons.js"></script>
 <script src="js/ui/statsview.js"></script>
 <script src="js/ui/router.js"></script>

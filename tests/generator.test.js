@@ -170,3 +170,53 @@ test('a fixed-text lesson is used verbatim', function () {
   const w = G.lesson({ text: 'the quick brown fox' }, {});
   eq(w, ['the', 'quick', 'brown', 'fox']);
 });
+
+suite('generator / weakness drills');
+
+test('pairDrill mixes the pairs themselves with words containing them', function () {
+  const w = G.pairDrill({ lang: 'en', pairs: ['th'], count: 40, random: seeded(5) });
+  eq(w.length, 40);
+  ok(w.indexOf('th') !== -1, 'the bare pair should appear');
+  ok(w.some(function (x) { return x.length > 2 && x.indexOf('th') !== -1; }),
+    'a real word containing the pair should appear');
+  ok(w.every(function (x) { return x === 'th' || x.indexOf('th') !== -1; }),
+    'everything in the drill should exercise the pair');
+});
+
+test('pairDrill with no pairs returns nothing', function () {
+  eq(G.pairDrill({ lang: 'en', pairs: [], random: seeded(1) }), []);
+});
+
+test('a slowest lesson practises the pairs in word context', function () {
+  const w = G.lesson({ slowest: true }, { lang: 'en', count: 30, slowest: ['he'], random: seeded(2) });
+  eq(w.length, 30);
+  ok(w.every(function (x) { return x.indexOf('he') !== -1; }));
+});
+
+test('keyDrill only serves words that exercise the requested keys', function () {
+  const w = G.keyDrill({ lang: 'en', keys: ['w', 'z'], pairs: ['ow'], count: 30, random: seeded(9) });
+  eq(w.length, 30);
+  ok(w.every(function (x) {
+    return x.indexOf('w') !== -1 || x.indexOf('z') !== -1;
+  }), 'every entry should contain one of the drilled keys');
+});
+
+test('keyDrill with no keys and no pairs returns nothing', function () {
+  eq(G.keyDrill({ lang: 'en', keys: [], random: seeded(1) }), []);
+});
+
+test('hardestQuote prefers the quote densest in the given pairs', function () {
+  const quotes = global.TT.data.quotes.en;
+  const q = G.hardestQuote({ lang: 'en', pairs: ['zz'], random: seeded(1) });
+  ok(q.words.length > 0, 'always returns a quote even when nothing matches');
+  // A pair taken from one specific quote must rank that quote into the top picks.
+  const target = quotes[0].text.toLowerCase().slice(0, 2);
+  const picked = G.hardestQuote({ lang: 'en', pairs: [target], random: seeded(1) });
+  ok(picked.text.toLowerCase().indexOf(target) !== -1);
+});
+
+test('hardestQuote avoids recently seen quotes', function () {
+  const all = global.TT.data.quotes.en.map(function (q) { return q.text; });
+  const q = G.hardestQuote({ lang: 'en', pairs: [], avoid: all.slice(1), random: seeded(4) });
+  eq(q.text, all[0]);
+});

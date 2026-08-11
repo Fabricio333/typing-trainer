@@ -6,13 +6,7 @@
   var heatBoard = null;
   var keyView = 'accuracy';   // 'accuracy' (heatmap) or 'speed' (bar chart)
 
-  var KEY_VIEW_SUB = {
-    accuracy: 'Redder keys are the ones you miss most. These feed the adaptive ' +
-              'pattern drill.',
-    speed: 'How fast each key comes out once the previous one is down, shaded ' +
-           'against your own fastest and slowest. Timed from clean in-word ' +
-           'keystrokes only.'
-  };
+  var KEY_VIEW_SUB = { accuracy: 'stats.keys.accSub', speed: 'stats.keys.speedSub' };
 
   function setKeyView(mode) {
     keyView = mode === 'speed' ? 'speed' : 'accuracy';
@@ -96,7 +90,7 @@
     // chart. Both halves are toggled before drawing — a canvas inside a hidden
     // element measures zero and would draw at the wrong size.
     var speedView = keyView === 'speed';
-    if (els.keyViewSub) els.keyViewSub.textContent = KEY_VIEW_SUB[keyView];
+    if (els.keyViewSub) els.keyViewSub.textContent = TT.i18n.t(KEY_VIEW_SUB[keyView]);
     if (els.keyViewToggle) {
       Array.prototype.forEach.call(els.keyViewToggle.querySelectorAll('[data-keyview]'), function (b) {
         var on = b.dataset.keyview === keyView;
@@ -122,8 +116,9 @@
       els.worst.innerHTML = speeds.length === 0
         ? '<span class="tile-sub">Finish a few tests and your slowest keys will show up here.</span>'
         : speeds.slice(0, 8).map(function (r) {
-            return '<span class="worst-key">' + escapeHtml(r.key) +
-              ' <b>' + Math.round(r.wpm) + '</b> wpm</span>';
+            return '<button type="button" class="worst-key" data-key="' + escapeHtml(r.key) +
+              '" title="' + TT.i18n.t('stats.drillKey') + '">' + escapeHtml(r.key) +
+              ' <b>' + Math.round(r.wpm) + '</b> ' + TT.i18n.t('th.wpm') + '</button>';
           }).join('');
     } else {
       var keys = keyStats();
@@ -133,8 +128,9 @@
       els.worst.innerHTML = worst.length === 0
         ? '<span class="tile-sub">Type a few more tests and your weakest keys will show up here.</span>'
         : worst.map(function (w) {
-            return '<span class="worst-key">' + escapeHtml(w.key) +
-              ' <b>' + Math.round(w.rate * 100) + '%</b> missed</span>';
+            return '<button type="button" class="worst-key" data-key="' + escapeHtml(w.key) +
+              '" title="' + TT.i18n.t('stats.drillKey') + '">' + escapeHtml(w.key) +
+              ' <b>' + Math.round(w.rate * 100) + '%</b> ' + TT.i18n.t('stats.missed') + '</button>';
           }).join('');
     }
 

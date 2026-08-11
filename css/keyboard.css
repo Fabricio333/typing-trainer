@@ -89,7 +89,10 @@
 }
 
 .kb-key.is-hit {
-  background: var(--surface-2);
+  /* A clear accent flash: the old surface-on-surface shade was nearly
+   * invisible on several themes. */
+  background: color-mix(in srgb, var(--main) 45%, var(--surface));
+  border-color: var(--main);
   color: var(--text);
   transform: translateY(2px);
 }

@@ -21,6 +21,8 @@
     patternAdaptive: true,
     poolSize: 200,
     drillSize: 20,
+    // What the "hardest" mode drills: 'words' | 'keys' | 'combos' | 'quotes'.
+    hardestKind: 'words',
 
     punctuation: false,
     numbers: false,

@@ -197,6 +197,87 @@
     return out;
   }
 
+  function dedupe(list) {
+    var seen = {};
+    return list.filter(function (w) {
+      if (seen[w]) return false;
+      seen[w] = true;
+      return true;
+    });
+  }
+
+  /* Drill over slow key pairs: each pair as a bare chunk plus a couple of real
+   * words containing it, so the transition is practised in the context where it
+   * actually occurs — not only as an isolated two-letter exercise.
+   * opts: { lang, pairs, count, random } */
+  function pairDrill(opts) {
+    var o = opts || {};
+    var rnd = o.random || defaultRandom;
+    var src = pool(o.lang || 'en', 0);
+    var set = [];
+    (o.pairs || []).forEach(function (p) {
+      set.push(p);
+      var carriers = src.filter(function (w) { return w.indexOf(p) !== -1; });
+      set = set.concat(shuffle(carriers, rnd).slice(0, 2));
+    });
+    set = dedupe(set);
+    return set.length ? drill(set, o.count || 30, rnd) : [];
+  }
+
+  /* Drill for specific keys — the slowest ones from the stats screen. Real
+   * words containing each key carry the practice; the learner's slowest pairs
+   * into those keys (opts.pairs) are mixed in as chunks.
+   * opts: { lang, keys, pairs, count, random } */
+  function keyDrill(opts) {
+    var o = opts || {};
+    var rnd = o.random || defaultRandom;
+    var src = pool(o.lang || 'en', 0);
+    var set = [];
+    (o.keys || []).forEach(function (k) {
+      var carriers = src.filter(function (w) { return w.indexOf(k) !== -1; });
+      set = set.concat(shuffle(carriers, rnd).slice(0, 6));
+    });
+    set = dedupe(set.concat(o.pairs || []));
+    return set.length ? drill(set, o.count || 40, rnd) : [];
+  }
+
+  /* The quote that gives the learner's slow spots the most work: candidates are
+   * scored by how densely they contain the given pairs, per character, so a
+   * long quote does not win on length alone. Same shape as quote().
+   * opts: { lang, pairs, avoid, random } */
+  function hardestQuote(opts) {
+    var o = opts || {};
+    var rnd = o.random || defaultRandom;
+    var lang = o.lang || 'en';
+    var all = (TT.data && TT.data.quotes && TT.data.quotes[lang]) || [];
+    if (!all.length) return { words: [], source: '', text: '' };
+
+    var candidates = all;
+    if (o.avoid && o.avoid.length) {
+      var fresh = candidates.filter(function (q) { return o.avoid.indexOf(q.text) === -1; });
+      if (fresh.length) candidates = fresh;
+    }
+
+    var pairs = o.pairs || [];
+    var scored = candidates.map(function (q) {
+      var hits = 0;
+      var text = q.text.toLowerCase();
+      pairs.forEach(function (p) {
+        for (var i = text.indexOf(p); i !== -1; i = text.indexOf(p, i + 1)) hits++;
+      });
+      return { q: q, score: text.length ? hits / text.length : 0 };
+    });
+    scored.sort(function (a, b) { return b.score - a.score; });
+
+    // A little variety: any of the top few, not always the single top scorer.
+    var q = pick(scored.slice(0, Math.min(3, scored.length)), rnd).q;
+    return {
+      words: q.text.split(/\s+/).filter(Boolean),
+      source: q.source,
+      text: q.text
+    };
+  }
+
   /* Splits a quote into engine words. Returns { words, source, text }. */
   function quote(opts) {
     var o = opts || {};
@@ -245,11 +326,9 @@
       // to the language's common patterns — still a pattern drill, just not a
       // personalised one.
       var pairs = o.slowest && o.slowest.length ? o.slowest : null;
-      if (!pairs) {
-        var sets = (TT.data && TT.data.patterns && TT.data.patterns[lang]) || {};
-        pairs = [].concat(sets.bigrams || [], sets.trigrams || []);
-      }
-      return drill(pairs, count, rnd);
+      if (pairs) return pairDrill({ lang: lang, pairs: pairs, count: count, random: rnd });
+      var sets = (TT.data && TT.data.patterns && TT.data.patterns[lang]) || {};
+      return drill([].concat(sets.bigrams || [], sets.trigrams || []), count, rnd);
     }
     if (def.pool) {
       return words({
@@ -290,6 +369,9 @@
   TT.generator = {
     words: words,
     quote: quote,
+    pairDrill: pairDrill,
+    keyDrill: keyDrill,
+    hardestQuote: hardestQuote,
     lesson: lesson,
     drill: drill,
     shuffle: shuffle,
