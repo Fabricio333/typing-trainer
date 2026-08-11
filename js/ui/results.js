@@ -12,10 +12,82 @@
 
   function save(record) {
     var rows = list();
+    var life = lifetimeFrom(rows);
     rows.push(record);
-    if (rows.length > MAX_HISTORY) rows = rows.slice(rows.length - MAX_HISTORY);
+    if (rows.length > MAX_HISTORY) {
+      archive(rows.slice(0, rows.length - MAX_HISTORY));
+      rows = rows.slice(rows.length - MAX_HISTORY);
+    }
     TT.storage.write('results', rows);
+    life.tests += 1;
+    life.seconds += record.seconds || 0;
+    if (record.wpm > life.bestWpm) life.bestWpm = record.wpm;
+    TT.storage.write('lifetime', life);
     return rows;
+  }
+
+  /* Totals that keep growing after the history is trimmed to MAX_HISTORY.
+   * Seeded from the stored rows for profiles that predate the counter. */
+  function lifetimeFrom(rows) {
+    var life = TT.storage.read('lifetime', null);
+    if (life && typeof life === 'object') {
+      return {
+        tests: life.tests || 0,
+        seconds: life.seconds || 0,
+        bestWpm: life.bestWpm || 0
+      };
+    }
+    return {
+      tests: rows.length,
+      seconds: rows.reduce(function (a, r) { return a + (r.seconds || 0); }, 0),
+      bestWpm: rows.reduce(function (m, r) { return Math.max(m, r.wpm || 0); }, 0)
+    };
+  }
+
+  function lifetime() {
+    return lifetimeFrom(list());
+  }
+
+  var BLOCK_SIZE = 50;
+
+  /* Results trimmed from the history are folded into fixed-size summary
+   * blocks, so the long-term picture keeps building without the rows. */
+  function archive(dropped) {
+    var store = blocks();
+    dropped.forEach(function (r) {
+      var o = store.open;
+      if (!o) {
+        o = store.open = { n: 0, wpmSum: 0, accSum: 0, seconds: 0, bestWpm: 0, from: r.at, to: r.at };
+      }
+      o.n += 1;
+      o.wpmSum += r.wpm || 0;
+      o.accSum += r.acc || 0;
+      o.seconds += r.seconds || 0;
+      if ((r.wpm || 0) > o.bestWpm) o.bestWpm = r.wpm;
+      o.to = r.at;
+      if (o.n >= BLOCK_SIZE) {
+        store.done.push({
+          n: o.n,
+          wpm: round(o.wpmSum / o.n, 1),
+          acc: round(o.accSum / o.n, 1),
+          seconds: round(o.seconds, 1),
+          bestWpm: o.bestWpm,
+          from: o.from,
+          to: o.to
+        });
+        store.open = null;
+      }
+    });
+    TT.storage.write('blocks', store);
+    return store;
+  }
+
+  function blocks() {
+    var store = TT.storage.read('blocks', null);
+    if (!store || typeof store !== 'object' || !Array.isArray(store.done)) {
+      store = { done: [], open: null };
+    }
+    return store;
   }
 
   function modeLabel(mode, extra) {
@@ -155,6 +227,8 @@
     render: render,
     save: save,
     list: list,
+    lifetime: lifetime,
+    blocks: blocks,
     bests: bests,
     toRecord: toRecord,
     modeLabel: modeLabel,

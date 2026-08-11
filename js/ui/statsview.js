@@ -24,8 +24,8 @@
     return merged;
   }
 
-  function tiles(rows) {
-    if (rows.length === 0) {
+  function tiles(rows, life) {
+    if (rows.length === 0 && (!life || life.tests === 0)) {
       return [
         { label: 'tests taken', value: '0' },
         { label: 'best wpm', value: '—' },
@@ -34,18 +34,18 @@
       ];
     }
 
-    var best = rows.reduce(function (m, r) { return Math.max(m, r.wpm); }, 0);
-    var recent = rows.slice(-10);
-    var avg = recent.reduce(function (a, r) { return a + r.wpm; }, 0) / recent.length;
-    var acc = recent.reduce(function (a, r) { return a + r.acc; }, 0) / recent.length;
-    var seconds = rows.reduce(function (a, r) { return a + (r.seconds || 0); }, 0);
+    // Lifetime totals keep counting after the history is trimmed;
+    // the averages are a rolling window over the most recent tests.
+    var recent = rows.slice(-50);
+    var avg = recent.reduce(function (a, r) { return a + r.wpm; }, 0) / (recent.length || 1);
+    var acc = recent.reduce(function (a, r) { return a + r.acc; }, 0) / (recent.length || 1);
 
     return [
-      { label: 'tests taken', value: String(rows.length) },
-      { label: 'best wpm', value: String(Math.round(best)) },
+      { label: 'tests taken', value: String(life.tests) },
+      { label: 'best wpm', value: String(Math.round(life.bestWpm)) },
       { label: 'average wpm', value: String(Math.round(avg)), sub: 'last ' + recent.length + ' tests' },
       { label: 'average accuracy', value: Math.round(acc) + '%', sub: 'last ' + recent.length + ' tests' },
-      { label: 'time typing', value: formatDuration(seconds) }
+      { label: 'time typing', value: formatDuration(life.seconds) }
     ];
   }
 
@@ -60,7 +60,7 @@
   function render(els, lang) {
     var rows = TT.results.list();
 
-    els.tiles.innerHTML = tiles(rows).map(function (t) {
+    els.tiles.innerHTML = tiles(rows, TT.results.lifetime()).map(function (t) {
       return '<div class="tile">' +
         '<div class="tile-label">' + t.label + '</div>' +
         '<div class="tile-value">' + t.value + '</div>' +
