@@ -21,7 +21,7 @@ try {
 
 /* Defaults to the local files. Point APP_URL at a deployed site to verify a
  * release — a script path that only breaks over HTTP is invisible on file://. */
-const APP = process.env.APP_URL || 'file://' + path.join(__dirname, '..', 'index.html');
+const APP = process.env.APP_URL || 'file://' + path.join(__dirname, '..', 'type', 'index.html');
 const SHOTS = path.join(__dirname, 'screenshots');
 const TAKE_SHOTS = process.env.SHOTS === '1';
 

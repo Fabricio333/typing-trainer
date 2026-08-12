@@ -23,7 +23,7 @@ try {
   }
 }
 
-const APP = 'file://' + path.join(__dirname, '..', 'index.html');
+const APP = 'file://' + path.join(__dirname, '..', 'type', 'index.html');
 const OUT = path.join(__dirname, '..', 'og.png');
 
 function findBrowser() {

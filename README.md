@@ -4,8 +4,11 @@ A free typing tutor that runs entirely in the browser. Progressive lessons that
 unlock as you improve, monkeytype-style speed tests, per-key statistics, and
 English + Spanish throughout.
 
-No accounts, no build step, no network requests, no tracking. Open `index.html`
-and it works — online or off.
+No accounts, no build step, no network requests, no tracking. Open
+`type/index.html` and it works — online or off.
+
+The site has two pages: a landing page at the root explaining what this is, and
+the trainer itself under `/type/`.
 
 **Live:** https://typing.fabriok.ar/
 
@@ -17,7 +20,7 @@ Either works:
 
 ```bash
 # 1. Just open the file
-xdg-open index.html          # or double-click it
+xdg-open type/index.html     # or double-click it
 
 # 2. Or serve it, if you prefer a real origin
 python3 -m http.server 8000  # then visit http://localhost:8000
@@ -112,18 +115,20 @@ synthesised with WebAudio, and the fonts are whatever the system already has.
 
 Scripts load as classic `<script>` tags rather than ES modules, which is what lets
 the page run from `file://` — modules would be blocked by CORS and force a server.
-Everything attaches to a single `TT` namespace, and `index.html` lists the tags in
-dependency order.
+Everything attaches to a single `TT` namespace, and `type/index.html` lists the
+tags in dependency order.
 
 ```
-index.html
-css/     style.css  themes.css  keyboard.css
+index.html          # landing page — its own markup, css/landing.css, js/landing.js
+type/index.html     # the trainer
+css/     style.css  themes.css  keyboard.css  landing.css
 js/
   data/  words.{en,es}.js  quotes.{en,es}.js  patterns.js  layouts.js  lessons.js
   core/  storage.js  generator.js  engine.js  stats.js  wordstats.js  # DOM-free
   ui/    render.js  keyboard.js  chart.js  sound.js  results.js
          settings.js  lessons.js  statsview.js  router.js
   app.js                                                    # wiring, loaded last
+  landing.js                                       # landing page only, standalone
 tests/   run.js  browser.js  *.test.js
 ```
 
@@ -162,7 +167,7 @@ Point it at a deployed site to verify a release — a broken script path only sh
 up over HTTP, never on `file://`:
 
 ```bash
-APP_URL=https://typing.fabriok.ar/ node tests/browser.js
+APP_URL=https://typing.fabriok.ar/type/ node tests/browser.js
 ```
 
 ## Deployment

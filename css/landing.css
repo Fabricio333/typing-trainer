@@ -1,0 +1,491 @@
+/* Landing page only. The app's palette (themes.css) and base rules (style.css)
+ * come first; everything here is layout for the marketing page and never loads
+ * inside the trainer itself.
+ *
+ * Motion is opt-out: every animation below is disabled wholesale by the
+ * prefers-reduced-motion block at the bottom, and the reveal script marks the
+ * document so nothing starts hidden when JavaScript never runs. */
+
+.landing {
+  --gutter: clamp(1rem, 4vw, 2rem);
+  display: block;
+}
+
+.wrap {
+  width: min(100% - 2rem, var(--wrap));
+  margin: 0 auto;
+}
+
+.landing section { scroll-margin-top: 5rem; }
+
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--main);
+}
+
+.section-head { margin-bottom: 2rem; }
+.section-head h2 {
+  color: var(--text);
+  font-size: clamp(1.5rem, 3.4vw, 2.1rem);
+  letter-spacing: -0.02em;
+  margin-top: 0.4rem;
+}
+.section-head p {
+  margin-top: 0.6rem;
+  max-width: 60ch;
+  color: var(--sub);
+}
+
+/* ── buttons ───────────────────────────────────────────────────────── */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  padding: 0.7rem 1.35rem;
+  font-size: 0.98rem;
+  text-decoration: none;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: transform 140ms ease, background 140ms ease,
+              border-color 140ms ease, color 140ms ease;
+}
+.btn:hover { transform: translateY(-2px); border-color: var(--sub-alt); }
+
+.btn-primary {
+  background: var(--main);
+  border-color: var(--main);
+  color: var(--bg);
+  font-weight: 600;
+}
+.btn-primary:hover { background: var(--main); filter: brightness(1.08); }
+.btn-primary .arrow { transition: transform 140ms ease; }
+.btn-primary:hover .arrow { transform: translateX(3px); }
+
+.btn-ghost { color: var(--sub); }
+.btn-ghost:hover { color: var(--text); }
+.btn svg { display: block; }
+
+.btn-sm { padding: 0.4rem 0.9rem; font-size: 0.88rem; }
+
+/* ── hero ──────────────────────────────────────────────────────────── */
+
+.hero {
+  position: relative;
+  padding: clamp(2.5rem, 7vw, 5rem) 0 clamp(2rem, 5vw, 3.5rem);
+  overflow: hidden;
+}
+
+/* A single soft accent wash behind the hero. Painted with the theme accent so
+ * it re-tints for free when the palette changes. */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: -30% 0 auto 50%;
+  width: min(900px, 120vw);
+  aspect-ratio: 1;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--main) 16%, transparent) 0%, transparent 62%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.hero > .wrap { position: relative; z-index: 1; }
+
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: clamp(2rem, 5vw, 3.5rem);
+  align-items: center;
+}
+
+.hero h1 {
+  color: var(--text);
+  font-size: clamp(2.1rem, 5.4vw, 3.4rem);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  margin: 0.8rem 0 0;
+}
+.hero h1 em {
+  font-style: normal;
+  color: var(--main);
+}
+
+.hero-sub {
+  margin-top: 1.1rem;
+  font-size: 1.08rem;
+  max-width: 46ch;
+  color: var(--sub);
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.8rem;
+}
+
+.hero-note {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: var(--sub-alt);
+}
+
+/* ── the live demo ─────────────────────────────────────────────────── */
+
+.demo {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 1.1rem 1.2rem 1.3rem;
+  box-shadow: 0 24px 60px -30px rgba(0, 0, 0, 0.75);
+}
+
+.demo-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--sub-alt);
+}
+.demo-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: var(--surface-2);
+}
+.demo-url { margin-left: auto; }
+
+.demo-live {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  margin: 1rem 0 0.6rem;
+  font-family: var(--mono);
+}
+.demo-count { color: var(--main); font-size: 1.6rem; font-weight: 600; }
+.demo-meta { color: var(--sub); font-size: 0.85rem; }
+
+.demo-text {
+  font-family: var(--mono);
+  font-size: clamp(1rem, 2.1vw, 1.2rem);
+  line-height: 1.75;
+  color: var(--sub);
+  min-height: 5.25em;
+  word-break: break-word;
+}
+.demo-text .ok { color: var(--text); }
+.demo-text .bad {
+  color: var(--error);
+  text-decoration: underline;
+  text-decoration-color: var(--error);
+}
+.demo-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  margin: 0 -1px;
+  vertical-align: text-bottom;
+  background: var(--main);
+  animation: demo-blink 1s steps(1) infinite;
+}
+@keyframes demo-blink { 50% { opacity: 0; } }
+
+.demo-kb {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 1.1rem;
+  align-items: center;
+}
+.demo-kb-row { display: flex; gap: 5px; }
+.demo-key {
+  width: clamp(20px, 2.6vw, 28px);
+  height: clamp(20px, 2.6vw, 28px);
+  display: grid;
+  place-items: center;
+  border-radius: 5px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  color: var(--sub);
+  transition: background 90ms ease, color 90ms ease, transform 90ms ease;
+}
+.demo-key.wide { width: clamp(74px, 12vw, 130px); }
+.demo-key.is-hit {
+  background: var(--main);
+  border-color: var(--main);
+  color: var(--bg);
+  transform: translateY(1px);
+}
+
+/* ── numbers strip ─────────────────────────────────────────────────── */
+
+.figures {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.figure {
+  background: var(--bg);
+  padding: 1.2rem 1.1rem;
+}
+.figure-value {
+  font-family: var(--mono);
+  font-size: 1.75rem;
+  color: var(--main);
+  line-height: 1.1;
+}
+.figure-label {
+  margin-top: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--sub);
+}
+
+/* ── generic sections ──────────────────────────────────────────────── */
+
+.band { padding: clamp(3rem, 8vw, 5.5rem) 0; }
+.band-alt {
+  background: var(--surface);
+  border-block: 1px solid var(--border);
+}
+
+.two-col {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: start;
+}
+.prose p { margin-bottom: 1rem; max-width: 62ch; }
+.prose p:last-child { margin-bottom: 0; }
+.prose strong { color: var(--text); font-weight: 600; }
+
+.pullquote {
+  border-left: 2px solid var(--main);
+  padding: 0.2rem 0 0.2rem 1.2rem;
+  color: var(--text);
+  font-size: clamp(1.1rem, 2.6vw, 1.4rem);
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+}
+.pullquote cite {
+  display: block;
+  margin-top: 0.8rem;
+  font-style: normal;
+  font-size: 0.85rem;
+  color: var(--sub);
+}
+.pullquote cite a { color: var(--sub); }
+
+/* ── steps ─────────────────────────────────────────────────────────── */
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  counter-reset: step;
+}
+.step {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.4rem;
+  position: relative;
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+.band-alt .step { background: var(--bg); }
+.step:hover { border-color: var(--sub-alt); transform: translateY(-3px); }
+.step::before {
+  counter-increment: step;
+  content: counter(step, decimal-leading-zero);
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--main);
+}
+.step h3 {
+  margin: 0.6rem 0 0.45rem;
+  color: var(--text);
+  font-size: 1.05rem;
+}
+.step p { font-size: 0.94rem; }
+
+/* ── previews ──────────────────────────────────────────────────────── */
+
+.shots {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+.shot {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+}
+/* The files themselves are cropped to the interesting part of the capture, so
+ * this only has to scale them. */
+.shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-bottom: 1px solid var(--border);
+}
+.shot figcaption {
+  padding: 0.9rem 1.1rem;
+  font-size: 0.9rem;
+  color: var(--sub);
+}
+.shot figcaption b { color: var(--text); font-weight: 600; display: block; }
+
+/* The heatmap card is built from markup rather than a screenshot: a real one
+ * needs somebody's accumulated history to look like anything. */
+.heatcard {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+.heatgrid {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: center;
+  margin: auto 0;
+}
+.heatgrid .demo-key { color: var(--text); }
+.heat-scale {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.78rem;
+  color: var(--sub);
+}
+.heat-bar {
+  flex: 1;
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--main), var(--error));
+}
+
+/* ── features ──────────────────────────────────────────────────────── */
+
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1rem;
+}
+.feature {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.2rem;
+  background: var(--surface);
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+.band-alt .feature { background: var(--bg); }
+.feature:hover { border-color: var(--sub-alt); transform: translateY(-3px); }
+.feature-icon { font-size: 1.3rem; line-height: 1; }
+.feature h3 {
+  margin: 0.6rem 0 0.4rem;
+  font-size: 1rem;
+  color: var(--text);
+}
+.feature p { font-size: 0.92rem; }
+
+/* ── quotes ────────────────────────────────────────────────────────── */
+
+.quote-rotator {
+  font-family: var(--mono);
+  font-size: clamp(1rem, 2.4vw, 1.3rem);
+  line-height: 1.7;
+  color: var(--text);
+  min-height: 4.5em;
+}
+.quote-rotator .who {
+  display: block;
+  margin-top: 0.7rem;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 0.85rem;
+  color: var(--sub);
+}
+
+/* ── faq ───────────────────────────────────────────────────────────── */
+
+.faq { display: grid; gap: 0.6rem; }
+.faq details {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  padding: 0.9rem 1.1rem;
+}
+.band-alt .faq details { background: var(--bg); }
+.faq summary {
+  cursor: pointer;
+  color: var(--text);
+  font-weight: 500;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after {
+  content: '+';
+  color: var(--main);
+  font-family: var(--mono);
+}
+.faq details[open] summary::after { content: '−'; }
+.faq details p { margin-top: 0.7rem; font-size: 0.94rem; max-width: 70ch; }
+
+/* ── closing call to action ────────────────────────────────────────── */
+
+.closing {
+  text-align: center;
+  padding: clamp(3rem, 8vw, 5.5rem) 0;
+}
+.closing h2 {
+  color: var(--text);
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  letter-spacing: -0.02em;
+}
+.closing p { margin: 0.8rem auto 0; max-width: 48ch; }
+.closing .hero-actions { justify-content: center; }
+
+/* ── reveal-on-scroll ──────────────────────────────────────────────── */
+
+/* Only applied once the script has confirmed it can undo it. */
+.js-reveal .reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 520ms ease, transform 520ms ease;
+}
+.js-reveal .reveal.is-in { opacity: 1; transform: none; }
+
+/* ── responsive ────────────────────────────────────────────────────── */
+
+@media (max-width: 860px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .demo { order: 2; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js-reveal .reveal { opacity: 1; transform: none; transition: none; }
+  .demo-caret { animation: none; }
+  .btn:hover, .step:hover, .feature:hover { transform: none; }
+  .demo-key { transition: none; }
+}

@@ -96,7 +96,10 @@
       'drill.keyLabel': 'Key drill',
       'drill.noKeyHistory': 'Not enough key history yet — finish a few tests first.',
       'skip.lastLesson': 'That was the last lesson.',
-      'skip.skippedTo': 'Skipped to'
+      'skip.skippedTo': 'Skipped to',
+
+      'foot.about': 'what this is',
+      'foot.article': 'the essay behind it'
     },
 
     es: {
@@ -187,7 +190,10 @@
       'drill.keyLabel': 'Entrenamiento de tecla',
       'drill.noKeyHistory': 'Aún no hay historial de teclas — termina unas cuantas pruebas primero.',
       'skip.lastLesson': 'Esa era la última lección.',
-      'skip.skippedTo': 'Saltado a'
+      'skip.skippedTo': 'Saltado a',
+
+      'foot.about': 'qué es esto',
+      'foot.article': 'el ensayo detrás'
     }
   };
 

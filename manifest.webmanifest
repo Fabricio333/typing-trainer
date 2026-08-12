@@ -2,7 +2,7 @@
   "name": "Typing Trainer",
   "short_name": "Typing",
   "description": "A dependency-free typing tutor: progressive lessons, speed tests and per-key statistics, in English and Spanish.",
-  "start_url": "./",
+  "start_url": "./type/",
   "scope": "./",
   "display": "standalone",
   "background_color": "#131316",

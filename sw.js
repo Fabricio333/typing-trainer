@@ -12,16 +12,20 @@
  * (username.github.io/typing-trainer/) and a local server root alike. */
 'use strict';
 
-var CACHE = 'typing-trainer-v6';
+var CACHE = 'typing-trainer-v7';
 
 var ASSETS = [
   './',
   'index.html',
+  'type/',
+  'type/index.html',
   'manifest.webmanifest',
   'icon.svg',
   'css/themes.css',
   'css/style.css',
   'css/keyboard.css',
+  'css/landing.css',
+  'js/landing.js',
   'js/data/words.en.js',
   'js/data/words.es.js',
   'js/data/quotes.en.js',
@@ -79,9 +83,12 @@ self.addEventListener('fetch', function (e) {
       }).catch(function () {
         return cache.match(e.request, { ignoreSearch: true }).then(function (cached) {
           if (cached) return cached;
-          // A navigation can still fall back to the app shell, which handles
-          // its own routing by hash.
-          if (e.request.mode === 'navigate') return cache.match('./');
+          // A navigation can still fall back to a shell: the trainer for
+          // anything under /type/ (it handles its own routing by hash), the
+          // landing page for everything else.
+          if (e.request.mode === 'navigate') {
+            return cache.match(/\/type(\/|$)/.test(url.pathname) ? 'type/' : './');
+          }
           return Promise.reject(new Error('offline and uncached: ' + url.pathname));
         });
       });
