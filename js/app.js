@@ -41,6 +41,7 @@
    * the set was picked, which is what "improved" is measured against. */
   var drillSet = null;
   var drillLang = null;
+  var drillLimit = null;     // stats can request a persistent one-word session
   var drillBaseline = {};
 
   var pendingResume = null;  // words to restore after a refresh, used once
@@ -498,20 +499,20 @@
   /* Picks the set once and remembers each word's speed at that moment. */
   function pickDrillSet() {
     var lang = TT.settings.get('lang');
-    var size = TT.settings.get('drillSize') || 20;
+    var size = drillLimit || TT.settings.get('drillSize') || 20;
     var rows = TT.wordstats.hardest(lang, size, MIN_DRILL_SAMPLES);
 
     drillSet = rows.map(function (r) { return r.word; });
     drillLang = lang;
     drillBaseline = {};
-    rows.forEach(function (r) { drillBaseline[r.word] = r.wpm; });
+    rows.forEach(function (r) { drillBaseline[r.word] = r.bestWpm; });
     return drillSet;
   }
 
   function ensureDrillSet() {
     // Re-pick when the language changed or the size no longer matches, but
     // never merely because the rankings moved.
-    var size = TT.settings.get('drillSize') || 20;
+    var size = drillLimit || TT.settings.get('drillSize') || 20;
     if (!drillSet || drillLang !== TT.settings.get('lang') || drillSet.length > size) {
       pickDrillSet();
     }
@@ -551,9 +552,9 @@
 
     els.drillWords.innerHTML = set.map(function (word) {
       var row = current[word];
-      var wpm = row ? Math.round(row.wpm) : 0;
+      var wpm = row ? Math.round(row.bestWpm) : 0;
       var was = drillBaseline[word] || 0;
-      var improved = was > 0 && row && row.wpm > was + 1;
+      var improved = was > 0 && row && row.bestWpm > was;
       return '<span class="drill-word' + (improved ? ' is-improved' : '') + '">' +
         '<b>' + escapeHtml(word) + '</b>' +
         '<span class="drill-wpm">' + (wpm ? wpm + ' wpm' : '—') +
@@ -787,11 +788,13 @@
       if (btn.dataset.mode) {
         context.lessonDef = null;
         context.keyDrill = null;
+        drillLimit = null;
         TT.settings.set('mode', btn.dataset.mode);
         renderConfig();
         startTest();
       } else if (btn.dataset.kind) {
         context.keyDrill = null;
+        drillLimit = null;
         TT.settings.set('hardestKind', btn.dataset.kind);
         renderConfig();
         startTest();
@@ -916,6 +919,7 @@
       context.lessonDef = null;
       context.keyDrill = null;
       drillSet = null;   // word history is per language
+      drillLimit = null;
       if (TT.router.current() === 'test') { renderConfig(); startTest(); }
       if (TT.router.current() === 'lessons') renderLessons();
       if (TT.router.current() === 'stats') renderStats();
@@ -940,6 +944,7 @@
     if (key === 'drillSize') {
       // An explicit size change is a request for a different set, unlike the
       // rankings shifting underneath an existing one.
+      drillLimit = null;
       pickDrillSet();
       renderDrillPanel();
       if (TT.router.current() === 'test') startTest();
@@ -988,11 +993,12 @@
       context.keyDrill = null;
       TT.settings.set('mode', 'hardest');
       TT.settings.set('hardestKind', 'words');
+      drillLimit = rows ? rows.length : null;
       if (rows) {
         drillSet = rows.map(function (r) { return r.word; });
         drillLang = TT.settings.get('lang');
         drillBaseline = {};
-        rows.forEach(function (r) { drillBaseline[r.word] = r.wpm; });
+        rows.forEach(function (r) { drillBaseline[r.word] = r.bestWpm; });
       } else {
         pickDrillSet();
       }

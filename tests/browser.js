@@ -462,6 +462,18 @@ function check(name, cond, detail) {
   check('hardest-word action drills only the single hardest word',
     hardestOnly.length === 1, hardestOnly.join(', '));
 
+  const oneWordText = await page.$$eval('#words .word', e => e.map(x => x.textContent));
+  await page.click('#typing-area');
+  await page.keyboard.type(oneWordText.join(' '), { delay: 35 });
+  await page.waitForSelector('#view-results.is-active', { timeout: 5000 });
+  await page.click('#res-again');
+  await page.waitForSelector('#view-test.is-active');
+  const hardestStillOnly = await page.$$eval('#drill-words .drill-word b',
+    e => e.map(x => x.textContent));
+  check('next test keeps a single-hardest-word session narrowed to one word',
+    hardestStillOnly.length === 1 && hardestStillOnly[0] === hardestOnly[0],
+    hardestStillOnly.join(', '));
+
   await page.evaluate(() => { window.location.hash = '#/stats'; });
   await page.waitForSelector('#view-stats.is-active');
   await page.click('#practice-slow-words');

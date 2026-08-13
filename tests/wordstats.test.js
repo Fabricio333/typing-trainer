@@ -115,6 +115,18 @@ test('merging accumulates count, total and best', function () {
   eq(map.the.n, 2);
   eq(map.the.ms, 600);
   eq(map.the.best, 200);
+  near(map.the.bestRate, 200 / 3, 0.001);
+});
+
+test('a faster attempt updates best speed even when the lifetime average barely moves', function () {
+  const old = { word: 'the', ms: 300, units: 3, correct: true };
+  let map = {};
+  for (let i = 0; i < 1000; i++) map = W.mergeTimings(map, [old]);
+  const before = W.rank(map, { minSamples: 1 })[0];
+  map = W.mergeTimings(map, [{ word: 'the', ms: 150, units: 3, correct: true }]);
+  const after = W.rank(map, { minSamples: 1 })[0];
+  ok(after.bestWpm > before.bestWpm, 'the personal best should react immediately');
+  eq(Math.round(after.wpm), Math.round(before.wpm), 'the average can still round to the same WPM');
 });
 
 test('merging does not mutate the input map', function () {
@@ -214,6 +226,7 @@ test('ranking reports a per-word wpm', function () {
   const row = W.rank(map, { minSamples: 1 })[0];
   near(row.msPerChar, 100, 0.001);
   near(row.wpm, 120, 0.001);
+  near(row.bestWpm, 120, 0.001);
   near(row.avgMs, 500, 0.001);
 });
 
@@ -223,6 +236,7 @@ test('records written before unit tracking still rank sensibly', function () {
   const row = W.rank(map, { minSamples: 1 })[0];
   near(row.msPerChar, 1200 / (2 * 6), 0.001);
   ok(row.wpm > 0);
+  near(row.bestWpm, 120, 0.001);
 });
 
 test('ranking is stable and never returns junk entries', function () {

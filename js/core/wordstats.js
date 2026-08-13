@@ -13,9 +13,9 @@
   var DEFAULT_MIN_SAMPLES = 2;
 
   /* n = samples, ms = total time, u = total keystroke units those samples
-   * covered (see stats.wordTimings), best = fastest single attempt. */
+   * covered (see stats.wordTimings), bestRate = fastest per-key attempt. */
   function emptyEntry() {
-    return { n: 0, ms: 0, u: 0, best: 0, err: 0 };
+    return { n: 0, ms: 0, u: 0, best: 0, bestRate: 0, err: 0 };
   }
 
   /* Folds one test's timings into an existing map. Pure: returns a new map. */
@@ -29,6 +29,7 @@
           ms: map[k].ms || 0,
           u: map[k].u || 0,
           best: map[k].best || 0,
+          bestRate: map[k].bestRate || 0,
           err: map[k].err || 0
         };
       }
@@ -47,8 +48,11 @@
 
       e.n++;
       e.ms += t.ms;
-      e.u += t.units > 0 ? t.units : t.word.length;
+      var units = t.units > 0 ? t.units : t.word.length;
+      e.u += units;
       e.best = e.best === 0 ? t.ms : Math.min(e.best, t.ms);
+      var rate = t.ms / units;
+      e.bestRate = e.bestRate === 0 ? rate : Math.min(e.bestRate, rate);
     });
 
     return out;
@@ -80,12 +84,15 @@
       // "characters plus the committing space" count.
       var units = e.u > 0 ? e.u : e.n * (word.length + 1);
       var msPerChar = e.ms / units;
+      var bestRate = e.bestRate > 0 ? e.bestRate
+        : e.best / (e.u > 0 ? e.u / e.n : word.length + 1);
       rows.push({
         word: word,
         n: e.n,
         err: e.err || 0,
         avgMs: avgMs,
         bestMs: e.best,
+        bestWpm: bestRate > 0 ? 60000 / (bestRate * 5) : 0,
         msPerChar: msPerChar,
         wpm: msPerChar > 0 ? 60000 / (msPerChar * 5) : 0
       });
