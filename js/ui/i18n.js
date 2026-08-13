@@ -69,6 +69,7 @@
       'stats.missed': 'missed',
       'stats.slowWords': 'Slowest words',
       'stats.slowWordsSub': 'Ranked by time per character, so long words are not penalised for being long. These are what the "hardest words" drill uses.',
+      'stats.drillHardestWord': 'drill your hardest word →',
       'stats.drillWords': 'drill these words →',
       'stats.slowPatterns': 'Slowest patterns',
       'stats.slowPatternsSub': 'Key-to-key transitions, ranked by the average gap between the two presses. The combinations drill practises them inside real words.',
@@ -95,6 +96,7 @@
       'drill.slowCombosLabel': 'Slowest combinations',
       'drill.keyLabel': 'Key drill',
       'drill.noKeyHistory': 'Not enough key history yet — finish a few tests first.',
+      'drill.noWordHistory': 'Not enough word history yet — finish a few tests first.',
       'skip.lastLesson': 'That was the last lesson.',
       'skip.skippedTo': 'Skipped to',
 
@@ -163,6 +165,7 @@
       'stats.missed': 'fallada',
       'stats.slowWords': 'Palabras más lentas',
       'stats.slowWordsSub': 'Ordenadas por tiempo por carácter, así las palabras largas no quedan penalizadas por su longitud. Son las que usa el entrenamiento de "palabras difíciles".',
+      'stats.drillHardestWord': 'entrenar tu palabra más difícil →',
       'stats.drillWords': 'entrenar estas palabras →',
       'stats.slowPatterns': 'Patrones más lentos',
       'stats.slowPatternsSub': 'Transiciones entre teclas, ordenadas por el intervalo medio entre las dos pulsaciones. El entrenamiento de combinaciones las practica dentro de palabras reales.',
@@ -189,6 +192,7 @@
       'drill.slowCombosLabel': 'Combinaciones más lentas',
       'drill.keyLabel': 'Entrenamiento de tecla',
       'drill.noKeyHistory': 'Aún no hay historial de teclas — termina unas cuantas pruebas primero.',
+      'drill.noWordHistory': 'Aún no hay historial de palabras — termina unas cuantas pruebas primero.',
       'skip.lastLesson': 'Esa era la última lección.',
       'skip.skippedTo': 'Saltado a',
 

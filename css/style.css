@@ -525,7 +525,12 @@ details.stat-card > summary::after {
 details.stat-card[open] > summary::after { transform: rotate(90deg); }
 details.stat-card[open] > summary { margin-bottom: 0.8rem; }
 details.stat-card > summary:hover h2 { color: var(--main); }
-.card-actions { margin: -0.4rem 0 0.9rem; }
+.card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: -0.4rem 0 0.9rem;
+}
 .history-table tr[data-lesson-id] { cursor: pointer; }
 .history-table tr[data-lesson-id]:hover td { color: var(--main); }
 .empty-note { color: var(--sub); font-size: 0.9rem; text-align: center; padding: 2rem 0; }

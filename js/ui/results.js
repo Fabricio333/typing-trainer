@@ -13,6 +13,7 @@
   function save(record) {
     var rows = list();
     var life = lifetimeFrom(rows);
+    var savedBests = bestsFrom(rows, TT.storage.read('bests', {}));
     rows.push(record);
     if (rows.length > MAX_HISTORY) {
       archive(rows.slice(0, rows.length - MAX_HISTORY));
@@ -23,6 +24,10 @@
     life.seconds += record.seconds || 0;
     if (record.wpm > life.bestWpm) life.bestWpm = record.wpm;
     TT.storage.write('lifetime', life);
+    if (!savedBests[record.mode] || record.wpm > savedBests[record.mode].wpm) {
+      savedBests[record.mode] = record;
+    }
+    TT.storage.write('bests', savedBests);
     return rows;
   }
 
@@ -97,20 +102,25 @@
       case 'words': return 'words ' + mode.value;
       case 'quote': return 'quote ' + (extra && extra.quoteLength ? extra.quoteLength : '');
       case 'patterns': return 'patterns';
+      case 'hardest': return 'hardest ' + (extra && extra.hardestKind ? extra.hardestKind : 'words');
       case 'zen': return 'zen';
       case 'lesson': return 'lesson';
       default: return mode.type;
     }
   }
 
-  /* Best result per mode label, ranked by wpm. */
-  function bests() {
-    var out = {};
-    list().forEach(function (r) {
+  function bestsFrom(rows, seed) {
+    var out = seed && typeof seed === 'object' ? seed : {};
+    rows.forEach(function (r) {
       var k = r.mode;
       if (!out[k] || r.wpm > out[k].wpm) out[k] = r;
     });
     return out;
+  }
+
+  /* Best result per mode label, retained even after detailed history is trimmed. */
+  function bests() {
+    return bestsFrom(list(), TT.storage.read('bests', {}));
   }
 
   function round(n, places) {

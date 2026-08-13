@@ -446,7 +446,24 @@ function check(name, cond, detail) {
   check('all four stat cards open with content',
     Object.values(statCards).every(Boolean), JSON.stringify(statCards));
 
+  await page.setViewport({ width: 360, height: 800 });
+  const statsOverflow = await page.evaluate(() => ({
+    viewport: document.documentElement.clientWidth,
+    page: document.documentElement.scrollWidth
+  }));
+  check('statistics stay inside the mobile viewport',
+    statsOverflow.page <= statsOverflow.viewport, JSON.stringify(statsOverflow));
+  await page.setViewport({ width: 1280, height: 900 });
+
   // The cards double as launch pads for practice.
+  await page.click('#practice-hardest-word');
+  await page.waitForSelector('#view-test.is-active');
+  const hardestOnly = await page.$$eval('#drill-words .drill-word b', e => e.map(x => x.textContent));
+  check('hardest-word action drills only the single hardest word',
+    hardestOnly.length === 1, hardestOnly.join(', '));
+
+  await page.evaluate(() => { window.location.hash = '#/stats'; });
+  await page.waitForSelector('#view-stats.is-active');
   await page.click('#practice-slow-words');
   await page.waitForSelector('#view-test.is-active');
   const cardDrillMode = await page.evaluate(() => window.TT.settings.get('mode'));

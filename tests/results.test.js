@@ -4,6 +4,11 @@ const R = global.TT.results;
 
 suite('results');
 
+test('hardest submodes get separate statistics labels', function () {
+  eq(R.modeLabel({ type: 'hardest' }, { hardestKind: 'keys' }), 'hardest keys');
+  eq(R.modeLabel({ type: 'hardest' }, {}), 'hardest words');
+});
+
 test('the finished run is included immediately and lesson notes do not hide a PR', function () {
   var store = {};
   TT.storage = {
@@ -53,6 +58,22 @@ test('lifetime counters keep growing past the history cap and trimmed rows fold 
   eq(blocks.done[0].n, 50);
   eq(blocks.done[0].seconds, 1500);
   eq(blocks.open.n, 10);               // ...and 10 waiting in the open block
+});
+
+test('personal bests survive detailed history trimming', function () {
+  var store = {};
+  TT.storage = {
+    read: function (name, fallback) { return name in store ? store[name] : fallback; },
+    write: function (name, value) { store[name] = value; }
+  };
+
+  R.save({ at: 1, mode: 'words 10', wpm: 200, acc: 100, seconds: 10 });
+  for (var i = 0; i < R.MAX_HISTORY + 1; i++) {
+    R.save({ at: i + 2, mode: 'words 10', wpm: 50, acc: 95, seconds: 10 });
+  }
+
+  eq(R.list().some(function (r) { return r.wpm === 200; }), false);
+  eq(R.bests()['words 10'].wpm, 200);
 });
 
 test('lifetime seeds itself from an existing history the first time', function () {

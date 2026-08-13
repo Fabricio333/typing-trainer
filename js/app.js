@@ -707,6 +707,7 @@
     var ctx = {
       lang: context.lang,
       quoteLength: TT.settings.get('quoteLength'),
+      hardestKind: context.keyDrill ? 'keys' : (TT.settings.get('hardestKind') || 'words'),
       lessonId: context.lessonDef ? context.lessonDef.id : null,
       // Fixed content gets an identity so runs of the same text compare:
       // lessons by id, quotes by their (stable) opening words.
@@ -982,14 +983,36 @@
 
   /* The stat cards double as launch pads: what they diagnose, you can drill. */
   function wireStatsActions() {
-    document.getElementById('practice-slow-words').addEventListener('click', function () {
+    function startWordDrill(rows) {
       context.lessonDef = null;
       context.keyDrill = null;
       TT.settings.set('mode', 'hardest');
       TT.settings.set('hardestKind', 'words');
-      pickDrillSet();
+      if (rows) {
+        drillSet = rows.map(function (r) { return r.word; });
+        drillLang = TT.settings.get('lang');
+        drillBaseline = {};
+        rows.forEach(function (r) { drillBaseline[r.word] = r.wpm; });
+      } else {
+        pickDrillSet();
+      }
       TT.router.go('test');
       startTest();
+    }
+
+    document.getElementById('practice-hardest-word').addEventListener('click', function () {
+      var rows = TT.wordstats.hardest(
+        TT.settings.get('lang'), 1, TT.wordstats.DEFAULT_MIN_SAMPLES
+      );
+      if (!rows.length) {
+        toast(TT.i18n.t('drill.noWordHistory'));
+        return;
+      }
+      startWordDrill(rows);
+    });
+
+    document.getElementById('practice-slow-words').addEventListener('click', function () {
+      startWordDrill(null);
     });
 
     document.getElementById('practice-slow-patterns').addEventListener('click', function () {

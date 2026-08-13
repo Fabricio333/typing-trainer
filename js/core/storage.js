@@ -78,7 +78,7 @@
   /* Every store the app writes. Export, import and reset all walk this list,
    * so a new store MUST be added here or it silently escapes all three. */
   var NAMES = ['settings', 'progress', 'results', 'keystats',
-               'wordstats', 'keyspeed', 'session', 'lifetime', 'blocks'];
+               'wordstats', 'keyspeed', 'session', 'lifetime', 'blocks', 'bests'];
 
   function exportAll() {
     var out = { version: VERSION, exportedAt: new Date().toISOString(), data: {} };

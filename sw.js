@@ -12,7 +12,7 @@
  * (username.github.io/typing-trainer/) and a local server root alike. */
 'use strict';
 
-var CACHE = 'typing-trainer-v7';
+var CACHE = 'typing-trainer-v8';
 
 var ASSETS = [
   './',
