@@ -142,7 +142,7 @@
       : slow.map(function (r) {
           return '<tr>' +
             '<td>' + escapeHtml(r.word) + '</td>' +
-            '<td>' + Math.round(r.bestWpm) + '</td>' +
+            '<td>' + Math.round(r.wpm) + '</td>' +
             '<td class="dim">' + Math.round(r.avgMs) + 'ms</td>' +
             '<td class="dim">' + Math.round(r.bestMs) + 'ms</td>' +
             '<td class="dim">' + r.n + '</td>' +
