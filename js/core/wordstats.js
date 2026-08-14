@@ -11,10 +11,12 @@
   var MAX_MS = 10000;
 
   var DEFAULT_MIN_SAMPLES = 2;
+  var RECENT_WEIGHT = 0.2;
 
-  /* n = samples, ms = total time, best = fastest single attempt. */
+  /* n/ms are lifetime totals; recentMs is the weighted average used for
+   * ranking so hundreds of old attempts cannot bury current improvement. */
   function emptyEntry() {
-    return { n: 0, ms: 0, best: 0, err: 0 };
+    return { n: 0, ms: 0, recentMs: 0, best: 0, err: 0 };
   }
 
   /* Folds one test's timings into an existing map. Pure: returns a new map. */
@@ -26,6 +28,7 @@
         out[k] = {
           n: map[k].n || 0,
           ms: map[k].ms || 0,
+          recentMs: map[k].recentMs || 0,
           best: map[k].best || 0,
           err: map[k].err || 0
         };
@@ -43,6 +46,8 @@
       }
       if (!(t.ms >= MIN_MS && t.ms <= MAX_MS)) return;
 
+      var previous = e.recentMs || (e.n > 0 ? e.ms / e.n : t.ms);
+      e.recentMs = previous + RECENT_WEIGHT * (t.ms - previous);
       e.n++;
       e.ms += t.ms;
       e.best = e.best === 0 ? t.ms : Math.min(e.best, t.ms);
@@ -71,7 +76,7 @@
       if (!e || e.n < minSamples || !word.length) continue;
       if (o.allow && !o.allow(word)) continue;
 
-      var avgMs = e.ms / e.n;
+      var avgMs = e.recentMs || e.ms / e.n;
       var unitsPerWord = word.length + 1; // letters plus the committing space
       var msPerChar = avgMs / unitsPerWord;
       rows.push({

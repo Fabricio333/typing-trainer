@@ -150,7 +150,7 @@
       document.head.appendChild(link);
 
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('../sw.js?v=11').catch(function () {
+        navigator.serviceWorker.register('../sw.js?v=12').catch(function () {
           // Plain-http hosts other than localhost refuse service workers; the
           // app still works, just without the offline cache.
         });

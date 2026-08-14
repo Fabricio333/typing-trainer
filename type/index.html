@@ -260,8 +260,8 @@
 
     <details class="panel stat-card" id="card-slow-words">
       <summary><h2 data-i18n="stats.slowWords">Slowest words</h2></summary>
-      <p class="panel-sub" data-i18n="stats.slowWordsSub">Ranked by time per character, so long words are not
-         penalised for being long. These are what the "hardest words" drill uses.</p>
+      <p class="panel-sub" data-i18n="stats.slowWordsSub">Ranked by recent speed per character, so improvement
+         shows without being buried by old attempts. These are what the "hardest words" drill uses.</p>
       <div class="card-actions">
         <button type="button" class="ghost-btn" id="practice-hardest-word" data-i18n="stats.drillHardestWord">drill your hardest word →</button>
         <button type="button" class="ghost-btn" id="practice-slow-words" data-i18n="stats.drillWords">drill these words →</button>
@@ -269,7 +269,7 @@
       <div class="table-scroll">
         <table class="history-table">
           <thead>
-            <tr><th data-i18n="th.word">word</th><th data-i18n="th.wpm">wpm</th><th data-i18n="th.avg">avg</th><th data-i18n="th.best">best</th><th data-i18n="th.typed">typed</th><th data-i18n="th.missed">missed</th></tr>
+            <tr><th data-i18n="th.word">word</th><th data-i18n="th.wpm">wpm</th><th data-i18n="th.recentAvg">recent avg</th><th data-i18n="th.best">best</th><th data-i18n="th.typed">typed</th><th data-i18n="th.missed">missed</th></tr>
           </thead>
           <tbody id="slow-words-body"></tbody>
         </table>
@@ -385,7 +385,7 @@
 <script src="../js/core/generator.js"></script>
 <script src="../js/core/engine.js"></script>
 <script src="../js/core/stats.js"></script>
-<script src="../js/core/wordstats.js?v=11"></script>
+<script src="../js/core/wordstats.js?v=12"></script>
 <script src="../js/core/keyspeed.js"></script>
 
 <script src="../js/ui/chart.js"></script>
@@ -394,11 +394,11 @@
 <script src="../js/ui/sound.js"></script>
 <script src="../js/ui/results.js?v=9"></script>
 <script src="../js/ui/settings.js"></script>
-<script src="../js/ui/i18n.js?v=9"></script>
+<script src="../js/ui/i18n.js?v=12"></script>
 <script src="../js/ui/lessons.js"></script>
 <script src="../js/ui/statsview.js?v=10"></script>
 <script src="../js/ui/router.js"></script>
 
-<script src="../js/app.js?v=11"></script>
+<script src="../js/app.js?v=12"></script>
 </body>
 </html>

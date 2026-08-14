@@ -117,7 +117,7 @@ test('merging accumulates count, total and best', function () {
   eq(map.the.best, 200);
 });
 
-test('a faster attempt updates best speed even when the lifetime average barely moves', function () {
+test('a faster attempt moves recent speed even when the lifetime average is buried', function () {
   const old = { word: 'the', ms: 300, correct: true };
   let map = {};
   for (let i = 0; i < 1000; i++) map = W.mergeTimings(map, [old]);
@@ -125,7 +125,8 @@ test('a faster attempt updates best speed even when the lifetime average barely 
   map = W.mergeTimings(map, [{ word: 'the', ms: 150, correct: true }]);
   const after = W.rank(map, { minSamples: 1 })[0];
   ok(after.bestWpm > before.bestWpm, 'the personal best should react immediately');
-  eq(Math.round(after.wpm), Math.round(before.wpm), 'the average can still round to the same WPM');
+  ok(after.wpm > before.wpm * 1.1, 'recent speed should react immediately');
+  near(map.the.ms / map.the.n, 300, 0.2, 'lifetime average remains available');
 });
 
 test('merging does not mutate the input map', function () {

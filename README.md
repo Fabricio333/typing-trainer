@@ -78,7 +78,9 @@ longest words rather than your hard ones.
 
 Speed is derived directly from total time, attempt count and word length. Keeping
 the calculation reconstructible from those displayed values prevents a separate
-stored divisor from drifting and producing impossible WPM figures.
+stored divisor from drifting and producing impossible WPM figures. Ranking uses
+a recent weighted average, while the attempt count remains lifetime, so current
+improvement is not buried under hundreds of old runs.
 
 The **hardest words** mode takes the slowest N (10–50) and drills them by
 repetition, cycling the set so every word gets an equal share. The set is
