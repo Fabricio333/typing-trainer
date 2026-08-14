@@ -115,15 +115,14 @@ test('merging accumulates count, total and best', function () {
   eq(map.the.n, 2);
   eq(map.the.ms, 600);
   eq(map.the.best, 200);
-  near(map.the.bestRate, 200 / 3, 0.001);
 });
 
 test('a faster attempt updates best speed even when the lifetime average barely moves', function () {
-  const old = { word: 'the', ms: 300, units: 3, correct: true };
+  const old = { word: 'the', ms: 300, correct: true };
   let map = {};
   for (let i = 0; i < 1000; i++) map = W.mergeTimings(map, [old]);
   const before = W.rank(map, { minSamples: 1 })[0];
-  map = W.mergeTimings(map, [{ word: 'the', ms: 150, units: 3, correct: true }]);
+  map = W.mergeTimings(map, [{ word: 'the', ms: 150, correct: true }]);
   const after = W.rank(map, { minSamples: 1 })[0];
   ok(after.bestWpm > before.bestWpm, 'the personal best should react immediately');
   eq(Math.round(after.wpm), Math.round(before.wpm), 'the average can still round to the same WPM');
@@ -161,9 +160,11 @@ suite('wordstats / ranking');
  * purely for being short. */
 test('word length does not affect the score at a constant rhythm', function () {
   const words = ['zz', 'abcdefghij', 'of', 'extraordinary', 'it'];
-  const s = play(words, words.join(' '), 100);
-  let map = {};
-  for (let i = 0; i < 3; i++) map = W.mergeTimings(map, S.wordTimings(s));
+  const map = {};
+  words.forEach(function (word) {
+    map[word] = { n: 3, ms: 3 * (word.length + 1) * 100,
+      best: (word.length + 1) * 100, err: 0 };
+  });
 
   const rows = W.rank(map);
   eq(rows.length, words.length);
@@ -221,21 +222,21 @@ test('limit truncates to the hardest N', function () {
 });
 
 test('ranking reports a per-word wpm', function () {
-  // 5 keystroke units in 500ms => 100ms per key => 120 wpm.
-  const map = { abcde: { n: 1, ms: 500, u: 5, best: 500, err: 0 } };
+  // Five letters plus their committing space in 600ms => 120 wpm.
+  const map = { abcde: { n: 1, ms: 600, u: 999, best: 600, err: 0 } };
   const row = W.rank(map, { minSamples: 1 })[0];
   near(row.msPerChar, 100, 0.001);
   near(row.wpm, 120, 0.001);
   near(row.bestWpm, 120, 0.001);
-  near(row.avgMs, 500, 0.001);
+  near(row.avgMs, 600, 0.001);
 });
 
-test('records written before unit tracking still rank sensibly', function () {
-  // No `u`: fall back to characters plus the committing space.
+test('corrupt stored unit totals cannot distort word speed', function () {
   const map = { abcde: { n: 2, ms: 1200, best: 600, err: 0 } };
+  map.abcde.u = 999999;
   const row = W.rank(map, { minSamples: 1 })[0];
-  near(row.msPerChar, 1200 / (2 * 6), 0.001);
-  ok(row.wpm > 0);
+  near(row.msPerChar, 100, 0.001);
+  near(row.wpm, 120, 0.001);
   near(row.bestWpm, 120, 0.001);
 });
 

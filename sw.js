@@ -12,7 +12,7 @@
  * (username.github.io/typing-trainer/) and a local server root alike. */
 'use strict';
 
-var CACHE = 'typing-trainer-v10';
+var CACHE = 'typing-trainer-v11';
 
 var ASSETS = [
   './',
@@ -37,7 +37,7 @@ var ASSETS = [
   'js/core/generator.js',
   'js/core/engine.js',
   'js/core/stats.js',
-  'js/core/wordstats.js?v=10',
+  'js/core/wordstats.js?v=11',
   'js/core/keyspeed.js',
   'js/ui/chart.js',
   'js/ui/render.js',
@@ -49,7 +49,7 @@ var ASSETS = [
   'js/ui/lessons.js',
   'js/ui/statsview.js?v=10',
   'js/ui/router.js',
-  'js/app.js?v=10'
+  'js/app.js?v=11'
 ];
 
 self.addEventListener('install', function (e) {

@@ -12,10 +12,9 @@
 
   var DEFAULT_MIN_SAMPLES = 2;
 
-  /* n = samples, ms = total time, u = total keystroke units those samples
-   * covered (see stats.wordTimings), bestRate = fastest per-key attempt. */
+  /* n = samples, ms = total time, best = fastest single attempt. */
   function emptyEntry() {
-    return { n: 0, ms: 0, u: 0, best: 0, bestRate: 0, err: 0 };
+    return { n: 0, ms: 0, best: 0, err: 0 };
   }
 
   /* Folds one test's timings into an existing map. Pure: returns a new map. */
@@ -27,9 +26,7 @@
         out[k] = {
           n: map[k].n || 0,
           ms: map[k].ms || 0,
-          u: map[k].u || 0,
           best: map[k].best || 0,
-          bestRate: map[k].bestRate || 0,
           err: map[k].err || 0
         };
       }
@@ -48,11 +45,7 @@
 
       e.n++;
       e.ms += t.ms;
-      var units = t.units > 0 ? t.units : t.word.length;
-      e.u += units;
       e.best = e.best === 0 ? t.ms : Math.min(e.best, t.ms);
-      var rate = t.ms / units;
-      e.bestRate = e.bestRate === 0 ? rate : Math.min(e.bestRate, rate);
     });
 
     return out;
@@ -65,9 +58,8 @@
    * typing that word. That is what "this word is hard for me" means
    * independently of how many letters it happens to have.
    *
-   * The divisor is the recorded keystroke-unit count rather than the word's
-   * length, because a word's measured span also covers the space that commits
-   * it. Dividing by length alone would make every short word look hard. */
+   * Deriving it from time, attempts and word length keeps the result auditable
+   * and avoids trusting a separate accumulated divisor that can drift. */
   function rank(map, opts) {
     var o = opts || {};
     var minSamples = o.minSamples === undefined ? DEFAULT_MIN_SAMPLES : o.minSamples;
@@ -80,19 +72,15 @@
       if (o.allow && !o.allow(word)) continue;
 
       var avgMs = e.ms / e.n;
-      // Records written before unit tracking existed fall back to the nominal
-      // "characters plus the committing space" count.
-      var units = e.u > 0 ? e.u : e.n * (word.length + 1);
-      var msPerChar = e.ms / units;
-      var bestRate = e.bestRate > 0 ? e.bestRate
-        : e.best / (e.u > 0 ? e.u / e.n : word.length + 1);
+      var unitsPerWord = word.length + 1; // letters plus the committing space
+      var msPerChar = avgMs / unitsPerWord;
       rows.push({
         word: word,
         n: e.n,
         err: e.err || 0,
         avgMs: avgMs,
         bestMs: e.best,
-        bestWpm: bestRate > 0 ? 60000 / (bestRate * 5) : 0,
+        bestWpm: e.best > 0 ? 60000 / ((e.best / unitsPerWord) * 5) : 0,
         msPerChar: msPerChar,
         wpm: msPerChar > 0 ? 60000 / (msPerChar * 5) : 0
       });
