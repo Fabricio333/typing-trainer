@@ -505,7 +505,7 @@
     drillSet = rows.map(function (r) { return r.word; });
     drillLang = lang;
     drillBaseline = {};
-    rows.forEach(function (r) { drillBaseline[r.word] = r.bestWpm; });
+    rows.forEach(function (r) { drillBaseline[r.word] = r.wpm; });
     return drillSet;
   }
 
@@ -552,9 +552,9 @@
 
     els.drillWords.innerHTML = set.map(function (word) {
       var row = current[word];
-      var wpm = row ? Math.round(row.bestWpm) : 0;
+      var wpm = row ? Math.round(row.wpm) : 0;
       var was = drillBaseline[word] || 0;
-      var improved = was > 0 && row && row.bestWpm > was;
+      var improved = was > 0 && row && row.wpm > was;
       return '<span class="drill-word' + (improved ? ' is-improved' : '') + '">' +
         '<b>' + escapeHtml(word) + '</b>' +
         '<span class="drill-wpm">' + (wpm ? wpm + ' wpm' : '—') +
@@ -998,7 +998,7 @@
         drillSet = rows.map(function (r) { return r.word; });
         drillLang = TT.settings.get('lang');
         drillBaseline = {};
-        rows.forEach(function (r) { drillBaseline[r.word] = r.bestWpm; });
+        rows.forEach(function (r) { drillBaseline[r.word] = r.wpm; });
       } else {
         pickDrillSet();
       }

@@ -345,7 +345,7 @@ function check(name, cond, detail) {
     });
     slow.forEach(w => {
       const u = 4 * (w.length + 1);
-      map[w] = { n: 4, ms: u * 900, u: u, best: 900 * (w.length + 1), err: 0 };
+      map[w] = { n: 4, ms: u * 900, u: u, best: 24 * (w.length + 1), err: 0 };
     });
     // Letter-chunk debris, as an old finger drill would have recorded it: the
     // slowest entry of all, but not a word — it must never surface.
@@ -369,6 +369,10 @@ function check(name, cond, detail) {
     chosen.every(w => seedSets.slow.indexOf(w) !== -1), chosen.join(' '));
   check('letter chunks never surface as drill words',
     chosen.indexOf('fjjf') === -1, chosen.join(' '));
+  const shownSpeeds = await page.$$eval('#drill-words .drill-wpm',
+    e => e.map(x => x.textContent));
+  check('drill shows the slow ranking speed, not a freak 500 wpm personal best',
+    shownSpeeds.every(x => x.trim() === '13 wpm'), shownSpeeds.join(', '));
 
   const drillWords = await page.$$eval('#words .word', e => e.map(x => x.textContent));
   check('the test text is drawn from the drill set',
