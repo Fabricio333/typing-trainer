@@ -3,7 +3,7 @@
  * Usage:  node scripts/og-image.js
  *
  * The card is the app's own finger-coloured keyboard rendered under the brand
- * and tagline, screenshot at 1200x630 CSS pixels (2x device scale). Like the
+ * and tagline, screenshot at 1200x630 pixels. Like the
  * browser smoke test this needs a Chromium; it reuses the same discovery:
  * puppeteer if installed, else CHROME_PATH, else any Chromium on the machine. */
 'use strict';
@@ -48,7 +48,7 @@ function findBrowser() {
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--font-render-hinting=none']
   });
   const page = await browser.newPage();
-  await page.setViewport({ width: 1200, height: 630, deviceScaleFactor: 2 });
+  await page.setViewport({ width: 1200, height: 630, deviceScaleFactor: 1 });
   await page.goto(APP, { waitUntil: 'networkidle0' });
   await page.waitForSelector('.kb-key');
 
@@ -64,6 +64,11 @@ function findBrowser() {
       text-align: center; margin: 0.8rem 0 1.5rem;
     }
     .og-tagline .dot { color: var(--main); margin: 0 0.55rem; }
+    .og-cta {
+      width: fit-content; margin: 0 auto 1.2rem; padding: 0.65rem 1.1rem;
+      border-radius: 8px; background: var(--main); color: var(--bg);
+      font: 700 1rem var(--mono); text-transform: uppercase;
+    }
     .kb { max-width: 1080px !important; gap: 0.4rem !important; }
     .kb-row { gap: 0.4rem !important; }
     .kb-key { min-height: 3.3rem !important; font-size: 1.1rem !important;
@@ -81,7 +86,8 @@ function findBrowser() {
       '<span class="kbd-ico">⌨️</span>typing<b>trainer</b></div></div>' +
       '<div class="og-tagline">learn to type properly<span class="dot">·</span>' +
       'lessons, tests, stats<span class="dot">·</span>english + español' +
-      '<span class="dot">·</span>free &amp; offline</div>';
+      '<span class="dot">·</span>free &amp; offline</div>' +
+      '<div class="og-cta">Start typing — free</div>';
     const host = document.getElementById('keyboard-host');
     stage.appendChild(host);
     document.querySelector('main').appendChild(stage);
