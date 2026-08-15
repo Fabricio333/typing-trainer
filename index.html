@@ -85,28 +85,23 @@
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "Is the typing trainer free?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. It is free and open source under the MIT licence. There are no accounts, no adverts and no paid tier." }
+          "name": "Is Typing Trainer free?",
+          "acceptedAnswer": { "@type": "Answer", "text": "yes. free and open source under the MIT licence." }
         },
         {
           "@type": "Question",
-          "name": "Where is my typing data stored?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Only in your own browser's local storage. Nothing is sent to a server — there is no server. You can export everything to a JSON file and import it on another machine." }
+          "name": "Where does Typing Trainer store my data?",
+          "acceptedAnswer": { "@type": "Answer", "text": "nowhere. it stays in your browser and can be exported as JSON." }
         },
         {
           "@type": "Question",
-          "name": "Does it work offline?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. After the first visit a service worker caches the whole app, so it keeps working with no connection and can be installed as a standalone app." }
+          "name": "Does Typing Trainer work offline?",
+          "acceptedAnswer": { "@type": "Answer", "text": "yes. after the first visit, the whole app works offline." }
         },
         {
           "@type": "Question",
-          "name": "Which languages and layouts are supported?",
-          "acceptedAnswer": { "@type": "Answer", "text": "English and Spanish for both the practice text and the interface, including accented input and dead keys, across several common keyboard layouts." }
-        },
-        {
-          "@type": "Question",
-          "name": "I already touch type. Is there anything here for me?",
-          "acceptedAnswer": { "@type": "Answer", "text": "Yes. The trainer records your slowest words and key transitions and builds repetition drills from them, so practice targets the movements that still cost you time rather than the ones you already do well." }
+          "name": "Which languages and keyboard layouts does Typing Trainer support?",
+          "acceptedAnswer": { "@type": "Answer", "text": "English and Spanish, with common keyboard layouts, accents, and dead keys." }
         }
       ]
     }
@@ -117,7 +112,7 @@
 <meta name="theme-color" content="#131316">
 <link rel="stylesheet" href="css/themes.css">
 <link rel="stylesheet" href="css/style.css">
-<link rel="stylesheet" href="css/landing.css">
+<link rel="stylesheet" href="css/landing.css?v=2">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⌨️</text></svg>">
 
 <script>
@@ -153,9 +148,8 @@
   </a>
 
   <nav class="nav" aria-label="Sections">
-    <a href="#why" data-i18n="l.nav.why">why</a>
     <a href="#how" data-i18n="l.nav.how">how it works</a>
-    <a href="#preview" data-i18n="l.nav.preview">preview</a>
+    <a href="#preview" data-i18n="l.nav.preview">screens</a>
     <a href="#faq" data-i18n="l.nav.faq">faq</a>
   </nav>
 
@@ -179,21 +173,12 @@
     <div class="wrap hero-grid">
       <div>
         <p class="eyebrow" data-i18n="l.hero.eyebrow">free · offline · no accounts</p>
-        <h1 data-i18n="l.hero.title">Type without looking down. Then <em>keep getting better</em>.</h1>
-        <p class="hero-sub" data-i18n="l.hero.sub">
-          Typing is the layer underneath emails, notes, essays, code and searches.
-          This trainer takes you from the home row to fluency — and then keeps
-          working, by turning your own slowest words and key transitions into
-          practice.
-        </p>
+        <h1 data-i18n="l.hero.title">type without looking down. then <em>keep getting better</em>.</h1>
+        <p class="hero-sub" data-i18n="l.hero.sub">guided lessons, live stats, and drills built from the keys that slow you down.</p>
         <div class="hero-actions">
           <a class="btn btn-primary" href="type/" data-i18n="l.cta.start">start typing <span class="arrow" aria-hidden="true">→</span></a>
-          <a class="btn" href="https://github.com/Fabricio333/typing-trainer" rel="noopener" data-i18n="l.cta.source">
-            <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.4 7.4 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
-            view the source
-          </a>
         </div>
-        <p class="hero-note" data-i18n="l.hero.note">Nothing to install. Nothing leaves your browser.</p>
+        <p class="hero-note" data-i18n="l.hero.note">nothing to install · nothing leaves your browser</p>
       </div>
 
       <!-- A scripted replay of the real interface. It types by itself; no
@@ -217,62 +202,16 @@
   <section class="wrap" aria-label="At a glance">
     <div class="figures reveal">
       <div class="figure">
-        <div class="figure-value" data-count="40" data-suffix="+ h">0+ h</div>
-        <div class="figure-label" data-i18n="l.fig.hours">saved a year, if better technique buys you ten minutes a day</div>
-      </div>
-      <div class="figure">
         <div class="figure-value" data-count="22">0</div>
-        <div class="figure-label" data-i18n="l.fig.lessons">progressive lessons, home row to full keyboard</div>
+        <div class="figure-label" data-i18n="l.fig.lessons">guided lessons</div>
       </div>
       <div class="figure">
         <div class="figure-value" data-count="6">0</div>
-        <div class="figure-label" data-i18n="l.fig.modes">test modes: time, words, quote, patterns, hardest, zen</div>
-      </div>
-      <div class="figure">
-        <div class="figure-value">2</div>
-        <div class="figure-label" data-i18n="l.fig.langs">languages — English and Spanish, accents included</div>
+        <div class="figure-label" data-i18n="l.fig.modes">practice modes</div>
       </div>
       <div class="figure">
         <div class="figure-value">0</div>
-        <div class="figure-label" data-i18n="l.fig.zero">accounts, trackers and network requests</div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ──────────────────────────── WHY ─────────────────────────── -->
-  <section class="band" id="why">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <p class="eyebrow" data-i18n="l.why.eyebrow">why bother</p>
-        <h2 data-i18n="l.why.title">A few seconds a sentence, thousands of times over</h2>
-      </div>
-      <div class="two-col">
-        <div class="prose reveal" data-i18n="l.why.body">
-          <p>
-            Most people learn to type without ever really learning how. They look
-            down, search for the next key, correct a mistake, and repeat. It works
-            — and it adds a little friction to nearly every digital task they do.
-          </p>
-          <p>
-            <strong>The return compounds.</strong> Typing is rarely the main task;
-            it is the layer underneath the main task. Saving a few seconds on one
-            sentence means nothing. Saving it across thousands of sentences is
-            worth more than the hours you spend learning.
-          </p>
-          <p>
-            And the win is not only speed. A fast typist still loses time to
-            constant corrections. What actually helps is speed, accuracy and
-            consistency together — which is exactly what this trainer measures.
-          </p>
-        </div>
-        <div class="reveal">
-          <blockquote class="pullquote" data-i18n="l.why.quote">
-            “Instead of splitting attention between finding keys and developing an
-            idea, you can focus on the idea itself. Your hands become less of a
-            bottleneck between thought and text.”
-            <cite>from <a href="https://www.fabriok.ar/writings/touch-typing-investment" rel="noopener">Touch Typing Is an Investment That Pays You Back Every Day</a></cite>
-          </blockquote>
-        </div>
+        <div class="figure-label" data-i18n="l.fig.zero">accounts or trackers</div>
       </div>
     </div>
   </section>
@@ -282,37 +221,30 @@
     <div class="wrap">
       <div class="section-head reveal">
         <p class="eyebrow" data-i18n="l.how.eyebrow">how it works</p>
-        <h2 data-i18n="l.how.title">Learn the movement, measure it, then drill what is slow</h2>
-        <p data-i18n="l.how.sub">
-          Accuracy comes before speed. Every rushed mistake teaches your fingers
-          the wrong movement, so the trainer is built to make the wrong movements
-          visible rather than to hand out a big number.
-        </p>
+        <h2 data-i18n="l.how.title">learn. test. improve.</h2>
       </div>
       <div class="steps reveal">
         <div class="step">
-          <h3 data-i18n="l.step1.title">Start on the home row</h3>
-          <p data-i18n="l.step1.body">
-            Twenty-two lessons introduce a few keys at a time. Each unlocks the
-            next only when you hit its target speed <em>and</em> accuracy, so you
-            never build on a shaky foundation.
-          </p>
+          <div class="step-visual mini-keys" aria-hidden="true">
+            <span>f</span><span>d</span><span>s</span><span>a</span>
+            <span>j</span><span>k</span><span>l</span><span>;</span>
+          </div>
+          <h3 data-i18n="l.step1.title">learn the keyboard</h3>
+          <p data-i18n="l.step1.body">22 guided lessons.</p>
         </div>
         <div class="step">
-          <h3 data-i18n="l.step2.title">Test in real language</h3>
-          <p data-i18n="l.step2.body">
-            Timed runs, word counts, quotes, key-pattern chunks or open-ended zen
-            mode. Live WPM, accuracy and consistency, with a second-by-second
-            chart at the end.
-          </p>
+          <div class="step-visual mini-stats" aria-hidden="true">
+            <strong>68</strong><span>wpm</span><i></i><i></i><i></i>
+          </div>
+          <h3 data-i18n="l.step2.title">see every result</h3>
+          <p data-i18n="l.step2.body">speed, accuracy, consistency.</p>
         </div>
         <div class="step">
-          <h3 data-i18n="l.step3.title">Drill your weak spots</h3>
-          <p data-i18n="l.step3.body">
-            The trainer ranks your slowest words, key pairs and keys — then builds
-            repetition drills out of them. Practice goes where the time is
-            actually being lost.
-          </p>
+          <div class="step-visual mini-drill" aria-hidden="true">
+            <span>typing</span><span>practice</span><span>accuracy</span>
+          </div>
+          <h3 data-i18n="l.step3.title">fix what is slow</h3>
+          <p data-i18n="l.step3.body">automatic personal drills.</p>
         </div>
       </div>
     </div>
@@ -322,27 +254,26 @@
   <section class="band" id="preview">
     <div class="wrap">
       <div class="section-head reveal">
-        <p class="eyebrow" data-i18n="l.prev.eyebrow">preview</p>
-        <h2 data-i18n="l.prev.title">What it looks like</h2>
-        <p data-i18n="l.prev.sub">Eight colour themes, an on-screen keyboard that mirrors finger colours, and no chrome you did not ask for.</p>
+        <p class="eyebrow" data-i18n="l.prev.eyebrow">the real app</p>
+        <h2 data-i18n="l.prev.title">less explaining. more showing.</h2>
       </div>
       <div class="shots reveal">
         <figure class="shot">
           <img src="assets/shots/test.png" width="1280" height="740" loading="lazy" decoding="async"
                data-i18n-alt="l.prev.altTest"
                alt="A typing test in progress: a countdown, live words per minute and accuracy, greyed-out upcoming words and an on-screen keyboard highlighting the next key.">
-          <figcaption data-i18n="l.prev.capTest"><b>The test</b> Live speed and accuracy while you type, with the next key lit on the keyboard below.</figcaption>
+          <figcaption data-i18n="l.prev.capTest"><b>live test</b> speed, accuracy, next key.</figcaption>
         </figure>
         <figure class="shot">
           <img src="assets/shots/lessons.png" width="1280" height="740" loading="lazy" decoding="async"
                data-i18n-alt="l.prev.altLessons"
                alt="The lesson list: twenty-two lessons from home row f and j onwards, each showing a target speed, target accuracy and three stars, with later lessons locked.">
-          <figcaption data-i18n="l.prev.capLessons"><b>The lessons</b> Ordered, gated by a target, and scored out of three stars each.</figcaption>
+          <figcaption data-i18n="l.prev.capLessons"><b>lessons</b> clear goals, visible progress.</figcaption>
         </figure>
         <div class="heatcard shot">
           <div class="heatgrid" id="heat-kb" aria-hidden="true"></div>
           <div class="heat-scale"><span data-i18n="l.prev.accurate">accurate</span><span class="heat-bar"></span><span data-i18n="l.prev.errorProne">error-prone</span></div>
-          <figcaption data-i18n="l.prev.capHeat"><b>The heatmap</b> Every key shaded by how often you miss it — or by how long it takes you to reach it.</figcaption>
+          <figcaption data-i18n="l.prev.capHeat"><b>heatmap</b> weak keys light up.</figcaption>
         </div>
       </div>
     </div>
@@ -353,77 +284,37 @@
     <div class="wrap">
       <div class="section-head reveal">
         <p class="eyebrow" data-i18n="l.feat.eyebrow">what you get</p>
-        <h2 data-i18n="l.feat.title">Everything, and nothing else</h2>
+        <h2 data-i18n="l.feat.title">the useful bits</h2>
       </div>
       <div class="features reveal">
         <div class="feature">
           <div class="feature-icon" aria-hidden="true">🎯</div>
-          <h3 data-i18n="l.feat1.title">Adaptive drills</h3>
-          <p data-i18n="l.feat1.body">Repetition built from your own slowest words, key pairs and keys.</p>
-        </div>
-        <div class="feature">
-          <div class="feature-icon" aria-hidden="true">🔥</div>
-          <h3 data-i18n="l.feat2.title">Per-key statistics</h3>
-          <p data-i18n="l.feat2.body">A heatmap by accuracy or by speed, plus a ranked table of what is costing you time.</p>
+          <h3 data-i18n="l.feat1.title">adaptive drills</h3>
         </div>
         <div class="feature">
           <div class="feature-icon" aria-hidden="true">📈</div>
-          <h3 data-i18n="l.feat3.title">History that keeps</h3>
-          <p data-i18n="l.feat3.body">Speed over time, personal bests per mode, and lifetime counters that survive the history cap.</p>
+          <h3 data-i18n="l.feat2.title">live stats</h3>
         </div>
         <div class="feature">
           <div class="feature-icon" aria-hidden="true">🌐</div>
-          <h3 data-i18n="l.feat4.title">English and Spanish</h3>
-          <p data-i18n="l.feat4.body">Interface and practice text both, with accented input, dead keys and several layouts.</p>
+          <h3 data-i18n="l.feat4.title">English + Spanish</h3>
         </div>
         <div class="feature">
-          <div class="feature-icon" aria-hidden="true">📴</div>
-          <h3 data-i18n="l.feat5.title">Works offline</h3>
-          <p data-i18n="l.feat5.body">Cached after the first visit and installable as an app. A flight is a practice session.</p>
-        </div>
-        <div class="feature">
-          <div class="feature-icon" aria-hidden="true">🔒</div>
-          <h3 data-i18n="l.feat6.title">Private by construction</h3>
-          <p data-i18n="l.feat6.body">No server, no accounts, no analytics. Your results live in your browser; export them whenever.</p>
-        </div>
-        <div class="feature">
-          <div class="feature-icon" aria-hidden="true">🎨</div>
-          <h3 data-i18n="l.feat7.title">Eight themes</h3>
-          <p data-i18n="l.feat7.body">Carbon, paper, nord, dracula, solarized, matrix, ocean and sepia. Light and dark both.</p>
-        </div>
-        <div class="feature">
-          <div class="feature-icon" aria-hidden="true">⌨️</div>
-          <h3 data-i18n="l.feat8.title">Keyboard-first</h3>
-          <p data-i18n="l.feat8.body">Tab restarts, Esc backs out, Enter starts the next one. Your hands never have to leave home.</p>
+          <div class="feature-icon" aria-hidden="true">🛡️</div>
+          <h3 data-i18n="l.feat6.title">offline + private</h3>
         </div>
       </div>
     </div>
   </section>
 
   <!-- ─────────────────────────── QUOTES ───────────────────────── -->
-  <section class="band">
-    <div class="wrap two-col">
-      <div class="prose reveal">
+  <section class="band quote-band">
+    <div class="wrap reveal">
+      <div class="section-head">
         <p class="eyebrow" data-i18n="l.quotes.eyebrow">practice text</p>
-        <h2 class="quotes-title" data-i18n="l.quotes.title">Ideas worth repeating</h2>
-        <div data-i18n="l.quotes.body">
-          <p>
-            Typing exercises usually use random words. They train the fingers and
-            give the mind nothing. Quote mode draws instead on Stoic and other
-            philosophical writing, so while your hands repeat key patterns you are
-            reading about discipline, attention and what is actually under your
-            control.
-          </p>
-          <p>
-            It suits the practice. Improving accuracy means accepting mistakes
-            without frustration and going back to the exercise — and typing a
-            sentence is a far more active way of meeting it than scrolling past.
-          </p>
-        </div>
+        <h2 class="quotes-title" data-i18n="l.quotes.title">practice ideas, not filler.</h2>
       </div>
-      <div class="reveal">
-        <p class="quote-rotator" id="quote-rotator" aria-live="off"></p>
-      </div>
+      <p class="quote-rotator" id="quote-rotator" aria-live="off"></p>
     </div>
   </section>
 
@@ -432,32 +323,24 @@
     <div class="wrap">
       <div class="section-head reveal">
         <p class="eyebrow" data-i18n="l.faq.eyebrow">questions</p>
-        <h2 data-i18n="l.faq.title">The short answers</h2>
+        <h2 data-i18n="l.faq.title">short answers</h2>
       </div>
       <div class="faq reveal">
         <details>
-          <summary data-i18n="l.faq1.q">Is it free?</summary>
-          <p data-i18n="l.faq1.a">Yes — free and open source under the MIT licence. No accounts, no adverts, no paid tier, nothing to unlock.</p>
+          <summary data-i18n="l.faq1.q">Is Typing Trainer free?</summary>
+          <p data-i18n="l.faq1.a">yes. free and open source under the MIT licence.</p>
         </details>
         <details>
-          <summary data-i18n="l.faq2.q">Where does my data go?</summary>
-          <p data-i18n="l.faq2.a">Nowhere. Results, lesson progress and settings sit in your browser's local storage; there is no server to send them to. Settings → your data exports the lot as JSON so you can move it to another machine.</p>
+          <summary data-i18n="l.faq2.q">Where does Typing Trainer store my data?</summary>
+          <p data-i18n="l.faq2.a">nowhere. it stays in your browser and can be exported as JSON.</p>
         </details>
         <details>
-          <summary data-i18n="l.faq3.q">Does it work offline?</summary>
-          <p data-i18n="l.faq3.a">After the first visit, yes. A service worker caches the whole app, and you can install it so it opens like any other application.</p>
+          <summary data-i18n="l.faq3.q">Does Typing Trainer work offline?</summary>
+          <p data-i18n="l.faq3.a">yes. after the first visit, the whole app works offline.</p>
         </details>
         <details>
-          <summary data-i18n="l.faq4.q">Which languages and layouts?</summary>
-          <p data-i18n="l.faq4.a">English and Spanish for both interface and practice text, including accented characters and dead keys, across several common keyboard layouts.</p>
-        </details>
-        <details>
-          <summary data-i18n="l.faq5.q">I already touch type. Anything here for me?</summary>
-          <p data-i18n="l.faq5.a">That is precisely who it was built for. Once the fundamentals are automatic, what remains is a set of specific slow words and awkward transitions — the trainer finds those and drills them, instead of making you retype text you already handle well.</p>
-        </details>
-        <details>
-          <summary data-i18n="l.faq6.q">How long until I see a difference?</summary>
-          <p data-i18n="l.faq6.a">Expect to be slower for the first few sessions: you are replacing an improvised habit with a deliberate one. Short daily sessions beat long occasional ones, and accuracy should lead speed the whole way.</p>
+          <summary data-i18n="l.faq4.q">Which languages and keyboard layouts does Typing Trainer support?</summary>
+          <p data-i18n="l.faq4.a">English and Spanish, with common keyboard layouts, accents, and dead keys.</p>
         </details>
       </div>
     </div>
@@ -466,11 +349,9 @@
   <!-- ────────────────────────── CLOSING ───────────────────────── -->
   <section class="closing">
     <div class="wrap reveal">
-      <h2 data-i18n="l.close.title">A small investment in a tool you already use every day</h2>
-      <p data-i18n="l.close.sub">Your own hands. Open it and practise — the first lesson takes about a minute.</p>
+      <h2 data-i18n="l.close.title">ready when your hands are.</h2>
       <div class="hero-actions">
         <a class="btn btn-primary" href="type/" data-i18n="l.cta.start">start typing <span class="arrow" aria-hidden="true">→</span></a>
-        <a class="btn" href="https://www.fabriok.ar/writings/touch-typing-investment" rel="noopener" data-i18n="l.cta.essay">read the essay</a>
       </div>
     </div>
   </section>
@@ -481,8 +362,6 @@
   <p class="sitefoot-line">
     <span data-i18n="l.foot.built">Typing Trainer — MIT licensed, built by <a href="https://www.fabriok.ar/" rel="noopener">Fabricio Acosta</a>.</span>
     <span aria-hidden="true">·</span>
-    <a href="https://www.fabriok.ar/writings/touch-typing-investment" rel="noopener" data-i18n="l.foot.essay">the essay behind it</a>
-    <span aria-hidden="true">·</span>
     <a class="sitefoot-gh" href="https://github.com/Fabricio333/typing-trainer" rel="noopener">
       <svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true" focusable="false"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.4 7.4 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
       GitHub
@@ -490,6 +369,6 @@
   </p>
 </footer>
 
-<script src="js/landing.js"></script>
+<script src="js/landing.js?v=2"></script>
 </body>
 </html>
