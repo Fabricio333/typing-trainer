@@ -13,7 +13,7 @@
     lang: 'en',
     theme: 'carbon',
 
-    mode: 'time',
+    mode: 'quote',
     timeValue: 30,
     wordsValue: 25,
     quoteLength: 'medium',
@@ -26,6 +26,7 @@
 
     punctuation: false,
     numbers: false,
+    tutorialSeen: false,
 
     caret: 'line',
     fontSize: 'medium',

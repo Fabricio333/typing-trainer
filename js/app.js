@@ -13,6 +13,8 @@
   var blurredAt = null;
   var lastWords = null;      // for "repeat same text"
   var toastTimer = null;
+  var tourTargets = [];
+  var tourIndex = 0;
 
   var CAPS_TEXT = { en: 'caps lock is on', es: 'bloq mayús activado' };
 
@@ -85,6 +87,12 @@
       langLabel: id('lang-label'),
       themeCycle: id('theme-cycle'),
       toast: id('toast'),
+      controlTour: id('control-tour'),
+      controlTourCount: id('control-tour-count'),
+      controlTourTitle: id('control-tour-title'),
+      controlTourText: id('control-tour-text'),
+      controlTourSkip: id('control-tour-skip'),
+      controlTourNext: id('control-tour-next'),
 
       resWpm: id('res-wpm'), resAcc: id('res-acc'), resMeta: id('res-meta'),
       resChart: id('res-chart'), resGrid: id('res-grid'), resNote: id('res-note'),
@@ -778,10 +786,96 @@
     }
   }
 
+  /* ── first-visit control tour ─────────────────────────────────── */
+
+  function tourKey(btn) {
+    if (btn.dataset.toggle) return 'tour.' + btn.dataset.toggle;
+    if (btn.dataset.mode) return 'tour.' + btn.dataset.mode;
+    return 'tour.value';
+  }
+
+  function positionTour() {
+    if (els.controlTour.hidden || !tourTargets[tourIndex]) return;
+    var target = tourTargets[tourIndex].getBoundingClientRect();
+    var width = els.controlTour.offsetWidth;
+    var height = els.controlTour.offsetHeight;
+    var below = target.bottom + 12;
+    els.controlTour.style.left = Math.max(8, Math.min(
+      window.innerWidth - width - 8, target.left + target.width / 2 - width / 2
+    )) + 'px';
+    els.controlTour.style.top = (below + height < window.innerHeight - 8
+      ? below : Math.max(8, target.top - height - 12)) + 'px';
+  }
+
+  function showTourStep() {
+    Array.prototype.forEach.call(els.configBar.querySelectorAll('.tour-target'), function (btn) {
+      btn.classList.remove('tour-target');
+    });
+    var target = tourTargets[tourIndex];
+    if (!target) return finishTour();
+    target.classList.add('tour-target');
+    els.controlTourCount.textContent = (tourIndex + 1) + ' / ' + tourTargets.length;
+    els.controlTourTitle.textContent = target.textContent.trim();
+    els.controlTourText.textContent = TT.i18n.t(tourKey(target));
+    els.controlTourSkip.textContent = TT.i18n.t('tour.skip');
+    els.controlTourNext.textContent = TT.i18n.t(
+      tourIndex === tourTargets.length - 1 ? 'tour.done' : 'tour.next'
+    );
+    els.controlTour.hidden = false;
+    document.body.classList.add('tour-open');
+    els.configBar.classList.add('tour-active');
+    target.scrollIntoView({ block: 'nearest', inline: 'center' });
+    window.requestAnimationFrame(function () {
+      positionTour();
+      els.controlTourNext.focus();
+    });
+  }
+
+  function startTour() {
+    if (TT.settings.get('tutorialSeen') || TT.router.current() !== 'test' ||
+        !els.controlTour.hidden) return;
+    els.input.blur();
+    tourTargets = Array.prototype.filter.call(
+      els.configBar.querySelectorAll('button'),
+      function (btn) { return !btn.hidden && btn.offsetParent !== null; }
+    );
+    tourIndex = 0;
+    showTourStep();
+  }
+
+  function finishTour() {
+    var target = tourTargets[tourIndex];
+    if (target) target.classList.remove('tour-target');
+    els.controlTour.hidden = true;
+    document.body.classList.remove('tour-open');
+    els.configBar.classList.remove('tour-active');
+    TT.settings.set('tutorialSeen', true);
+    if (target) target.focus();
+  }
+
   /* ── chrome ────────────────────────────────────────────────────── */
 
   function wireChrome() {
+    els.controlTourSkip.addEventListener('click', finishTour);
+    els.controlTourNext.addEventListener('click', function () {
+      if (tourIndex === tourTargets.length - 1) finishTour();
+      else { tourIndex++; showTourStep(); }
+    });
+    window.addEventListener('resize', positionTour);
+    document.addEventListener('keydown', function (e) {
+      if (els.controlTour.hidden) return;
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        finishTour();
+      } else if (e.key !== 'Tab' && e.key !== 'Enter' && e.key !== ' ') {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+      }
+    }, true);
+
     els.configBar.addEventListener('click', function (e) {
+      if (!els.controlTour.hidden) return;
       var btn = e.target.closest('button');
       if (!btn) return;
 
@@ -1172,8 +1266,10 @@
         } else {
           focusInput();
         }
+        window.requestAnimationFrame(startTour);
       },
       leave: function () {
+        if (!els.controlTour.hidden) finishTour();
         stopTick();
         document.body.classList.remove('is-typing');
       }

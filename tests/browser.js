@@ -93,6 +93,28 @@ function check(name, cond, detail) {
     fingerColours.lp !== fingerColours.li,
     JSON.stringify(fingerColours));
 
+  await page.waitForSelector('#control-tour:not([hidden])');
+  const firstVisit = await page.evaluate(() => ({
+    mode: window.TT.settings.get('mode'),
+    firstMode: document.querySelector('[data-mode]').dataset.mode,
+    title: document.getElementById('control-tour-title').textContent
+  }));
+  check('quote is the fresh-user default', firstVisit.mode === 'quote', JSON.stringify(firstVisit));
+  check('quote is first on the control bar', firstVisit.firstMode === 'quote', JSON.stringify(firstVisit));
+  check('the first-visit tour starts on quote', firstVisit.title === 'quote', JSON.stringify(firstVisit));
+  await page.click('#control-tour-next');
+  const tourAdvanced = await page.evaluate(() => ({
+    title: document.getElementById('control-tour-title').textContent,
+    count: document.getElementById('control-tour-count').textContent
+  }));
+  check('next advances and highlights the next control',
+    tourAdvanced.title === 'time' && tourAdvanced.count.startsWith('2 /'),
+    JSON.stringify(tourAdvanced));
+  await page.click('#control-tour-skip');
+  const tourDismissed = await page.evaluate(() =>
+    document.getElementById('control-tour').hidden && window.TT.settings.get('tutorialSeen'));
+  check('skipping the tour remembers completion', tourDismissed);
+
   // The layout setting overrides the language's default distribution.
   const spanishIso = await page.evaluate(() => {
     window.TT.settings.set('keyboardLayout', 'es');

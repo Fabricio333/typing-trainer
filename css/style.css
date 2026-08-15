@@ -181,6 +181,46 @@ main {
 .opt:hover { color: var(--text); }
 .opt.is-on { color: var(--main); }
 
+/* ── first-visit control tour ────────────────────────────────────── */
+
+.control-tour {
+  position: fixed;
+  z-index: 100;
+  width: min(280px, calc(100vw - 16px));
+  padding: 1rem;
+  border: 1px solid var(--main);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  color: var(--text);
+}
+.control-tour[hidden] { display: none; }
+.control-tour-count {
+  color: var(--main);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+}
+.control-tour strong { display: block; margin-top: 0.25rem; }
+.control-tour p { margin-top: 0.35rem; color: var(--sub); font-size: 0.9rem; }
+.control-tour-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+.control-tour-actions button { padding: 0.45rem 0.8rem; }
+.config.tour-active .opt:not(.tour-target) { opacity: 0.35; }
+.config .tour-target {
+  position: relative;
+  z-index: 101;
+  background: var(--surface-2);
+  outline: 2px solid var(--main);
+  outline-offset: 2px;
+}
+body.tour-open .topbar,
+body.tour-open .stage,
+body.tour-open .keyboard-host { pointer-events: none; }
+
 /* Fades the chrome away while typing so only the words remain. The on-screen
  * keyboard deliberately stays put — it is the one thing a learner needs most
  * precisely while they are typing. */
