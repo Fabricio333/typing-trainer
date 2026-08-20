@@ -31,6 +31,7 @@
     'l.nav.faq': 'preguntas',
 
     'l.cta.start': 'empezá a escribir <span class="arrow" aria-hidden="true">→</span>',
+    'l.cta.essay': 'leer el ensayo',
     'l.hero.eyebrow': 'gratis · sin conexión · sin cuentas',
     'l.hero.title': 'escribí sin mirar el teclado. después <em>seguí mejorando</em>.',
     'l.hero.sub': 'lecciones guiadas, estadísticas en vivo y ejercicios hechos con las teclas que te frenan.',
@@ -82,7 +83,8 @@
 
     'l.close.title': 'listo cuando tus manos estén listas.',
 
-    'l.foot.built': 'Typing Trainer — licencia MIT, hecho por <a href="https://www.fabriok.ar/" rel="noopener">Fabricio Acosta</a>.'
+    'l.foot.built': 'Typing Trainer — licencia MIT, hecho por <a href="https://www.fabriok.ar/" rel="noopener">Fabricio Acosta</a>.',
+    'l.foot.essay': 'el ensayo detrás'
   };
 
   var originals = null;
